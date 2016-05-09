@@ -16,33 +16,26 @@ import android.util.Pair;
 
 import com.vizdashcam.fragments.FragmentAllVideos;
 import com.vizdashcam.fragments.FragmentMarkedVideos;
+import com.vizdashcam.utils.Constants;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 
 public class GlobalState extends Application {
+
 	private static final String TAG = "GlobalState";
 
-	private File mediaStorageDir = new File(
-			Environment.getExternalStorageDirectory(), "vizDashcamApp");
+	private File mediaStorageDir;
 
-	public static final float SHOCK_SENSITIVITY_LOW = 5;
-	public static final float SHOCK_SENSITIVITY_MEDIUM = 7;
-	public static final float SHOCK_SENSITIVITY_HIGH = 11;
-
-	public static final int SPEEDOMETER_MPH = 0;
-	public static final int SPEEDOMETER_KPH = 1;
-
-	private Pair<Integer, Integer> lastFeedbackCoords;
+    private Pair<Integer, Integer> lastFeedbackCoords;
 
 	private String lastFilename;
 	private String lastMarkedFilename;
-	public static final String KEY_MARKED_FILES = "MARKED";
 
 	private boolean recording = false;
 	private boolean loggingEnabled = false;
 	private boolean previewBound = false;
 	private boolean activityPaused = false;
 	private boolean previewActive = false;
-	private boolean splashscreenOpen = true;
+//	private boolean splashscreenOpen = true;
 
 	private boolean supports1080p;
 	private boolean supports720p;
@@ -71,15 +64,17 @@ public class GlobalState extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+
 		createVideoFolder();
 		detectSupportedCamcorderProfiles();
 		FeedbackSoundPlayer.init(this);
-		new VideoPreview(this);
+		new VideoPreview();
+
 		Locale.setDefault(Locale.US);
 	}
 
 	public void createVideoFolder() {
-		File mediaStorageDir = new File(
+		mediaStorageDir = new File(
 				Environment.getExternalStorageDirectory(), "vizDashcamApp");
 
 		if (!mediaStorageDir.exists()) {
@@ -181,17 +176,13 @@ public class GlobalState extends Application {
 		return defaultVideoLength;
 	}
 
-	public void setDefaultVideoLength(int defaultVideoLength) {
-		this.defaultVideoLength = defaultVideoLength;
-	}
-
 	public int getDefaultShockSensitivity() {
 		return defaultShockSensitivity;
 	}
 
 	private void detectSupportedCamcorderProfiles() {
 		SharedPreferences camcorderProfiles = PreferenceManager
-				.getDefaultSharedPreferences(this);
+                .getDefaultSharedPreferences(this);
 
 		if (!camcorderProfiles.contains("1080p")) {
 			saveSupportedCamcorderProfiles();
@@ -204,7 +195,6 @@ public class GlobalState extends Application {
 		supportsCIF = camcorderProfiles.getBoolean("CIF", false);
 		supportsQCIF = camcorderProfiles.getBoolean("QCIF", false);
 		supportsQVGA = camcorderProfiles.getBoolean("QVGA", false);
-
 	}
 
 	private void saveSupportedCamcorderProfiles() {
@@ -219,7 +209,7 @@ public class GlobalState extends Application {
 		else
 			camcorderProfilesEditor.putBoolean("1080p", false);
 
-		// 640 × 480 || 720 x 480 || 704 x 480
+		// 640 x 480 || 720 x 480 || 704 x 480
 		if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_480P)) {
 			camcorderProfilesEditor.putBoolean("480p", true);
 		} else
@@ -231,7 +221,7 @@ public class GlobalState extends Application {
 		else
 			camcorderProfilesEditor.putBoolean("720p", false);
 
-		// 352 × 288
+		// 352 x 288
 		if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_CIF))
 			camcorderProfilesEditor.putBoolean("CIF", true);
 		else
@@ -484,20 +474,12 @@ public class GlobalState extends Application {
 		String temp = sharedPreferences.getString("speedometerUnitsMeasure",
 				"kph");
 		if (temp.compareTo("kph") == 0) {
-			defaultSpeedometerUnitsMeasure = SPEEDOMETER_KPH;
+			defaultSpeedometerUnitsMeasure = Constants.SPEEDOMETER_KPH;
 		} else {
-			defaultSpeedometerUnitsMeasure = SPEEDOMETER_MPH;
+			defaultSpeedometerUnitsMeasure = Constants.SPEEDOMETER_MPH;
 		}
 
 		return defaultSpeedometerUnitsMeasure;
-	}
-
-	public boolean isSplashscreenOpen() {
-		return splashscreenOpen;
-	}
-
-	public void setSplashscreenOpen(boolean splashscreenOpen) {
-		this.splashscreenOpen = splashscreenOpen;
 	}
 
 	public FragmentAllVideos getAllVideosFragment() {

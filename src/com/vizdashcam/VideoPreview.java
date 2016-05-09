@@ -21,7 +21,7 @@ public class VideoPreview {
 	private static Map<ImageView, String> imageViews = Collections
 			.synchronizedMap(new ConcurrentHashMap<ImageView, String>());
 
-	public VideoPreview(GlobalState globalState) {
+	public VideoPreview() {
 		pool = Executors.newFixedThreadPool(3);
 		mBitmapCache = new BitmapLruCache<String>();
 	}

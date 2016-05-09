@@ -22,7 +22,7 @@ public class ActivitySplashscreen extends Activity {
 
 			@Override
 			public void run() {
-				mAppState.setSplashscreenOpen(false);
+//				mAppState.setSplashscreenOpen(false);
 				ActivitySplashscreen.this.finish();
 			}
 		}, 3000);

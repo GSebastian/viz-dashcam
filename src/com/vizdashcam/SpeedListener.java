@@ -8,6 +8,8 @@ import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import com.vizdashcam.utils.Constants;
+
 public class SpeedListener implements LocationListener {
 
     public static final String TAG = "SpeedListener";
@@ -46,7 +48,7 @@ public class SpeedListener implements LocationListener {
     private String getSpeedString(float mps) {
         int kph = (int) (mps * 3600 / 1000);
         int mph = (int) (mps * 3600 / 1609);
-        if (mAppState.detectSpeedometersUnitsMeasure() == GlobalState.SPEEDOMETER_KPH) {
+        if (mAppState.detectSpeedometersUnitsMeasure() == Constants.SPEEDOMETER_KPH) {
             return Integer.toString(kph);
         } else {
             return Integer.toString(mph);
@@ -54,7 +56,7 @@ public class SpeedListener implements LocationListener {
     }
 
     private String getUnitsString() {
-        if (mAppState.detectSpeedometersUnitsMeasure() == GlobalState.SPEEDOMETER_KPH) {
+        if (mAppState.detectSpeedometersUnitsMeasure() == Constants.SPEEDOMETER_KPH) {
             return "KM/H";
         } else {
             return "MI/H";

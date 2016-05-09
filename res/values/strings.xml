@@ -106,5 +106,7 @@
     <string name="units_of_measurement">Units of Measurement</string>
 
     <string name="play_video">Play Video</string>
+    <string name="overlay_permission_not_granted">Overlay permission not granted</string>
+    <string name="retry">Retry</string>
 
 </resources>
