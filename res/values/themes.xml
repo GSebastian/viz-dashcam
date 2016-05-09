@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- the theme applied to the application or activity -->
+    <style name="ReskinTheme" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionBarStyle">@style/ReskinTheme.ActionBar.Style</item>
+        <item name="android:actionBarTabStyle">@style/ReskinTheme.ActionBar.Tabs</item>
+        <item name="android:actionBarTabBarStyle">@style/ReskinTheme.ActionBar.TabBar</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="ReskinTheme.ActionBar.Style" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/C2DarkBlue</item>
+        <item name="android:icon">@drawable/ic_menu_logo</item>
+    </style>
+
+    <!-- Tab styles -->
+    <style name="ReskinTheme.ActionBar.Tabs" parent="@android:style/Widget.Holo.Light.ActionBar.TabBar.Inverse">
+        <item name="android:background">@drawable/tab_bar_background</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!-- Tab styles -->
+    <style name="ReskinTheme.ActionBar.TabBar" parent="@android:style/Widget.Holo.Light.ActionBar.TabBar">
+        <item name="android:background">@color/C2White</item>
+        <item name="android:divider">@null</item>
+        <item name="android:showDividers">none</item>
+    </style>
+
+</resources>

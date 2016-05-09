@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="172dp"
+    android:background="@color/Transparent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@color/C1Black"
+        android:gravity="center_vertical|left"
+        android:paddingLeft="10dp"
+        android:text="DashEye"
+        android:textColor="@color/C1White" />
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="2dp"
+        android:background="@color/C1White" >
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:background="@color/C1Black"
+        android:gravity="center"
+        android:text="Insufficient memory - Recording Stopped"
+        android:textColor="@color/C1White" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:text="Dismiss" />
+
+</LinearLayout>

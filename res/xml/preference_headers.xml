@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <header
+        android:fragment="com.vizdashcam.fragments.FragmentPreferences"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:summary="Edit the application preferences."
+        android:title="Preference" />
+
+</preference-headers>

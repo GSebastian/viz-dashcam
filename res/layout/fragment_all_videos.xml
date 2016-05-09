@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/C2White"
+    android:dividerHeight="2dp"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@+id/lv_videolist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/C2White"
+        android:divider="@null"
+        android:dividerHeight="0dp" >
+    </ListView>
+
+</LinearLayout>
+
+
+
+
