@@ -103,7 +103,7 @@ public class ActivityMain extends Activity {
 
                 // If the user has selected "Don't show again" and denied the permission, it returns false, making me
                 // show a dialog and redirecting the user to the app's settings page to manually approve everything
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_CONTACTS)) {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                     ViewUtils.createOneButtonDialog(ActivityMain.this, R.string.permission_explanation_camera_dont_show, new
                             DialogInterface.OnClickListener() {
                                 @Override
@@ -114,7 +114,7 @@ public class ActivityMain extends Activity {
                                     startActivityForResult(intent, CODE_CAMERA_PERMISSION);
                                 }
                             }).show();
-                }
+                } else requestCameraPermission();
             }
         });
 
@@ -271,7 +271,7 @@ public class ActivityMain extends Activity {
 
     @TargetApi(Build.VERSION_CODES.M)
     private boolean hasOverlayPermission() {
-        return Settings.canDrawOverlays(this);
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
