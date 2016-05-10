@@ -107,6 +107,12 @@
 
     <string name="play_video">Play Video</string>
     <string name="overlay_permission_not_granted">Overlay permission not granted</string>
+    <string name="camera_permission_not_granted">Camera permission not granted</string>
     <string name="retry">Retry</string>
+    <string name="grant_permission">Grant permission</string>
+    <string name="permission_explanation_camera">application can\'t be used</string>
+    <string name="permission_explanation_camera_dont_show">The application can\'t work without the camera
+        permission. Please grant this permission from the Android Settings menu</string>
+    <string name="got_it">Got it</string>
 
 </resources>
