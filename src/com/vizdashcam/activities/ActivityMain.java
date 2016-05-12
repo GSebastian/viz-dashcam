@@ -31,7 +31,10 @@ import com.vizdashcam.utils.ViewUtils;
 public class ActivityMain extends Activity {
 
     private static final int CODE_OVERLAY_PERMISSION = 111;
-    private static final int CODE_CAMERA_PERMISSION = 222;
+    private static final int CODE_BASIC_PERMISSIONS = 222;
+    private static final int CODE_CAMERA_PERMISSION = 333;
+    private static final int CODE_WRITE_PERMISSION = 444;
+
     public String TAG = "MainActivity";
 
     private Messenger mMessenger;
@@ -55,9 +58,13 @@ public class ActivityMain extends Activity {
         }
     };
     private View viewNoOverlay;
+    private View viewNoBasicPermissions;
     private View viewNoCamera;
+    private View viewNoWrite;
     private Button btnRetryOverlay;
+    private Button btnRetryBasic;
     private Button btnRetryCamera;
+    private Button btnRetryWrite;
     private View viewPermissionsGranted;
 
     // If the user has been asked for the overlay permission and has declined it, don't re-request it automatically
@@ -65,7 +72,9 @@ public class ActivityMain extends Activity {
     // The role of this is to prevent onResume from re-checking a permission that has already been declined by the
     // user manually
     private boolean declinedOverlayPermission = false;
-    private boolean declinedCameraPermission = false;
+    // Basic permissions are the bare minimum needed for the app to function
+    // These are CAMERA and WRITE_EXTERNAL_STORAGE
+    private boolean declinedBasicPermissions = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +89,13 @@ public class ActivityMain extends Activity {
 
     private void findViews() {
         viewNoOverlay = findViewById(R.id.llNoOverlay);
+        viewNoBasicPermissions = findViewById(R.id.llNoBasic);
         viewNoCamera = findViewById(R.id.llNoCamera);
+        viewNoWrite = findViewById(R.id.llNoWrite);
         btnRetryOverlay = (Button) findViewById(R.id.btnRetryOverlay);
+        btnRetryBasic = (Button) findViewById(R.id.btnRetryBasic);
         btnRetryCamera = (Button) findViewById(R.id.btnRetryCamera);
+        btnRetryWrite = (Button) findViewById(R.id.btnRetryWrite);
     }
 
     private void initViews() {
@@ -95,31 +108,70 @@ public class ActivityMain extends Activity {
         });
 
         btnRetryCamera.setOnClickListener(new View.OnClickListener() {
-            @TargetApi(Build.VERSION_CODES.M)
             @Override
+            @TargetApi(Build.VERSION_CODES.M)
             public void onClick(View v) {
+
                 // By the time this is checked, the user has already been asked at least once about the permission,
                 // so shouldShowRequestPermissionRationale should return true
 
                 // If the user has selected "Don't show again" and denied the permission, it returns false, making me
                 // show a dialog and redirecting the user to the app's settings page to manually approve everything
                 if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string.permission_explanation_camera_dont_show, new
+                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string.permission_explanation_basic_dont_show, new
                             DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                                    intent.setData(uri);
-                                    startActivityForResult(intent, CODE_CAMERA_PERMISSION);
+                                    startActivitySettingsActivity();
                                 }
                             }).show();
                 } else requestCameraPermission();
             }
         });
 
-        viewNoOverlay.setVisibility(View.GONE);
-        viewNoCamera.setVisibility(View.GONE);
+        btnRetryWrite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            @TargetApi(Build.VERSION_CODES.M)
+            public void onClick(View v) {
+
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string.permission_explanation_basic_dont_show, new
+                            DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivitySettingsActivity();
+                                }
+                            }).show();
+                } else requestWritePermission();
+            }
+        });
+
+        btnRetryBasic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            @TargetApi(Build.VERSION_CODES.M)
+            public void onClick(View v) {
+
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ||
+                        !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string.permission_explanation_basic_dont_show, new
+                            DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivitySettingsActivity();
+                                }
+                            }).show();
+                } else requestBasicPermissions();
+            }
+        });
+
+        setViewsPermissionsGranted();
+    }
+
+    private void startActivitySettingsActivity() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivityForResult(intent, CODE_BASIC_PERMISSIONS);
     }
 
     @Override
@@ -130,12 +182,16 @@ public class ActivityMain extends Activity {
             requestOverlayPermission();
         else if (shouldRequestCameraPermission())
             requestCameraPermission();
+        else if (shouldRequestWritePermission())
+            requestWritePermission();
+        else if (shouldRequestBasicPermission())
+            requestBasicPermissions();
         else if (canShowCameraPreview()) {
             // If the preview can be shown, reset these to false
             // Need to do this because user might handle the permissions outside the app
             // which messes up the states
             declinedOverlayPermission = false;
-            declinedCameraPermission = false;
+            declinedBasicPermissions = false;
 
             // Typical case below marshmallow, others shouldn't even occur
             initService();
@@ -146,12 +202,20 @@ public class ActivityMain extends Activity {
         return !declinedOverlayPermission && !hasOverlayPermission();
     }
 
+    private boolean shouldRequestBasicPermission() {
+        return hasOverlayPermission() && !declinedBasicPermissions && !hasBasicPermissions();
+    }
+
     private boolean shouldRequestCameraPermission() {
-        return hasOverlayPermission() && !declinedCameraPermission && !hasCameraPermission();
+        return hasOverlayPermission() && !declinedBasicPermissions && !hasCameraPermission() && hasWritePermission();
+    }
+
+    private boolean shouldRequestWritePermission() {
+        return hasOverlayPermission() && !declinedBasicPermissions && !hasWritePermission() && hasCameraPermission();
     }
 
     private boolean canShowCameraPreview() {
-        return hasOverlayPermission() && hasCameraPermission();
+        return hasOverlayPermission() && hasBasicPermissions();
     }
 
     @Override
@@ -208,35 +272,34 @@ public class ActivityMain extends Activity {
                 declinedOverlayPermission = false;
 
                 // onResume gets fired after this, starting the preview
-                viewNoOverlay.setVisibility(View.GONE);
-                viewNoCamera.setVisibility(View.VISIBLE);
+                setViewsNoBasic();
             } else {
                 // If permission was asked for but has not been granted, don't retry (only explicitly when the user
                 // presses retry)
                 declinedOverlayPermission = true;
 
-                viewNoOverlay.setVisibility(View.VISIBLE);
-                viewNoCamera.setVisibility(View.GONE);
+                setViewsNoOverlay();
             }
-        } else if (requestCode == CODE_CAMERA_PERMISSION) {
-            if (hasCameraPermission()) {
+        } else if (requestCode == CODE_BASIC_PERMISSIONS || requestCode == CODE_CAMERA_PERMISSION || requestCode ==
+                CODE_WRITE_PERMISSION) {
+            if (hasBasicPermissions()) {
 
-                viewNoOverlay.setVisibility(View.GONE);
-                viewNoCamera.setVisibility(View.GONE);
+                setViewsPermissionsGranted();
 
                 // Makes onResume re-check the permission if the user accepted it the first place and then disabled
                 // it manually
                 // Accept permission - becomes false - user goes to settings - disables permission - onResume - this
                 // is false, hasOverlayPermission is false - rechecks permission
-                declinedCameraPermission = false;
+                declinedBasicPermissions = false;
             } else {
 
-                viewNoOverlay.setVisibility(View.GONE);
-                viewNoCamera.setVisibility(View.VISIBLE);
+                if (hasCameraPermission() && !hasWritePermission()) setViewsNoWrite();
+                else if (!hasCameraPermission() && hasWritePermission()) setViewsNoCamera();
+                else if (!hasCameraPermission() && !hasWritePermission()) setViewsNoBasic();
 
                 // If permission was asked for but has not been granted, don't retry (only explicitly when the user
                 // presses retry)
-                declinedCameraPermission = true;
+                declinedBasicPermissions = true;
             }
         }
     }
@@ -282,9 +345,27 @@ public class ActivityMain extends Activity {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
+    private boolean hasBasicPermissions() {
+        return hasCameraPermission() && hasWritePermission();
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
     private boolean hasCameraPermission() {
         int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private boolean hasWritePermission() {
+        int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void requestBasicPermissions() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                CODE_BASIC_PERMISSIONS);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -294,35 +375,126 @@ public class ActivityMain extends Activity {
                 CODE_CAMERA_PERMISSION);
     }
 
+    private void requestWritePermission() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                CODE_WRITE_PERMISSION);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case CODE_CAMERA_PERMISSION: {
+            case CODE_BASIC_PERMISSIONS: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length == 2
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
 
-                    viewNoOverlay.setVisibility(View.GONE);
-                    viewNoCamera.setVisibility(View.GONE);
+                    setViewsPermissionsGranted();
 
                     // Makes onResume re-check the permission if the user accepted it the first place and then disabled
                     // it manually
                     // Accept permission - becomes false - user goes to settings - disables permission - onResume - this
                     // is false, hasOverlayPermission is false - rechecks permission
-                    declinedCameraPermission = false;
+                    declinedBasicPermissions = false;
                 } else {
-
-                    viewNoOverlay.setVisibility(View.GONE);
-                    viewNoCamera.setVisibility(View.VISIBLE);
+                    if (grantResults.length == 2
+                            && grantResults[0] == PackageManager.PERMISSION_DENIED
+                            && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        setViewsNoCamera();
+                    } else if (grantResults.length == 2
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                            && grantResults[1] == PackageManager.PERMISSION_DENIED) {
+                        setViewsNoWrite();
+                    } else if (grantResults.length == 2
+                            && grantResults[0] == PackageManager.PERMISSION_DENIED
+                            && grantResults[1] == PackageManager.PERMISSION_DENIED) {
+                        setViewsNoBasic();
+                    } else {
+                        throw new IllegalStateException("OnRequestPermission result should have 2 items");
+                    }
 
                     // If permission was asked for but has not been granted, don't retry (only explicitly when the user
                     // presses retry)
-                    declinedCameraPermission = true;
+                    declinedBasicPermissions = true;
+                }
+
+                break;
+            }
+
+            case CODE_CAMERA_PERMISSION: {
+                if (hasCameraPermission()) {
+                    if (hasWritePermission())
+                        setViewsPermissionsGranted();
+                    else setViewsNoWrite();
+
+                    declinedBasicPermissions = false;
+                } else {
+                    if (!hasWritePermission())
+                        setViewsNoBasic();
+                    else
+                        setViewsNoCamera();
+
+                    declinedBasicPermissions = true;
+                }
+
+                break;
+            }
+
+            case CODE_WRITE_PERMISSION: {
+                if (hasWritePermission()) {
+                    if (hasCameraPermission())
+                        setViewsPermissionsGranted();
+                    else setViewsNoCamera();
+
+                    declinedBasicPermissions = false;
+                } else {
+                    if (!hasCameraPermission())
+                        setViewsNoBasic();
+                    else
+                        setViewsNoWrite();
+
+                    declinedBasicPermissions = true;
                 }
 
                 break;
             }
         }
+    }
+
+    private void setViewsNoOverlay() {
+        viewNoOverlay.setVisibility(View.VISIBLE);
+        viewNoCamera.setVisibility(View.GONE);
+        viewNoWrite.setVisibility(View.GONE);
+        viewNoBasicPermissions.setVisibility(View.GONE);
+    }
+
+    private void setViewsNoCamera() {
+        viewNoOverlay.setVisibility(View.GONE);
+        viewNoCamera.setVisibility(View.VISIBLE);
+        viewNoWrite.setVisibility(View.GONE);
+        viewNoBasicPermissions.setVisibility(View.GONE);
+    }
+
+    private void setViewsNoWrite() {
+        viewNoOverlay.setVisibility(View.GONE);
+        viewNoCamera.setVisibility(View.GONE);
+        viewNoWrite.setVisibility(View.VISIBLE);
+        viewNoBasicPermissions.setVisibility(View.GONE);
+    }
+
+    private void setViewsNoBasic() {
+        viewNoOverlay.setVisibility(View.GONE);
+        viewNoCamera.setVisibility(View.GONE);
+        viewNoWrite.setVisibility(View.GONE);
+        viewNoBasicPermissions.setVisibility(View.VISIBLE);
+    }
+
+    private void setViewsPermissionsGranted() {
+        viewNoOverlay.setVisibility(View.GONE);
+        viewNoCamera.setVisibility(View.GONE);
+        viewNoWrite.setVisibility(View.GONE);
+        viewNoBasicPermissions.setVisibility(View.GONE);
     }
 }
