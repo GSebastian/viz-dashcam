@@ -2,13 +2,14 @@ package com.vizdashcam.activities;
 
 import java.io.File;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -26,201 +27,224 @@ import com.vizdashcam.VideoItem;
 import com.vizdashcam.VideoPreview;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 
-public class ActivityVideoItem extends Activity {
+public class ActivityVideoItem extends AppCompatActivity {
 
-	public static final String TAG = "VideoItemActivity";
+    public static final String TAG = "VideoItemActivity";
+    public static final String KEY_VIDEO_ITEM = "video_item";
 
-	ImageView ivPreview;
-	ImageView ivPlay;
-	VideoItem mVideoItem;
-	TextView tvLength;
-	TextView tvSize;
-	LinearLayout llShock;
-	TextView tvTitle;
+    Toolbar toolbar;
+    ImageView ivPreview;
+    ImageView ivPlay;
+    VideoItem videoItem;
+    TextView tvLength;
+    TextView tvSize;
+    LinearLayout llShock;
+    TextView tvTitle;
 
-	Button btnDelete;
-	Button btnUpload;
+    Button btnDelete;
+    Button btnUpload;
 
-	boolean isVideoMarked;
-	String videoItemName;
+    boolean isVideoMarked;
+    String videoItemName;
 
-	GlobalState mAppState;
+    GlobalState appState;
 
-	public static final int RESULT_BECAME_MARKED = 5;
-	public static final int RESULT_BECAME_NORMAL = 6;
-	public static final int RESULT_DELETE = 7;
+    public static final int RESULT_BECAME_MARKED = 5;
+    public static final int RESULT_BECAME_NORMAL = 6;
+    public static final int RESULT_DELETE = 7;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_video_item);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_video_item);
 
-		mAppState = (GlobalState) getApplicationContext();
+        appState = (GlobalState) getApplicationContext();
 
-		Bundle extras = getIntent().getExtras();
-		if (extras != null) {
-			File value = (File) extras.getSerializable("video_item");
-			mVideoItem = new VideoItem(value);
-			if (mVideoItem.isMarked())
-				isVideoMarked = true;
-			else
-				isVideoMarked = false;
-			videoItemName = mVideoItem.getName();
-		}
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            File value = (File) extras.getSerializable(KEY_VIDEO_ITEM);
+            videoItem = new VideoItem(value);
 
-		ivPreview = (ImageView) findViewById(R.id.iv_preview);
-		VideoPreview.getFileIcon(mVideoItem.getFile(), ivPreview);
+            if (videoItem.isMarked())
+                isVideoMarked = true;
+            else
+                isVideoMarked = false;
 
-		ivPlay = (ImageView) findViewById(R.id.iv_play);
-		ivPlay.setOnClickListener(new OnClickListener() {
+            videoItemName = videoItem.getName();
+        }
 
-			@Override
-			public void onClick(View v) {
-				try {
-					tactileFeedback();
-					audioFeedback();
+        findViews();
+        initViews();
+    }
 
-					Uri videoUri = Uri.parse(mVideoItem.getPath());
-					Intent intent = new Intent(Intent.ACTION_VIEW, videoUri);
-					intent.setDataAndType(videoUri, "video/*");
-					startActivity(intent);
-				} catch (ActivityNotFoundException e) {
-					Toast.makeText(ActivityVideoItem.this,
-							"No video player detected", Toast.LENGTH_LONG)
-							.show();
-				}
-			}
-		});
+    private void findViews() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ivPreview = (ImageView) findViewById(R.id.iv_preview);
+        ivPlay = (ImageView) findViewById(R.id.iv_play);
+        tvTitle = (TextView) findViewById(R.id.tv_title);
+        tvSize = (TextView) findViewById(R.id.tv_size);
+        tvLength = (TextView) findViewById(R.id.tv_length);
+        llShock = (LinearLayout) findViewById(R.id.ll_shock);
+    }
 
-		tvTitle = (TextView) findViewById(R.id.tv_title);
-		tvTitle.setText(mVideoItem.getName());
-		getActionBar().setTitle(mVideoItem.getName());
+    private void initViews() {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
-		tvSize = (TextView) findViewById(R.id.tv_size);
-		tvSize.setText(mVideoItem.getSize() + "MB");
+        VideoPreview.getFileIcon(videoItem.getFile(), ivPreview);
 
-		tvLength = (TextView) findViewById(R.id.tv_length);
-		tvLength.setText(mVideoItem.getDuration() + " min");
+        ivPlay.setOnClickListener(new OnClickListener() {
 
-		llShock = (LinearLayout) findViewById(R.id.ll_shock);
-		if (!mVideoItem.isMarked()) {
-			llShock.setAlpha(0.1f);
-		}
-		llShock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    tactileFeedback();
+                    audioFeedback();
 
-			@Override
-			public void onClick(View v) {
-				if (!isVideoMarked) {
-					isVideoMarked = true;
-					markVideoTitle();
-					tvTitle.setText(videoItemName);
-					getActionBar().setTitle(videoItemName);
+                    Uri videoUri = Uri.parse(videoItem.getPath());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, videoUri);
+                    intent.setDataAndType(videoUri, "video/*");
+                    startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(ActivityVideoItem.this,
+                            "No video player detected", Toast.LENGTH_LONG)
+                            .show();
+                }
+            }
+        });
 
-					FeedbackSoundPlayer
-							.playSound(FeedbackSoundPlayer.SOUND_MARKED);
-					llShock.setAlpha(1f);
-					Toast.makeText(ActivityVideoItem.this, "File marked!",
-							Toast.LENGTH_SHORT).show();
+        tvTitle.setText(videoItem.getName());
 
-					setResult(RESULT_BECAME_MARKED);
-				} else {
-					isVideoMarked = false;
-					unmarkVideoTitle();
-					tvTitle.setText(videoItemName);
-					getActionBar().setTitle(videoItemName);
+        tvSize.setText(videoItem.getSize() + "MB");
 
-					FeedbackSoundPlayer
-							.playSound(FeedbackSoundPlayer.SOUND_MARKED);
-					llShock.setAlpha(0.1f);
-					Toast.makeText(ActivityVideoItem.this, "File unmarked!",
-							Toast.LENGTH_SHORT).show();
+        tvLength.setText(videoItem.getDuration() + " min");
 
-					setResult(RESULT_BECAME_NORMAL);
-				}
-			}
-		});
+        if (!videoItem.isMarked()) {
+            llShock.setAlpha(0.1f);
+        }
 
-	}
+        llShock.setOnClickListener(new View.OnClickListener() {
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_video_item, menu);
+            @Override
+            public void onClick(View v) {
+                if (!isVideoMarked) {
+                    isVideoMarked = true;
+                    markVideoTitle();
+                    tvTitle.setText(videoItemName);
+                    getSupportActionBar().setTitle(videoItemName);
 
-		MenuItem miShare = menu.findItem(R.id.menu_item_share);
-		MenuItem miDelete = menu.findItem(R.id.menu_item_delete);
+                    FeedbackSoundPlayer
+                            .playSound(FeedbackSoundPlayer.SOUND_MARKED);
+                    llShock.setAlpha(1f);
+                    Toast.makeText(ActivityVideoItem.this, "File marked!",
+                            Toast.LENGTH_SHORT).show();
 
-		miShare.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+                    setResult(RESULT_BECAME_MARKED);
+                } else {
+                    isVideoMarked = false;
+                    unmarkVideoTitle();
+                    tvTitle.setText(videoItemName);
+                    getSupportActionBar().setTitle(videoItemName);
 
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				Intent intentShareFile = new Intent(Intent.ACTION_SEND);
-				intentShareFile.setType("video/mp4");
-				intentShareFile.putExtra(
-						Intent.EXTRA_STREAM,
-						Uri.parse("file://"
-								+ mVideoItem.getFile().getAbsolutePath()));
-				intentShareFile.putExtra(Intent.EXTRA_SUBJECT,
-						mVideoItem.getName());
+                    FeedbackSoundPlayer
+                            .playSound(FeedbackSoundPlayer.SOUND_MARKED);
+                    llShock.setAlpha(0.1f);
+                    Toast.makeText(ActivityVideoItem.this, "File unmarked!",
+                            Toast.LENGTH_SHORT).show();
 
-				Intent chooser = Intent.createChooser(intentShareFile,
-						"Share file");
-				if (intentShareFile.resolveActivity(getPackageManager()) != null) {
-					startActivity(chooser);
-				}
-				return true;
-			}
-		});
+                    setResult(RESULT_BECAME_NORMAL);
+                }
+            }
+        });
+    }
 
-		miDelete.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_video_item, menu);
 
-			@Override
-			public boolean onMenuItemClick(MenuItem arg0) {
+        MenuItem miShare = menu.findItem(R.id.menu_item_share);
+        MenuItem miDelete = menu.findItem(R.id.menu_item_delete);
 
-				tactileFeedback();
-				audioFeedback();
+        miShare.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
-				setResult(RESULT_DELETE);
-				finish();
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intentShareFile = new Intent(Intent.ACTION_SEND);
+                intentShareFile.setType("video/mp4");
+                intentShareFile.putExtra(
+                        Intent.EXTRA_STREAM,
+                        Uri.parse("file://"
+                                + videoItem.getFile().getAbsolutePath()));
+                intentShareFile.putExtra(Intent.EXTRA_SUBJECT,
+                        videoItem.getName());
 
-				return true;
-			}
-		});
+                Intent chooser = Intent.createChooser(intentShareFile,
+                        getString(R.string.share_video));
 
-		return true;
-	}
+                if (intentShareFile.resolveActivity(getPackageManager()) != null) {
+                    startActivity(chooser);
+                }
 
-	private void unmarkVideoTitle() {
-		StringBuilder stringBuilder = new StringBuilder(videoItemName);
-		int lastPointPosition = videoItemName.lastIndexOf(".");
-		if (lastPointPosition != -1) {
-			stringBuilder.delete(lastPointPosition
-					- VideoItem.EXTENSION_MARKED_FILE.length(),
-					lastPointPosition);
-			videoItemName = stringBuilder.toString();
-		}
-	}
+                return true;
+            }
+        });
 
-	private void markVideoTitle() {
-		StringBuilder stringBuilder = new StringBuilder(videoItemName);
-		int lastPointPosition = videoItemName.lastIndexOf(".");
-		if (lastPointPosition != -1) {
-			stringBuilder.insert(lastPointPosition,
-					VideoItem.EXTENSION_MARKED_FILE);
-			videoItemName = stringBuilder.toString();
-		}
-	}
+        miDelete.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
-	private void tactileFeedback() {
-		if (mAppState.detectTactileFeedbackActive()) {
-			Vibrator vibrator = (Vibrator) this
-					.getSystemService(Context.VIBRATOR_SERVICE);
-			vibrator.vibrate(100);
-		}
-	}
+            @Override
+            public boolean onMenuItemClick(MenuItem arg0) {
 
-	private void audioFeedback() {
-		if (mAppState.detectAudioFeedbackButtonActive()) {
-			FeedbackSoundPlayer.playSound(FeedbackSoundPlayer.SOUND_BTN);
-		}
-	}
+                tactileFeedback();
+                audioFeedback();
+
+                setResult(RESULT_DELETE);
+                finish();
+
+                return true;
+            }
+        });
+
+        return true;
+    }
+
+    private void unmarkVideoTitle() {
+        StringBuilder stringBuilder = new StringBuilder(videoItemName);
+        int lastPointPosition = videoItemName.lastIndexOf(".");
+        if (lastPointPosition != -1) {
+            stringBuilder.delete(lastPointPosition
+                            - VideoItem.EXTENSION_MARKED_FILE.length(),
+                    lastPointPosition);
+            videoItemName = stringBuilder.toString();
+        }
+    }
+
+    private void markVideoTitle() {
+        StringBuilder stringBuilder = new StringBuilder(videoItemName);
+        int lastPointPosition = videoItemName.lastIndexOf(".");
+        if (lastPointPosition != -1) {
+            stringBuilder.insert(lastPointPosition,
+                    VideoItem.EXTENSION_MARKED_FILE);
+            videoItemName = stringBuilder.toString();
+        }
+    }
+
+    private void tactileFeedback() {
+        if (appState.detectTactileFeedbackActive()) {
+            Vibrator vibrator = (Vibrator) this
+                    .getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(100);
+        }
+    }
+
+    private void audioFeedback() {
+        if (appState.detectAudioFeedbackButtonActive()) {
+            FeedbackSoundPlayer.playSound(FeedbackSoundPlayer.SOUND_BTN);
+        }
+    }
 }

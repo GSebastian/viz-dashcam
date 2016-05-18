@@ -20,6 +20,11 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
 
+    dexOptions {
+        maxProcessCount 2
+        javaMaxHeapSize "4g"
+    }
+
     defaultConfig {
         applicationId "com.vizdashcam"
         minSdkVersion 16
@@ -52,8 +57,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'com.android.support:design:23.3.0'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
     compile 'joda-time:joda-time:2.9.2'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
 }

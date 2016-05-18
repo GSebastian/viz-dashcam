@@ -159,7 +159,7 @@ public class FragmentMarkedVideos extends Fragment {
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
 				Intent i = new Intent(getActivity(), ActivityVideoItem.class);
-				i.putExtra("video_item", directoryEntries.elementAt(position)
+				i.putExtra(ActivityVideoItem.KEY_VIDEO_ITEM, directoryEntries.elementAt(position)
 						.getFile());
 				startActivityForResult(i, CODE_DELETE);
 				lastClicked = directoryEntries.get(position);

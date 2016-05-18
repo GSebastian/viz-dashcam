@@ -19,4 +19,13 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="Theme.AppCompat.NoActionBar.Light.NoActionBar" parent="Theme.AppCompat.NoActionBar" >
+        <item name="colorPrimary">@color/C2LighterBlue</item>
+        <item name="colorPrimaryDark">@color/C2DarkBlue</item>
+        <item name="colorAccent">@color/C2DarkOrange</item>
+        <item name="android:colorBackground">@color/C2White</item>
+        <item name="android:colorForeground">@color/C2LightGrey</item>
+        <item name="android:textColorPrimary">@color/C2Black</item>
+    </style>
+
 </resources>

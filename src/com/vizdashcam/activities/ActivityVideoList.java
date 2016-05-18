@@ -13,109 +13,81 @@ import android.app.ActionBar.Tab;
 import android.app.ActionBar.TabListener;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 
-public class ActivityVideoList extends FragmentActivity implements TabListener {
+public class ActivityVideoList extends AppCompatActivity { //implements TabListener {
 
-	ActionBar mActionBar;
-	ViewPager mViewPager;
-	GlobalState mAppState;
+    Toolbar toolbar;
+    ViewPager viewPager;
+    TabLayout tabLayout;
 
-	@Override
-	protected void onCreate(Bundle arg0) {
-		super.onCreate(arg0);
-		setContentView(R.layout.activity_video_list);
+    @Override
+    protected void onCreate(Bundle arg0) {
+        super.onCreate(arg0);
+        setContentView(R.layout.activity_video_list);
 
-		getActionBar().setTitle("Videos");
+        findViews();
+        initViews();
+    }
 
-		mAppState = (GlobalState) getApplicationContext();
+    private void findViews() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+    }
 
-		mActionBar = getActionBar();
-		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+    private void initViews() {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
-		mViewPager = (ViewPager) findViewById(R.id.vp_pager);
-		mViewPager
-				.setAdapter(new VideoListAdapter(getSupportFragmentManager()));
-		mViewPager
-				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-					@Override
-					public void onPageSelected(int arg0) {
-						mActionBar.setSelectedNavigationItem(arg0);
-					}
-
-					@Override
-					public void onPageScrolled(int arg0, float arg1, int arg2) {
-					}
-
-					@Override
-					public void onPageScrollStateChanged(int arg0) {
-					}
-				});
-
-		ActionBar.Tab allVideosTab = mActionBar.newTab();
-		allVideosTab.setText("All Videos");
-		allVideosTab.setTabListener(this);
-
-		ActionBar.Tab markedVideosTab = mActionBar.newTab();
-		markedVideosTab.setText("Marked Videos");
-		markedVideosTab.setTabListener(this);
-
-		mActionBar.addTab(allVideosTab);
-		mActionBar.addTab(markedVideosTab);
-
-		try {
-			final Method setHasEmbeddedTabsMethod = mActionBar.getClass()
-					.getDeclaredMethod("setHasEmbeddedTabs", boolean.class);
-			setHasEmbeddedTabsMethod.setAccessible(true);
-			setHasEmbeddedTabsMethod.invoke(mActionBar, false);
-		} catch (final Exception e) {
-
-		}
-	}
-
-	@Override
-	public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-
-	}
-
-	@Override
-	public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
-		mViewPager.setCurrentItem(arg0.getPosition());
-	}
-
-	@Override
-	public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
-
-	}
+        viewPager.setAdapter(new VideoListAdapter(getSupportFragmentManager()));
+        tabLayout.setupWithViewPager(viewPager);
+    }
 }
 
 class VideoListAdapter extends FragmentPagerAdapter {
 
-	public VideoListAdapter(FragmentManager fm) {
-		super(fm);
-	}
+    public VideoListAdapter(FragmentManager fm) {
+        super(fm);
+    }
 
-	@Override
-	public Fragment getItem(int arg0) {
-		Fragment fragment = null;
-		if (arg0 == 0) {
-			fragment = new FragmentAllVideos();
-		}
+    @Override
+    public Fragment getItem(int arg0) {
+        Fragment fragment = null;
 
-		if (arg0 == 1) {
-			fragment = new FragmentMarkedVideos();
-		}
+        if (arg0 == 0) {
+            fragment = new FragmentAllVideos();
+        }
 
-		return fragment;
-	}
+        if (arg0 == 1) {
+            fragment = new FragmentMarkedVideos();
+        }
 
-	@Override
-	public int getCount() {
-		return 2;
-	}
+        return fragment;
+    }
+
+    @Override
+    public int getCount() {
+        return 2;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return position == 0 ? "All Videos" : "Marked Videos";
+    }
 }

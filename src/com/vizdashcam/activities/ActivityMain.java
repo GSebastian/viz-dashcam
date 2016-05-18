@@ -122,7 +122,7 @@ public class ActivityMain extends Activity {
                             DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    startActivitySettingsActivity();
+                                    startSettingsActivity();
                                 }
                             }).show();
                 } else requestCameraPermission();
@@ -139,7 +139,7 @@ public class ActivityMain extends Activity {
                             DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    startActivitySettingsActivity();
+                                    startSettingsActivity();
                                 }
                             }).show();
                 } else requestWritePermission();
@@ -152,12 +152,12 @@ public class ActivityMain extends Activity {
             public void onClick(View v) {
 
                 if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ||
-                        !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                        !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     ViewUtils.createOneButtonDialog(ActivityMain.this, R.string.permission_explanation_basic_dont_show, new
                             DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    startActivitySettingsActivity();
+                                    startSettingsActivity();
                                 }
                             }).show();
                 } else requestBasicPermissions();
@@ -167,7 +167,7 @@ public class ActivityMain extends Activity {
         setViewsPermissionsGranted();
     }
 
-    private void startActivitySettingsActivity() {
+    private void startSettingsActivity() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
