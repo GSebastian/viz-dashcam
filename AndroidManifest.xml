@@ -47,7 +47,7 @@
             android:label="@string/app_name" />
         <activity
             android:name="com.vizdashcam.activities.ActivitySettings"
-            android:label="@string/app_name"
+            android:label="@string/action_settings"
             android:parentActivityName="com.vizdashcam.activities.ActivityMain" />
         <activity
             android:name="com.vizdashcam.activities.DialogStorage"
@@ -60,8 +60,7 @@
             android:parentActivityName="com.vizdashcam.activities.ActivityMain" />
         <activity
             android:name="com.vizdashcam.activities.ActivityVideoItem"
-            android:label="@string/app_name"
-            android:parentActivityName="com.vizdashcam.activities.ActivityVideoList" />
+            android:label="@string/app_name" />
     </application>
 
 </manifest>
