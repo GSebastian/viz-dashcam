@@ -3,36 +3,36 @@ package com.vizdashcam;
 import java.io.File;
 import java.io.IOException;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
-import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.location.LocationManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.media.audiofx.BassBoost;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.os.Vibrator;
-import android.provider.Settings;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -70,6 +70,8 @@ public class ServicePreview extends Service implements
 
     public static final String ACTION_FOREGROUND = "com.vizdashcam.PrevievService.FOREGROUND";
     public static final String ACTION_BACKGROUND = "com.vizdashcam.PrevievService.BACKGROUND";
+
+    private static final int CODE_CAMERA_PERMISSION = 333;
 
     private CameraPreview mCameraPreview;
     private GlobalState mAppState;
@@ -585,7 +587,9 @@ public class ServicePreview extends Service implements
         try {
             mServiceCamera.unlock();
             mMediaRecorder.setCamera(mServiceCamera);
-            mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+
+            if (hasAudioRecordingPermission()) mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+
             mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
             mMediaRecorder.setMaxDuration(mAppState.getDefaultVideoLength());
@@ -871,18 +875,20 @@ public class ServicePreview extends Service implements
 
     private void requestLocationUpdates() {
         if (mAppState.detectSpeedometerActive()) {
-            if (mSpeedListener != null) {
-                mSpeedListener.initView();
-                mLocationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER, 0, 0, mSpeedListener);
+            if (hasFineLocationPermission()) {
+                if (mSpeedListener != null) {
+                    mSpeedListener.initView();
+                    mLocationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER, 0, 0, mSpeedListener);
+                } else {
+                    mSpeedListener = new SpeedListener(mSpeedView, mAppState);
+                    mSpeedListener.initView();
+                    mLocationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER, 0, 0, mSpeedListener);
+                }
             } else {
-                mSpeedListener = new SpeedListener(mSpeedView, mAppState);
-                mSpeedListener.initView();
-                mLocationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER, 0, 0, mSpeedListener);
-            }
-        } else {
 
+            }
         }
     }
 
@@ -900,5 +906,19 @@ public class ServicePreview extends Service implements
             return (float) Math.pow(input - 1, 5) + 1;
         }
 
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private boolean hasAudioRecordingPermission() {
+        int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission
+                .RECORD_AUDIO);
+        return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private boolean hasFineLocationPermission() {
+        int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission
+                .ACCESS_FINE_LOCATION);
+        return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
     }
 }

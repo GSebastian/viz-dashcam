@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="@string/video" >
-        
+    <PreferenceCategory android:title="@string/video">
+
         <ListPreference
             android:dialogTitle="@string/video_quality"
             android:key="defaultCamcorderProfile"
             android:summary="@string/set_video_quality"
             android:title="@string/video_quality" />
-        
+
         <ListPreference
+            android:dependency="defaultCamcorderProfile"
             android:dialogTitle="@string/video_length"
             android:entries="@array/video_length_entry"
             android:entryValues="@array/video_length_value"
             android:key="defaultVideoLength"
             android:summary="@string/set_video_length"
-            android:title="@string/video_length"
-            android:dependency="defaultCamcorderProfile" />
+            android:title="@string/video_length" />
 
         <CheckBoxPreference
             android:key="loopModeActive"
             android:title="@string/loop_mode" />
-    
+
     </PreferenceCategory>
-   
-    <PreferenceCategory android:title="@string/shock_detection" >
-       
+
+    <PreferenceCategory android:title="@string/shock_detection">
+
         <CheckBoxPreference
             android:key="shockModeActive"
             android:title="@string/shock_detection" />
@@ -37,39 +37,39 @@
             android:key="defaultShockSensitivity"
             android:title="@string/shock_detection_sensitivity" />
 
-        
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="longPressToMarkActive"
             android:summary="@string/mark_videos_by_long_pressing_on_the_screen"
             android:title="@string/long_press_to_mark" />
-    
+
     </PreferenceCategory>
-    
-    <PreferenceCategory android:title="@string/feedback" >
-        
+
+    <PreferenceCategory android:title="@string/feedback">
+
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="audioFeedbackShockActive"
             android:dependency="shockModeActive"
+            android:key="audioFeedbackShockActive"
             android:title="@string/audio_feedback_for_shocks" />
-        
+
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="audioFeedbackButtonActive"
             android:summary="@string/play_a_sound_when_pressing_buttons"
             android:title="@string/audio_feedback_for_buttons" />
-        
+
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="tactileFeedbackActive"
             android:summary="@string/vibrate_when_pressing_buttons"
             android:title="@string/tactile_feedback_for_buttons" />
-    
+
     </PreferenceCategory>
-    
-    <PreferenceCategory android:title="@string/speedometer" >
-        
+
+    <PreferenceCategory android:title="@string/speedometer">
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="speedometerActive"
@@ -83,7 +83,16 @@
             android:entryValues="@array/speedometer_units_value"
             android:key="speedometerUnitsMeasure"
             android:title="@string/units_of_measurement" />
-    
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/recording_audio">
+
+        <Preference
+            android:defaultValue="false"
+            android:key="recordingAudio"
+            android:title="@string/recording_audio" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

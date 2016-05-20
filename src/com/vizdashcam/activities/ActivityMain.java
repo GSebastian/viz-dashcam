@@ -26,12 +26,14 @@ import android.widget.Button;
 import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
 import com.vizdashcam.ServicePreview;
+import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.utils.ViewUtils;
 
 public class ActivityMain extends Activity {
 
     private static final int CODE_OVERLAY_PERMISSION = 111;
     private static final int CODE_BASIC_PERMISSIONS = 222;
+    private static final int CODE_BASIC_AND_AUDIO_PERMISSIONS = 666;
     private static final int CODE_CAMERA_PERMISSION = 333;
     private static final int CODE_WRITE_PERMISSION = 444;
 
@@ -67,9 +69,11 @@ public class ActivityMain extends Activity {
     private Button btnRetryWrite;
     private View viewPermissionsGranted;
 
-    // If the user has been asked for the overlay permission and has declined it, don't re-request it automatically
+    // If the user has been asked for the overlay permission and has declined it, don't
+    // re-request it automatically
     // but rather let him press the retry button (otherwise onResume requests it over and over)
-    // The role of this is to prevent onResume from re-checking a permission that has already been declined by the
+    // The role of this is to prevent onResume from re-checking a permission that has already
+    // been declined by the
     // user manually
     private boolean declinedOverlayPermission = false;
     // Basic permissions are the bare minimum needed for the app to function
@@ -112,13 +116,17 @@ public class ActivityMain extends Activity {
             @TargetApi(Build.VERSION_CODES.M)
             public void onClick(View v) {
 
-                // By the time this is checked, the user has already been asked at least once about the permission,
+                // By the time this is checked, the user has already been asked at least once
+                // about the permission,
                 // so shouldShowRequestPermissionRationale should return true
 
-                // If the user has selected "Don't show again" and denied the permission, it returns false, making me
-                // show a dialog and redirecting the user to the app's settings page to manually approve everything
+                // If the user has selected "Don't show again" and denied the permission, it
+                // returns false, making me
+                // show a dialog and redirecting the user to the app's settings page to manually
+                // approve everything
                 if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string.permission_explanation_basic_dont_show, new
+                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string
+                            .permission_explanation_basic_dont_show, new
                             DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -134,8 +142,10 @@ public class ActivityMain extends Activity {
             @TargetApi(Build.VERSION_CODES.M)
             public void onClick(View v) {
 
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string.permission_explanation_basic_dont_show, new
+                if (!shouldShowRequestPermissionRationale(Manifest.permission
+                        .WRITE_EXTERNAL_STORAGE)) {
+                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string
+                            .permission_explanation_basic_dont_show, new
                             DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -152,8 +162,10 @@ public class ActivityMain extends Activity {
             public void onClick(View v) {
 
                 if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ||
-                        !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string.permission_explanation_basic_dont_show, new
+                        !shouldShowRequestPermissionRationale(Manifest.permission
+                                .WRITE_EXTERNAL_STORAGE)) {
+                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string
+                            .permission_explanation_basic_dont_show, new
                             DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -184,6 +196,8 @@ public class ActivityMain extends Activity {
             requestCameraPermission();
         else if (shouldRequestWritePermission())
             requestWritePermission();
+        else if (shouldRequestBasicPermissionAndAudio())
+            requestBasicPermissionsAndAudio();
         else if (shouldRequestBasicPermission())
             requestBasicPermissions();
         else if (canShowCameraPreview()) {
@@ -202,6 +216,11 @@ public class ActivityMain extends Activity {
         return !declinedOverlayPermission && !hasOverlayPermission();
     }
 
+    private boolean shouldRequestBasicPermissionAndAudio() {
+        return hasOverlayPermission() && !declinedBasicPermissions && !hasBasicPermissions() &&
+                shouldRequestAudioRecordingPermission();
+    }
+
     private boolean shouldRequestBasicPermission() {
         return hasOverlayPermission() && !declinedBasicPermissions && !hasBasicPermissions();
     }
@@ -212,6 +231,16 @@ public class ActivityMain extends Activity {
 
     private boolean shouldRequestWritePermission() {
         return hasOverlayPermission() && !declinedBasicPermissions && !hasWritePermission() && hasCameraPermission();
+    }
+
+    private boolean shouldRequestAudioRecordingPermission() {
+        // Unlike the CAMERA and WRITE permissions, the user's choice is persistent and can only be changed from the
+        // app's Settings Activity of the Android-provided Settings activity
+
+        // Once the user denies the audio recording permission, he won't be asked for it again and recordings won't
+        // have audio. If the user wishes to have audio in his recordings, he can go to Settings and click a button
+        // to have audio permissions requested
+        return !SharedPreferencesHelper.getHasDeclinedAudio(this) && !hasAudioRecordingPermission();
     }
 
     private boolean canShowCameraPreview() {
@@ -261,34 +290,39 @@ public class ActivityMain extends Activity {
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == CODE_OVERLAY_PERMISSION) {
             if (Settings.canDrawOverlays(this)) {
-                // Makes onResume re-check the permission if the user accepted it the first place and then disabled
+                // Makes onResume re-check the permission if the user accepted it the first place
+                // and then disabled
                 // it manually
-                // Accept permission - becomes false - user goes to settings - disables permission - onResume - this
+                // Accept permission - becomes false - user goes to settings - disables
+                // permission - onResume - this
                 // is false, hasOverlayPermission is false - rechecks permission
                 declinedOverlayPermission = false;
 
                 // onResume gets fired after this, starting the preview
                 setViewsNoBasic();
             } else {
-                // If permission was asked for but has not been granted, don't retry (only explicitly when the user
+                // If permission was asked for but has not been granted, don't retry (only
+                // explicitly when the user
                 // presses retry)
                 declinedOverlayPermission = true;
 
                 setViewsNoOverlay();
             }
-        } else if (requestCode == CODE_BASIC_PERMISSIONS || requestCode == CODE_CAMERA_PERMISSION || requestCode ==
+        } else if (requestCode == CODE_BASIC_PERMISSIONS || requestCode == CODE_CAMERA_PERMISSION
+                || requestCode ==
                 CODE_WRITE_PERMISSION) {
             if (hasBasicPermissions()) {
 
                 setViewsPermissionsGranted();
 
-                // Makes onResume re-check the permission if the user accepted it the first place and then disabled
+                // Makes onResume re-check the permission if the user accepted it the first place
+                // and then disabled
                 // it manually
-                // Accept permission - becomes false - user goes to settings - disables permission - onResume - this
+                // Accept permission - becomes false - user goes to settings - disables
+                // permission - onResume - this
                 // is false, hasOverlayPermission is false - rechecks permission
                 declinedBasicPermissions = false;
             } else {
@@ -297,7 +331,8 @@ public class ActivityMain extends Activity {
                 else if (!hasCameraPermission() && hasWritePermission()) setViewsNoCamera();
                 else if (!hasCameraPermission() && !hasWritePermission()) setViewsNoBasic();
 
-                // If permission was asked for but has not been granted, don't retry (only explicitly when the user
+                // If permission was asked for but has not been granted, don't retry (only
+                // explicitly when the user
                 // presses retry)
                 declinedBasicPermissions = true;
             }
@@ -351,20 +386,38 @@ public class ActivityMain extends Activity {
 
     @TargetApi(Build.VERSION_CODES.M)
     private boolean hasCameraPermission() {
-        int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission
+                .CAMERA);
         return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     private boolean hasWritePermission() {
-        int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission
+                .WRITE_EXTERNAL_STORAGE);
         return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private boolean hasAudioRecordingPermission() {
+        int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission
+                .RECORD_AUDIO);
+        return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void requestBasicPermissionsAndAudio() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.CAMERA, Manifest.permission
+                        .WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO},
+                CODE_BASIC_AND_AUDIO_PERMISSIONS);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     private void requestBasicPermissions() {
         ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                new String[]{Manifest.permission.CAMERA, Manifest.permission
+                        .WRITE_EXTERNAL_STORAGE},
                 CODE_BASIC_PERMISSIONS);
     }
 
@@ -393,9 +446,11 @@ public class ActivityMain extends Activity {
 
                     setViewsPermissionsGranted();
 
-                    // Makes onResume re-check the permission if the user accepted it the first place and then disabled
+                    // Makes onResume re-check the permission if the user accepted it the first
+                    // place and then disabled
                     // it manually
-                    // Accept permission - becomes false - user goes to settings - disables permission - onResume - this
+                    // Accept permission - becomes false - user goes to settings - disables
+                    // permission - onResume - this
                     // is false, hasOverlayPermission is false - rechecks permission
                     declinedBasicPermissions = false;
                 } else {
@@ -412,13 +467,62 @@ public class ActivityMain extends Activity {
                             && grantResults[1] == PackageManager.PERMISSION_DENIED) {
                         setViewsNoBasic();
                     } else {
-                        throw new IllegalStateException("OnRequestPermission result should have 2 items");
+                        throw new IllegalStateException("OnRequestPermission result should have 2" +
+                                " items");
                     }
 
-                    // If permission was asked for but has not been granted, don't retry (only explicitly when the user
+                    // If permission was asked for but has not been granted, don't retry (only
+                    // explicitly when the user
                     // presses retry)
                     declinedBasicPermissions = true;
                 }
+
+                break;
+            }
+
+            case CODE_BASIC_AND_AUDIO_PERMISSIONS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length == 3
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                    setViewsPermissionsGranted();
+
+                    // Makes onResume re-check the permission if the user accepted it the first
+                    // place and then disabled
+                    // it manually
+                    // Accept permission - becomes false - user goes to settings - disables
+                    // permission - onResume - this
+                    // is false, hasOverlayPermission is false - rechecks permission
+                    declinedBasicPermissions = false;
+                } else {
+                    if (grantResults.length == 3
+                            && grantResults[0] == PackageManager.PERMISSION_DENIED
+                            && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        setViewsNoCamera();
+                    } else if (grantResults.length == 3
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                            && grantResults[1] == PackageManager.PERMISSION_DENIED) {
+                        setViewsNoWrite();
+                    } else if (grantResults.length == 3
+                            && grantResults[0] == PackageManager.PERMISSION_DENIED
+                            && grantResults[1] == PackageManager.PERMISSION_DENIED) {
+                        setViewsNoBasic();
+                    } else {
+                        throw new IllegalStateException("OnRequestPermission result should have 3" +
+                                " items");
+                    }
+
+                    // If permission was asked for but has not been granted, don't retry (only
+                    // explicitly when the user
+                    // presses retry)
+                    declinedBasicPermissions = true;
+                }
+
+                if (grantResults.length == 3 && grantResults[2] == PackageManager.PERMISSION_GRANTED)
+                    SharedPreferencesHelper.putHasDeclinedAudio(this, false);
+                else if (grantResults.length == 3 && grantResults[2] == PackageManager.PERMISSION_DENIED)
+                    SharedPreferencesHelper.putHasDeclinedAudio(this, true);
 
                 break;
             }

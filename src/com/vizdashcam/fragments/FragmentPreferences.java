@@ -1,6 +1,11 @@
 package com.vizdashcam.fragments;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.CheckBoxPreference;
@@ -9,9 +14,13 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
+import com.vizdashcam.SharedPreferencesHelper;
+import com.vizdashcam.activities.ActivitySettings;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 
 public class FragmentPreferences extends PreferenceFragment {
@@ -29,8 +38,12 @@ public class FragmentPreferences extends PreferenceFragment {
     private static final String KEY_CP_TACTILE_FEEDBACK = "tactileFeedbackActive";
     private static final String KEY_CP_SPEEDOMETER_ACTIVE = "speedometerActive";
     private static final String KEY_LP_SPEEDOMETER_UNITS = "speedometerUnitsMeasure";
+    private static final String KEY_RECORDING_AUDIO = "recordingAudio";
 
     GlobalState mAppState;
+
+    Preference audioRecording;
+    CheckBoxPreference speedometerActive;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,6 +62,8 @@ public class FragmentPreferences extends PreferenceFragment {
 
         mAppState = (GlobalState) getActivity().getApplicationContext();
 
+        Activity activity = getActivity();
+
         ListPreference videoQualityList = (ListPreference) findPreference(KEY_LP_VIDEO_QUALITY);
         ListPreference videoLengthList = (ListPreference) findPreference(KEY_LP_VIDEO_LENGTH);
         final CheckBoxPreference useLoopMode = (CheckBoxPreference) findPreference(KEY_CP_LOOP_ACTIVE);
@@ -58,8 +73,9 @@ public class FragmentPreferences extends PreferenceFragment {
         final CheckBoxPreference audioFeedbackButtonActive = (CheckBoxPreference) findPreference(KEY_CP_AUDIO_FEEDBACK_BUTTON);
         final CheckBoxPreference audioFeedbackShockActive = (CheckBoxPreference) findPreference(KEY_CP_AUDIO_FEEDBACK_SHOCK);
         final CheckBoxPreference tactileFeedbackActive = (CheckBoxPreference) findPreference(KEY_CP_TACTILE_FEEDBACK);
-        final CheckBoxPreference speedometerActive = (CheckBoxPreference) findPreference(KEY_CP_SPEEDOMETER_ACTIVE);
+        speedometerActive = (CheckBoxPreference) findPreference(KEY_CP_SPEEDOMETER_ACTIVE);
         final ListPreference speedometerUnitsMeasure = (ListPreference) findPreference(KEY_LP_SPEEDOMETER_UNITS);
+        audioRecording = findPreference(KEY_RECORDING_AUDIO);
 
         // Video Quality List
         videoQualityList.setEntries(mAppState.getSupportedVideoQualities());
@@ -71,10 +87,10 @@ public class FragmentPreferences extends PreferenceFragment {
         if (mAppState.isRecording()) {
             videoQualityList.setEnabled(false);
             videoQualityList
-                    .setSummary("Set video quality. Please stop recording before changing this.");
+                    .setSummary(R.string.prefs_set_video_quality_stop);
         } else {
             videoQualityList.setEnabled(true);
-            videoQualityList.setSummary("Set video quality");
+            videoQualityList.setSummary(R.string.prefs_set_video_quality);
         }
         videoQualityList.setOnPreferenceClickListener(feedbackClickListener);
         videoQualityList
@@ -87,10 +103,10 @@ public class FragmentPreferences extends PreferenceFragment {
         if (mAppState.isRecording()) {
             videoLengthList.setEnabled(false);
             videoLengthList
-                    .setSummary("Set video length. Please stop recording before changing this.");
+                    .setSummary(R.string.prefs_set_video_length_stop);
         } else {
             videoLengthList.setEnabled(true);
-            videoLengthList.setSummary("Set video length");
+            videoLengthList.setSummary(R.string.prefs_set_video_length);
         }
         videoLengthList.setOnPreferenceClickListener(feedbackClickListener);
         videoLengthList
@@ -101,11 +117,11 @@ public class FragmentPreferences extends PreferenceFragment {
         if (mAppState.isRecording()) {
             useLoopMode.setEnabled(false);
             useLoopMode
-                    .setSummary("Delete old videos when the phone runs out of storage. Please stop recording before changing this.");
+                    .setSummary(R.string.prefs_delete_old_videos_stop);
         } else {
             useLoopMode.setEnabled(true);
             useLoopMode
-                    .setSummary("Delete old videos when the phone runs out of storage");
+                    .setSummary(R.string.prefs_delete_old_videos);
         }
         useLoopMode
                 .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -125,11 +141,11 @@ public class FragmentPreferences extends PreferenceFragment {
         if (mAppState.isRecording()) {
             shockModeActive.setEnabled(false);
             shockModeActive
-                    .setSummary("Mark videos during which a shock occured. This prevents LOOP MODE from deleting these videos. Please stop recording before changing this. ");
+                    .setSummary(R.string.pref_mark_stop);
         } else {
             shockModeActive.setEnabled(true);
             shockModeActive
-                    .setSummary("Mark videos during which a shock occured. This prevents LOOP MODE from deleting these videos. ");
+                    .setSummary(R.string.pref_mark);
         }
         shockModeActive
                 .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -159,14 +175,14 @@ public class FragmentPreferences extends PreferenceFragment {
         if (mAppState.isRecording()) {
             shockSensitivity.setEnabled(false);
             shockSensitivity
-                    .setSummary("Set shock detection sensitivity. Please stop recording before changing this.");
+                    .setSummary(R.string.prefs_shock_sensitivity_stop);
         } else {
             if (shockModeActive.isChecked()) {
                 shockSensitivity.setEnabled(true);
             } else {
                 shockSensitivity.setEnabled(false);
             }
-            shockSensitivity.setSummary("Set shock detection sensitivity");
+            shockSensitivity.setSummary(R.string.prefs_shock_sensitivity);
         }
         shockSensitivity.setOnPreferenceClickListener(feedbackClickListener);
         shockSensitivity
@@ -186,6 +202,20 @@ public class FragmentPreferences extends PreferenceFragment {
 
         // Speedometer
         speedometerActive.setOnPreferenceChangeListener(feedbackPreferenceChangeListener);
+        speedometerActive.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                boolean newValue = SharedPreferencesHelper.checkBooleanPreferenceValue(getActivity(),
+                        KEY_CP_SPEEDOMETER_ACTIVE);
+
+                if (newValue && !hasFineLocationPermission()) requestFineLocationPermission();
+
+                return true;
+            }
+        });
+
+        if (hasFineLocationPermission()) obtainedLocationPermission();
+        else lostLocationPermission();
 
         // Speedometer Units
         if (speedometerUnitsMeasure.getValue() == null)
@@ -195,6 +225,13 @@ public class FragmentPreferences extends PreferenceFragment {
                 .setOnPreferenceClickListener(feedbackClickListener);
         speedometerUnitsMeasure
                 .setOnPreferenceChangeListener(feedbackPreferenceChangeListener);
+
+        // Audio Recording
+        if (hasAudioRecordingPermission()) {
+            obtainedAudioRecordingPermission();
+        } else {
+            lostAudioRecordingPermission();
+        }
     }
 
     private void audioFeedback() {
@@ -230,5 +267,59 @@ public class FragmentPreferences extends PreferenceFragment {
             audioFeedback();
             return true;
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private boolean hasAudioRecordingPermission() {
+        int permissionResultCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission
+                .RECORD_AUDIO);
+        return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void requestAudioRecordingPermission() {
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.RECORD_AUDIO},
+                ActivitySettings.CODE_AUDIO_RECORDING_PERMISSION);
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private boolean hasFineLocationPermission() {
+        int permissionResultCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission
+                .ACCESS_FINE_LOCATION);
+        return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void requestFineLocationPermission() {
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                ActivitySettings.CODE_FINE_LOCATION_PERMISSION);
+    }
+
+    public void obtainedAudioRecordingPermission() {
+        audioRecording.setEnabled(false);
+        audioRecording.setSummary(R.string.prefs_sound_recording_activated);
+    }
+
+    public void lostAudioRecordingPermission() {
+        audioRecording.setEnabled(true);
+        audioRecording.setSummary(R.string.prefs_sound_recording_not_activated);
+        audioRecording.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                requestAudioRecordingPermission();
+
+                return true;
+            }
+        });
+    }
+
+    public void obtainedLocationPermission() {
+        speedometerActive.setChecked(true);
+    }
+
+    public void lostLocationPermission() {
+        speedometerActive.setChecked(false);
     }
 }

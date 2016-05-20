@@ -17,4 +17,15 @@ public class ViewUtils {
         return new AlertDialog.Builder(context).setMessage(stringRes).setPositiveButton(R.string.got_it, listener)
                 .create();
     }
+
+    public static AlertDialog createTwoButtonDialog(Context context, @StringRes int stringRes, @StringRes int
+            negativeRes, @StringRes int positiveRes, AlertDialog.OnClickListener negativeListener, AlertDialog
+            .OnClickListener positiveListener) {
+
+        return new AlertDialog.Builder(context)
+                .setMessage(stringRes)
+                .setPositiveButton(positiveRes,  positiveListener)
+                .setNegativeButton(negativeRes, negativeListener)
+                .create();
+    }
 }

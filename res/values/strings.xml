@@ -15,43 +15,43 @@
         <item>Length - Asc.</item>
         <item>Length - Desc.</item>
     </string-array>
-    
+
     <string-array name="video_length_entry">
         <item>10 seconds</item>
         <item>1 minute</item>
         <item>5 minutes</item>
         <item>10 minutes</item>
     </string-array>
-    
+
     <string-array name="video_length_value">
         <item>10000</item>
         <item>60000</item>
         <item>300000</item>
         <item>600000</item>
     </string-array>
-    
-     <string-array name="speedometer_units_entry">
+
+    <string-array name="speedometer_units_entry">
         <item>Miles / hour</item>
         <item>KM / hour</item>
     </string-array>
-    
-     <string-array name="speedometer_units_value">
+
+    <string-array name="speedometer_units_value">
         <item>mph</item>
         <item>kph</item>
     </string-array>
-    
-     <string-array name="shock_sensitivity_entry">
+
+    <string-array name="shock_sensitivity_entry">
         <item>Low</item>
-        <item>Medium</item>        
+        <item>Medium</item>
         <item>High</item>
     </string-array>
-    
-     <string-array name="shock_sensitivity_value">
+
+    <string-array name="shock_sensitivity_value">
         <item>1</item>
         <item>2</item>
         <item>3</item>
     </string-array>
-    
+
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
@@ -101,6 +101,8 @@
 
     <string name="speedometer">Speedometer</string>
 
+    <string name="recording_audio">Recording Audio</string>
+
     <string name="display_vehicle_speed_note_the_speed_doesn_t_appear_in_the_video">Display vehicle speed. Note: the speed doesn\'t appear in the video.</string>
 
     <string name="units_of_measurement">Units of Measurement</string>
@@ -112,11 +114,35 @@
     <string name="basic_permissions_not_granted">Write and Camera permissions not granted</string>
     <string name="retry">Retry</string>
     <string name="grant_permission">Grant permission</string>
-    <string name="permission_explanation_camera">application can\'t be used</string>
-    <string name="permission_explanation_basic_dont_show">The application uses the <b>Camera</b> and <b>Write</b> permissions to
-        capture and save video. Please grant these permissions</string>
+    <string name="cancel">Cancel</string>
     <string name="got_it">Got it</string>
     <string name="videos">Videos</string>
     <string name="share_video">Share Video</string>
+
+
+    <string name="prefs_set_video_quality">Set video quality</string>
+    <string name="prefs_set_video_quality_stop">Set video quality. Please stop recording before changing this</string>
+    <string name="prefs_set_video_length_stop">Set video length. Please stop recording before changing this</string>
+    <string name="prefs_set_video_length">Set video length</string>
+    <string name="prefs_delete_old_videos_stop">Delete old videos when the phone runs out of storage. Please stop recording before changing this</string>
+    <string name="prefs_delete_old_videos">Delete old videos when the phone runs out of storage</string>
+    <string name="pref_mark_stop">Mark videos during which a shock occured. This prevents LOOP MODE from deleting these videos. Please stop recording before changing this</string>
+    <string name="pref_mark">Mark videos during which a shock occured. This prevents LOOP MODE from deleting these videos</string>
+    <string name="prefs_shock_sensitivity_stop">Set shock detection sensitivity. Please stop recording before changing this</string>
+    <string name="prefs_shock_sensitivity">Set shock detection sensitivity</string>
+    <string name="prefs_sound_recording_activated">Sound recording has been activated. Deactivate by removing
+        the permission from Settings > Apps > viz > Permissions > Microphone</string>
+    <string name="prefs_sound_recording_not_activated">Sound recording has not been activated. Tap to grant
+        permission</string>
+
+    <string name="permission_explanation_audio">For audio recording to work, the \"Microphone\" permission must be
+        granted</string>
+    <string name="permission_explanation_location">For the speedometer feature to work, the \"Location\" permission
+        must be granted</string>
+    <string name="permission_explanation_basic_dont_show">The application uses the <b>Camera</b> and <b>Storage</b>
+        permissions to capture and save video. Please grant these permissions</string>
+    <string name="permission_warning_audio">You have not granted the \"Microphone\" permission. Because of this,
+        the recordings won\'t contain audio.
+        <b>You can grant the permission from the app\'s Settings screen</b></string>
 
 </resources>
