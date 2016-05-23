@@ -56,6 +56,7 @@ import com.vizdashcam.fragments.FragmentAllVideos;
 import com.vizdashcam.fragments.FragmentMarkedVideos;
 import com.vizdashcam.managers.AccelerometerManager;
 import com.vizdashcam.managers.StorageManager;
+import com.vizdashcam.utils.CameraUtils;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 import com.vizdashcam.utils.Utils;
 
@@ -123,8 +124,6 @@ public class ServicePreview extends Service implements
 
     @Override
     public IBinder onBind(Intent arg0) {
-        if (mAppState.isLoggingEnabled())
-            Log.v(TAG, "Service Bound");
         return mMessenger.getBinder();
     }
 
@@ -133,27 +132,11 @@ public class ServicePreview extends Service implements
         super.onCreate();
 
         mAppState = (GlobalState) getApplicationContext();
-        if (mAppState.isLoggingEnabled())
-            Log.v(TAG, "onCreate");
+
         mMessenger = new Messenger(new PreviewIncomingHandler(this, mAppState));
 
         mWindowManager = (WindowManager) this
                 .getSystemService(Context.WINDOW_SERVICE);
-
-        try {
-            mServiceCamera = Camera.open(CameraInfo.CAMERA_FACING_BACK);
-            if (mServiceCamera != null) {
-                mAppState.initializeCameraParams();
-                setCameraParams();
-                if (mAppState.isLoggingEnabled())
-                    Log.v(TAG, "Camera.open");
-                Log.e(TAG, "CREATING CAMERA PREVIEW");
-                mCameraPreview = new CameraPreview(this, mServiceCamera);
-            }
-
-        } catch (RuntimeException re) {
-            Log.e(TAG, "Error opening camera!");
-        }
 
         mLocationManager = (LocationManager) this
                 .getSystemService(LOCATION_SERVICE);
@@ -168,55 +151,14 @@ public class ServicePreview extends Service implements
         startForeground(previewNotificationId, getPreviewNotification());
     }
 
-    private void setCameraParams() {
-        Camera.Parameters parameters = mServiceCamera.getParameters();
-        parameters.setRecordingHint(true);
-
-        // Pair<Integer, Integer> previewSize =
-        // mAppState.getPreviewSize(mAppState
-        // .getDefaultCamcorderProfile());
-        //
-        // parameters.setPreviewSize(previewSize.first, previewSize.second);
-
-        DisplayMetrics dm = new DisplayMetrics();
-        mWindowManager.getDefaultDisplay().getMetrics(dm);
-        int displayWidthLandscape = dm.widthPixels;
-        int displayHeightLandscape = dm.heightPixels;
-
-        if (displayHeightLandscape > displayWidthLandscape) {
-            int temp = displayHeightLandscape;
-            displayHeightLandscape = displayWidthLandscape;
-            displayWidthLandscape = temp;
-        }
-
-        displayHeightLandscape -= getStatusBarHeight(this);
-
-        Camera.Size previewSize = mAppState.getPreviewSize(
-                parameters.getSupportedPreviewSizes(), displayWidthLandscape,
-                displayHeightLandscape);
-
-        parameters.setPreviewSize(previewSize.width, previewSize.height);
-
-        mServiceCamera.setParameters(parameters);
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        if (mAppState.isLoggingEnabled()) {
-            Log.v(TAG, "onDestroy");
-        }
-
         if (mServiceCamera != null) {
             if (mAppState.isRecording()) {
-                if (mAppState.isLoggingEnabled())
-                    Log.v(TAG, "stopping recording");
                 stopRecording();
             }
-
-            if (mAppState.isLoggingEnabled())
-                Log.v(TAG, "releasing camera");
 
             mServiceCamera.stopPreview();
             mServiceCamera.setPreviewCallback(null);
@@ -230,14 +172,6 @@ public class ServicePreview extends Service implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_NOT_STICKY;
-    }
-
-    public int dpToPx(int dp) {
-        Resources r = getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                dp, r.getDisplayMetrics());
-
-        return px;
     }
 
     private void performSidebarOutAnimation() {
@@ -299,6 +233,35 @@ public class ServicePreview extends Service implements
         anim.setDuration(VALUE_MENU_TRANSITION_TIME);
         anim.start();
         sidebarState = SidebarState.OPEN;
+    }
+
+    private void initCameraPreview() {
+        try {
+            mServiceCamera = Camera.open(CameraInfo.CAMERA_FACING_BACK);
+            if (mServiceCamera != null) {
+
+                mAppState.initializeCameraParams();
+
+                setCameraParams();
+
+                mCameraPreview = new CameraPreview(this, mServiceCamera);
+            }
+        } catch (RuntimeException re) {
+            Log.e(TAG, "Error opening camera! " + re.getMessage());
+        }
+    }
+
+    private void setCameraParams() {
+        Camera.Parameters parameters = mServiceCamera.getParameters();
+        parameters.setRecordingHint(true);
+
+        Camera.Size previewSize = CameraUtils.getOptimalPreviewResolution(
+                parameters.getSupportedPreviewSizes(), CameraUtils.getDisplayWidth(this),
+                CameraUtils.getDisplayHeight(this));
+
+        parameters.setPreviewSize(previewSize.width, previewSize.height);
+
+        mServiceCamera.setParameters(parameters);
     }
 
     private void initUI() {
@@ -394,10 +357,11 @@ public class ServicePreview extends Service implements
             }
         });
 
+        initCameraPreview();
         mFrameLayout = (FrameLayout) mFullLayout.findViewById(R.id.fl_camera);
-        if (mServiceCamera != null && mCameraPreview != null) {
+        if (mServiceCamera != null && mCameraPreview != null)
             mFrameLayout.addView(mCameraPreview);
-        }
+
 
         mFeedbackLayout = (FrameLayout) mFullLayout
                 .findViewById(R.id.fl_feedback);
@@ -514,30 +478,10 @@ public class ServicePreview extends Service implements
         mWindowManager.addView(mFullLayout, mLayoutParamsFull);
     }
 
-    public static int getStatusBarHeight(Context pContext) {
-        Resources resources = pContext.getResources();
-        int resourceId = resources.getIdentifier("status_bar_height", "dimen",
-                "android");
-        if (resourceId > 0) {
-            return resources.getDimensionPixelSize(resourceId);
-        }
-        return 0;
-    }
-
     private void initLayoutParams() {
 
-        DisplayMetrics dm = new DisplayMetrics();
-        mWindowManager.getDefaultDisplay().getMetrics(dm);
-        int displayWidthLandscape = dm.widthPixels;
-        int displayHeightLandscape = dm.heightPixels;
-
-        if (displayHeightLandscape > displayWidthLandscape) {
-            int temp = displayHeightLandscape;
-            displayHeightLandscape = displayWidthLandscape;
-            displayWidthLandscape = temp;
-        }
-
-        displayHeightLandscape -= getStatusBarHeight(this);
+        int displayWidthLandscape = CameraUtils.getDisplayWidth(this);
+        int displayHeightLandscape = CameraUtils.getDisplayHeight(this);
 
         mLayoutParamsMinimised = new WindowManager.LayoutParams(1, 1,
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
@@ -569,9 +513,7 @@ public class ServicePreview extends Service implements
     }
 
     public void createOptionsMenu() {
-        if (mAppState.isLoggingEnabled())
-            Log.v(TAG, "CreateOptionsMenu");
-
+        
         tactileFeedback();
         audioFeedback();
 
@@ -588,7 +530,8 @@ public class ServicePreview extends Service implements
             mServiceCamera.unlock();
             mMediaRecorder.setCamera(mServiceCamera);
 
-            if (hasAudioRecordingPermission()) mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+            if (hasAudioRecordingPermission())
+                mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 
             mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
