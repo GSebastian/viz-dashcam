@@ -70,8 +70,10 @@ public class FragmentPreferences extends PreferenceFragment {
         final CheckBoxPreference shockModeActive = (CheckBoxPreference) findPreference(KEY_CP_SHOCK_ACTIVE);
         final ListPreference shockSensitivity = (ListPreference) findPreference(KEY_LP_SHOCK_SENSITIVITY);
         final CheckBoxPreference longPressToMarkActive = (CheckBoxPreference) findPreference(KEY_CP_LONG_PRESS);
-        final CheckBoxPreference audioFeedbackButtonActive = (CheckBoxPreference) findPreference(KEY_CP_AUDIO_FEEDBACK_BUTTON);
-        final CheckBoxPreference audioFeedbackShockActive = (CheckBoxPreference) findPreference(KEY_CP_AUDIO_FEEDBACK_SHOCK);
+        final CheckBoxPreference audioFeedbackButtonActive = (CheckBoxPreference) findPreference
+                (KEY_CP_AUDIO_FEEDBACK_BUTTON);
+        final CheckBoxPreference audioFeedbackShockActive = (CheckBoxPreference) findPreference
+                (KEY_CP_AUDIO_FEEDBACK_SHOCK);
         final CheckBoxPreference tactileFeedbackActive = (CheckBoxPreference) findPreference(KEY_CP_TACTILE_FEEDBACK);
         speedometerActive = (CheckBoxPreference) findPreference(KEY_CP_SPEEDOMETER_ACTIVE);
         final ListPreference speedometerUnitsMeasure = (ListPreference) findPreference(KEY_LP_SPEEDOMETER_UNITS);
@@ -316,7 +318,9 @@ public class FragmentPreferences extends PreferenceFragment {
     }
 
     public void obtainedLocationPermission() {
-        speedometerActive.setChecked(true);
+
+        if (SharedPreferencesHelper.checkBooleanPreferenceValue(getActivity(), KEY_CP_SPEEDOMETER_ACTIVE))
+            speedometerActive.setChecked(true);
     }
 
     public void lostLocationPermission() {
