@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.location.LocationManager;
@@ -35,6 +36,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -61,7 +63,7 @@ import com.vizdashcam.utils.Utils;
 
 
 public class ServicePreview extends Service implements
-        MediaRecorder.OnInfoListener, SurfaceHolder.Callback {
+        MediaRecorder.OnInfoListener {
 
     private static final String TAG = "PreviewService";
 
@@ -86,6 +88,7 @@ public class ServicePreview extends Service implements
     private RelativeLayout rlMenu;
     private ViewCircleFeedback circleFeedback;
     private RelativeLayout rlMenuLeftColumn;
+    private TextureView txtvCameraPreview;
 
     private Handler mHandler;
 
@@ -341,9 +344,35 @@ public class ServicePreview extends Service implements
         });
 
         initCameraPreview();
-        FrameLayout flCameraWrapper = (FrameLayout) fullLayout.findViewById(R.id.fl_camera);
-        SurfaceView svCameraPreview = (SurfaceView) flCameraWrapper.findViewById(R.id.svCameraPreview);
-        svCameraPreview.getHolder().addCallback(this);
+        txtvCameraPreview = (TextureView) fullLayout.findViewById(R.id.txtvCameraPreview);
+        txtvCameraPreview.setOpaque(true);
+        txtvCameraPreview.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+            @Override
+            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+                try {
+                    mServiceCamera.setPreviewTexture(txtvCameraPreview.getSurfaceTexture());
+                    mServiceCamera.startPreview();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+            }
+
+            @Override
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+                return false;
+            }
+
+            @Override
+            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+            }
+        });
+
 
         FrameLayout flFeedback = (FrameLayout) fullLayout
                 .findViewById(R.id.fl_feedback);
@@ -467,16 +496,18 @@ public class ServicePreview extends Service implements
 
         mLayoutParamsMinimised = new WindowManager.LayoutParams(1, 1,
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
+                        WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 PixelFormat.TRANSPARENT);
         mLayoutParamsMinimised.gravity = Gravity.LEFT | Gravity.BOTTOM;
 
         mLayoutParamsFull = new WindowManager.LayoutParams(
                 displayWidthLandscape, displayHeightLandscape,
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
+                        WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 PixelFormat.TRANSLUCENT);
         mLayoutParamsFull.gravity = Gravity.LEFT | Gravity.BOTTOM;
         mLayoutParamsFull.screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
@@ -850,24 +881,5 @@ public class ServicePreview extends Service implements
         int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission
                 .ACCESS_FINE_LOCATION);
         return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        if (mServiceCamera != null)
-            try {
-                mServiceCamera.setPreviewDisplay(holder);
-                mServiceCamera.startPreview();
-            } catch (IOException e) {
-                Log.e(TAG, "Error setting camera preview: " + e.getMessage());
-            }
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
     }
 }

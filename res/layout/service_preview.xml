@@ -2,21 +2,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+    <TextureView
+        android:id="@+id/txtvCameraPreview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <RelativeLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <FrameLayout
-            android:id="@+id/fl_camera"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <SurfaceView
-                android:id="@+id/svCameraPreview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-        </FrameLayout>
 
         <FrameLayout
             android:id="@+id/fl_feedback"
