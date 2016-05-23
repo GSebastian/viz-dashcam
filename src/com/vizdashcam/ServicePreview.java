@@ -15,7 +15,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
@@ -29,13 +28,13 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -60,8 +59,9 @@ import com.vizdashcam.utils.CameraUtils;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 import com.vizdashcam.utils.Utils;
 
+
 public class ServicePreview extends Service implements
-        MediaRecorder.OnInfoListener {
+        MediaRecorder.OnInfoListener, SurfaceHolder.Callback {
 
     private static final String TAG = "PreviewService";
 
@@ -70,11 +70,7 @@ public class ServicePreview extends Service implements
     private static final int VALUE_MENU_TRANSITION_TIME = 1000;
 
     public static final String ACTION_FOREGROUND = "com.vizdashcam.PrevievService.FOREGROUND";
-    public static final String ACTION_BACKGROUND = "com.vizdashcam.PrevievService.BACKGROUND";
 
-    private static final int CODE_CAMERA_PERMISSION = 333;
-
-    private CameraPreview mCameraPreview;
     private GlobalState mAppState;
     private WindowManager mWindowManager;
 
@@ -84,29 +80,18 @@ public class ServicePreview extends Service implements
     private LocationManager mLocationManager;
     private SpeedListener mSpeedListener;
 
-    private Notification.Builder mBuilder;
-
-    private ViewGroup mFullLayout;
-    private ImageView mRecordView;
-    private ImageView mMenuButtonView;
-    private FrameLayout mFrameLayout;
-    private FrameLayout mFeedbackLayout;
-    private TextView mSpeedView;
-    private RelativeLayout mMenuLayout;
-    private ViewCircleFeedback mCircleFeedbackView;
-    private TextView tvQuality;
-    private TextView tvLength;
-    private TextView tvLoopActive;
-    private TextView tvShockActive;
+    private ViewGroup fullLayout;
+    private ImageView ivRecord;
+    private TextView tvSpeed;
+    private RelativeLayout rlMenu;
+    private ViewCircleFeedback circleFeedback;
     private RelativeLayout rlMenuLeftColumn;
 
     private Handler mHandler;
 
     public enum SidebarState {
-        OPEN, CLOSED;
+        OPEN, CLOSED
     }
-
-    ;
 
     private SidebarState sidebarState;
 
@@ -165,7 +150,7 @@ public class ServicePreview extends Service implements
             mServiceCamera.release();
             mServiceCamera = null;
         }
-        mWindowManager.removeView(mFullLayout);
+        mWindowManager.removeView(fullLayout);
         removeLocationUpdates();
     }
 
@@ -175,15 +160,15 @@ public class ServicePreview extends Service implements
     }
 
     private void performSidebarOutAnimation() {
-        mFullLayout.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        ObjectAnimator anim = ObjectAnimator.ofFloat(mMenuLayout,
+        fullLayout.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        ObjectAnimator anim = ObjectAnimator.ofFloat(rlMenu,
                 "translationX", 0);
         anim.setInterpolator(new SmoothInterpolator());
         anim.addListener(new AnimatorListener() {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                mFullLayout.setLayerType(View.LAYER_TYPE_NONE, null);
+                fullLayout.setLayerType(View.LAYER_TYPE_NONE, null);
             }
 
             @Override
@@ -207,15 +192,15 @@ public class ServicePreview extends Service implements
     private void performSidebarInAnimation() {
         final int sidebarWidth = rlMenuLeftColumn.getLayoutParams().width;
 
-        mMenuLayout.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        ObjectAnimator anim = ObjectAnimator.ofFloat(mMenuLayout,
+        rlMenu.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        ObjectAnimator anim = ObjectAnimator.ofFloat(rlMenu,
                 "translationX", sidebarWidth);
         anim.setInterpolator(new SmoothInterpolator());
         anim.addListener(new AnimatorListener() {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                mFullLayout.setLayerType(View.LAYER_TYPE_NONE, null);
+                fullLayout.setLayerType(View.LAYER_TYPE_NONE, null);
             }
 
             @Override
@@ -243,8 +228,6 @@ public class ServicePreview extends Service implements
                 mAppState.initializeCameraParams();
 
                 setCameraParams();
-
-                mCameraPreview = new CameraPreview(this, mServiceCamera);
             }
         } catch (RuntimeException re) {
             Log.e(TAG, "Error opening camera! " + re.getMessage());
@@ -269,22 +252,22 @@ public class ServicePreview extends Service implements
         initLayoutParams();
 
         LayoutInflater inflater = (LayoutInflater) ServicePreview.this.getSystemService(LAYOUT_INFLATER_SERVICE);
-        mFullLayout = (ViewGroup) inflater.inflate(R.layout.service_preview,
+        fullLayout = (ViewGroup) inflater.inflate(R.layout.service_preview,
                 null);
-        mFullLayout.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        fullLayout.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
-        mMenuLayout = (RelativeLayout) mFullLayout.findViewById(R.id.rl_menu);
-        rlMenuLeftColumn = (RelativeLayout) mMenuLayout
+        rlMenu = (RelativeLayout) fullLayout.findViewById(R.id.rl_menu);
+        rlMenuLeftColumn = (RelativeLayout) rlMenu
                 .findViewById(R.id.rl_menu_left_column);
 
-        MarginLayoutParams params = (MarginLayoutParams) mMenuLayout
+        MarginLayoutParams params = (MarginLayoutParams) rlMenu
                 .getLayoutParams();
         params.leftMargin = -rlMenuLeftColumn.getLayoutParams().width;
-        mMenuLayout.setLayoutParams(params);
+        rlMenu.setLayoutParams(params);
 
         sidebarState = SidebarState.CLOSED;
 
-        Button videos = (Button) mMenuLayout.findViewById(R.id.btn_videos);
+        Button videos = (Button) rlMenu.findViewById(R.id.btn_videos);
         videos.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -296,7 +279,7 @@ public class ServicePreview extends Service implements
             }
         });
 
-        Button settings = (Button) mMenuLayout.findViewById(R.id.btn_settings);
+        Button settings = (Button) rlMenu.findViewById(R.id.btn_settings);
         settings.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -308,7 +291,7 @@ public class ServicePreview extends Service implements
             }
         });
 
-        Button help = (Button) mMenuLayout.findViewById(R.id.btn_help);
+        Button help = (Button) rlMenu.findViewById(R.id.btn_help);
         help.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -321,12 +304,12 @@ public class ServicePreview extends Service implements
             }
         });
 
-        mSpeedView = (TextView) mFullLayout.findViewById(R.id.tv_speed);
+        tvSpeed = (TextView) fullLayout.findViewById(R.id.tv_speed);
 
-        mRecordView = (ImageView) mFullLayout.findViewById(R.id.iv_record);
-        mRecordView.setImageResource(R.drawable.btn_not_recording);
+        ivRecord = (ImageView) fullLayout.findViewById(R.id.iv_record);
+        ivRecord.setImageResource(R.drawable.btn_not_recording);
 
-        mRecordView.setOnClickListener(new View.OnClickListener() {
+        ivRecord.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -340,8 +323,8 @@ public class ServicePreview extends Service implements
             }
         });
 
-        mMenuButtonView = (ImageView) mFullLayout.findViewById(R.id.iv_menu);
-        mMenuButtonView.setOnClickListener(new View.OnClickListener() {
+        ImageView ivMenu = (ImageView) fullLayout.findViewById(R.id.iv_menu);
+        ivMenu.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -358,23 +341,22 @@ public class ServicePreview extends Service implements
         });
 
         initCameraPreview();
-        mFrameLayout = (FrameLayout) mFullLayout.findViewById(R.id.fl_camera);
-        if (mServiceCamera != null && mCameraPreview != null)
-            mFrameLayout.addView(mCameraPreview);
+        FrameLayout flCameraWrapper = (FrameLayout) fullLayout.findViewById(R.id.fl_camera);
+        SurfaceView svCameraPreview = (SurfaceView) flCameraWrapper.findViewById(R.id.svCameraPreview);
+        svCameraPreview.getHolder().addCallback(this);
 
-
-        mFeedbackLayout = (FrameLayout) mFullLayout
+        FrameLayout flFeedback = (FrameLayout) fullLayout
                 .findViewById(R.id.fl_feedback);
-        mCircleFeedbackView = new ViewCircleFeedback(ServicePreview.this);
-        mFeedbackLayout.addView(mCircleFeedbackView);
-        mFeedbackLayout.setOnLongClickListener(new View.OnLongClickListener() {
+        circleFeedback = new ViewCircleFeedback(ServicePreview.this);
+        flFeedback.addView(circleFeedback);
+        flFeedback.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
             public boolean onLongClick(View arg0) {
                 if (mAppState.isRecording()
                         && mAppState.detectLongPressToMarkActive()) {
-                    if (mCircleFeedbackView != null) {
-                        mCircleFeedbackView.animate(mAppState
+                    if (circleFeedback != null) {
+                        circleFeedback.animate(mAppState
                                 .getLastFeedbackCoords());
                     }
                     rememberFileForMarking();
@@ -383,7 +365,7 @@ public class ServicePreview extends Service implements
             }
         });
 
-        mFeedbackLayout.setOnTouchListener(new View.OnTouchListener() {
+        flFeedback.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -405,7 +387,7 @@ public class ServicePreview extends Service implements
             }
         });
 
-        mFeedbackLayout.setOnClickListener(new View.OnClickListener() {
+        flFeedback.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
@@ -429,7 +411,7 @@ public class ServicePreview extends Service implements
             }
         };
 
-        tvQuality = (TextView) mFullLayout.findViewById(R.id.tv_quality);
+        TextView tvQuality = (TextView) fullLayout.findViewById(R.id.tv_quality);
         int defaultCamcorderProfile = mAppState.getDefaultCamcorderProfile();
         if (defaultCamcorderProfile == CamcorderProfile.QUALITY_1080P) {
             tvQuality.setText("1080P");
@@ -446,7 +428,7 @@ public class ServicePreview extends Service implements
         }
         tvQuality.setOnClickListener(togglesListener);
 
-        tvLength = (TextView) mFullLayout.findViewById(R.id.tv_length);
+        TextView tvLength = (TextView) fullLayout.findViewById(R.id.tv_length);
         int ms = mAppState.getDefaultVideoLength();
         int s = ms / 1000;
         if (s < 60) {
@@ -457,7 +439,7 @@ public class ServicePreview extends Service implements
         }
         tvLength.setOnClickListener(togglesListener);
 
-        tvShockActive = (TextView) mFullLayout
+        TextView tvShockActive = (TextView) fullLayout
                 .findViewById(R.id.tv_shock_toggled);
         if (mAppState.detectShockModeActive()) {
             tvShockActive.setVisibility(View.VISIBLE);
@@ -466,7 +448,7 @@ public class ServicePreview extends Service implements
         }
         tvShockActive.setOnClickListener(togglesListener);
 
-        tvLoopActive = (TextView) mFullLayout
+        TextView tvLoopActive = (TextView) fullLayout
                 .findViewById(R.id.tv_loop_toggled);
         if (mAppState.detectLoopModeActive()) {
             tvLoopActive.setVisibility(View.VISIBLE);
@@ -475,7 +457,7 @@ public class ServicePreview extends Service implements
         }
         tvLoopActive.setOnClickListener(togglesListener);
 
-        mWindowManager.addView(mFullLayout, mLayoutParamsFull);
+        mWindowManager.addView(fullLayout, mLayoutParamsFull);
     }
 
     private void initLayoutParams() {
@@ -504,16 +486,16 @@ public class ServicePreview extends Service implements
 
         if (mAppState.isActivityPaused()) {
             mWindowManager
-                    .updateViewLayout(mFullLayout, mLayoutParamsMinimised);
+                    .updateViewLayout(fullLayout, mLayoutParamsMinimised);
             removeLocationUpdates();
         } else {
-            mWindowManager.updateViewLayout(mFullLayout, mLayoutParamsFull);
+            mWindowManager.updateViewLayout(fullLayout, mLayoutParamsFull);
             requestLocationUpdates();
         }
     }
 
     public void createOptionsMenu() {
-        
+
         tactileFeedback();
         audioFeedback();
 
@@ -543,8 +525,8 @@ public class ServicePreview extends Service implements
             File outputFile = Utils.getOutputMediaFile();
             String outputFileName = outputFile.toString();
             mMediaRecorder.setOutputFile(outputFileName);
-
             mAppState.setLastFilename(outputFile.getName());
+
         } catch (IllegalStateException ise) {
             Log.e(TAG,
                     "IllegalStateException configuring recorder: "
@@ -593,23 +575,29 @@ public class ServicePreview extends Service implements
 
     public void startRecording() {
         if (mServiceCamera != null) {
+
             if (!mAppState.isRecording()) {
+
                 mStorageManager = new StorageManager(getApplicationContext(),
                         this, mHandler);
+
                 if (!StorageManager.hasRunOutOufSpace()) {
+
                     if (prepareVideoRecorder()) {
+
                         disableRecordButton();
                         mAppState.setRecording(true);
                         mAppState.setMustMarkFile(false);
 
                         mMediaRecorder.start();
+
                         mStorageManager.start();
 
                         if (mAppState.detectShockModeActive()) {
                             startListeningForShocks();
                         }
 
-                        mRecordView.setImageResource(R.drawable.btn_recording);
+                        ivRecord.setImageResource(R.drawable.btn_recording);
 
                     } else {
                         resetMediaRecorder();
@@ -653,7 +641,7 @@ public class ServicePreview extends Service implements
                 markFileByRenaming();
                 updateFragments();
 
-                mRecordView.setImageResource(R.drawable.btn_not_recording);
+                ivRecord.setImageResource(R.drawable.btn_not_recording);
 
             }
         }
@@ -664,22 +652,21 @@ public class ServicePreview extends Service implements
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, ActivityMain.class), 0);
 
-        mBuilder = new Notification.Builder(this)
+        Notification.Builder builder = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_notify).setContentTitle("viz")
                 .setContentText("viz is Running")
                 .setContentIntent(contentIntent);
-        return mBuilder.build();
-
+        return builder.build();
     }
 
     private void disableRecordButton() {
-        mRecordView.setOnClickListener(null);
+        ivRecord.setOnClickListener(null);
 
-        mRecordView.postDelayed(new Runnable() {
+        ivRecord.postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                mRecordView.setOnClickListener(new View.OnClickListener() {
+                ivRecord.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
@@ -715,7 +702,7 @@ public class ServicePreview extends Service implements
                     mMediaRecorder.start();
                 }
             } else {
-                mRecordView.setImageResource(R.drawable.btn_not_recording);
+                ivRecord.setImageResource(R.drawable.btn_not_recording);
             }
         }
     }
@@ -824,7 +811,7 @@ public class ServicePreview extends Service implements
                     mLocationManager.requestLocationUpdates(
                             LocationManager.GPS_PROVIDER, 0, 0, mSpeedListener);
                 } else {
-                    mSpeedListener = new SpeedListener(mSpeedView, mAppState);
+                    mSpeedListener = new SpeedListener(tvSpeed, mAppState);
                     mSpeedListener.initView();
                     mLocationManager.requestLocationUpdates(
                             LocationManager.GPS_PROVIDER, 0, 0, mSpeedListener);
@@ -838,7 +825,7 @@ public class ServicePreview extends Service implements
     private void removeLocationUpdates() {
         if (mSpeedListener != null) {
             mLocationManager.removeUpdates(mSpeedListener);
-            mSpeedView.setVisibility(View.INVISIBLE);
+            tvSpeed.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -863,5 +850,24 @@ public class ServicePreview extends Service implements
         int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission
                 .ACCESS_FINE_LOCATION);
         return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        if (mServiceCamera != null)
+            try {
+                mServiceCamera.setPreviewDisplay(holder);
+                mServiceCamera.startPreview();
+            } catch (IOException e) {
+                Log.e(TAG, "Error setting camera preview: " + e.getMessage());
+            }
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
     }
 }
