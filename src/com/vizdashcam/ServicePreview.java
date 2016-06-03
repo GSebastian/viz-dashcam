@@ -456,7 +456,7 @@ public class ServicePreview extends Service implements
         tvQuality.setOnClickListener(togglesListener);
 
         TextView tvLength = (TextView) fullLayout.findViewById(R.id.tv_length);
-        int ms = mAppState.getVideoLength();
+        int ms = SharedPreferencesHelper.detectVideoLength(mAppState);
         int s = ms / 1000;
         if (s < 60) {
             tvLength.setText(s + "SEC");
@@ -546,7 +546,7 @@ public class ServicePreview extends Service implements
 
             mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
-            mMediaRecorder.setMaxDuration(mAppState.getVideoLength());
+            mMediaRecorder.setMaxDuration(SharedPreferencesHelper.detectVideoLength(mAppState));
 
             mMediaRecorder.setProfile(CamcorderProfile.get(mAppState
                     .getCamcorderProfile()));

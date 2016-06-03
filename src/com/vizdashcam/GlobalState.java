@@ -40,8 +40,6 @@ public class GlobalState extends Application {
     private boolean supportsQVGA;
 
     private int camcorderProfile;
-    private int videoLength;
-    private int shockSensitivity;
 
     private FragmentAllVideos allVideosFragment = null;
     private FragmentMarkedVideos markedVideosFragment = null;
@@ -71,8 +69,6 @@ public class GlobalState extends Application {
 
     public void initializeCameraParams() {
         setCamcorderProfile();
-        setVideoLength();
-        setShockSensitivity();
     }
 
     public void setLastFeedbackCoords(Pair<Integer, Integer> coords) {
@@ -128,14 +124,6 @@ public class GlobalState extends Application {
 
     public void setRecording(boolean recording) {
         this.recording = recording;
-    }
-
-    public int getVideoLength() {
-        return videoLength;
-    }
-
-    public int getShockSensitivity() {
-        return shockSensitivity;
     }
 
     private void detectSupportedCamcorderProfiles() {
@@ -240,11 +228,6 @@ public class GlobalState extends Application {
         return temp.toArray(new CharSequence[temp.size()]);
     }
 
-    private void setShockSensitivity() {
-        String temp = SharedPreferencesHelper.checkStringValue(this, Constants.PREF_SHOCK_SENSITIVITY, "2");
-        shockSensitivity = Integer.parseInt(temp);
-    }
-
     private void setCamcorderProfile() {
         String temp = SharedPreferencesHelper.checkStringValue(this, Constants.PREF_VIDEO_QUALITY, null);
         if (temp != null) camcorderProfile = Integer.parseInt(temp);
@@ -262,12 +245,6 @@ public class GlobalState extends Application {
             else if (supportsQVGA)
                 camcorderProfile = CamcorderProfile.QUALITY_QVGA;
         }
-    }
-
-    private void setVideoLength() {
-        String temp = SharedPreferencesHelper.checkStringValue(this, Constants.PREF_VIDEO_LENGTH, Constants
-                .PREF_VIDEO_LENGTH_DEFAULT);
-        videoLength = Integer.parseInt(temp);
     }
 
     public FragmentAllVideos getAllVideosFragment() {

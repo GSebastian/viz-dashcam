@@ -10,6 +10,7 @@ import android.hardware.SensorManager;
 
 import com.vizdashcam.AccelerometerListener;
 import com.vizdashcam.GlobalState;
+import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.utils.Constants;
 
 public class AccelerometerManager {
@@ -64,7 +65,7 @@ public class AccelerometerManager {
 
         mContext = context;
         mAppState = (GlobalState) mContext.getApplicationContext();
-        int defaultShockSensitivity = mAppState.getShockSensitivity();
+        int defaultShockSensitivity = SharedPreferencesHelper.detectShockSensitivity(mAppState);
         if (defaultShockSensitivity == 1) {
             threshold = Constants.SHOCK_SENSITIVITY_LOW;
         } else if (defaultShockSensitivity == 2) {

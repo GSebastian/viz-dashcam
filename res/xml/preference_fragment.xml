@@ -38,6 +38,7 @@
             android:entries="@array/shock_sensitivity_entry"
             android:entryValues="@array/shock_sensitivity_value"
             android:key="defaultShockSensitivity"
+            android:defaultValue="2"
             android:title="@string/shock_detection_sensitivity" />
 
 
@@ -85,7 +86,7 @@
             android:entries="@array/speedometer_units_entry"
             android:entryValues="@array/speedometer_units_value"
             android:key="speedometerUnitsMeasure"
-            android:defaultValue="false"
+            android:defaultValue="kph"
             android:title="@string/units_of_measurement" />
 
     </PreferenceCategory>

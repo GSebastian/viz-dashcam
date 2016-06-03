@@ -78,12 +78,25 @@ public class SharedPreferencesHelper {
     }
 
     public static int detectSpeedometersUnitsMeasure(Context context) {
-        String temp = SharedPreferencesHelper.checkStringValue(context, Constants.PREF_SPEEDOMETER_UNITS, "kph");
+        String temp = SharedPreferencesHelper.checkStringValue(context, Constants.PREF_SPEEDOMETER_UNITS, Constants
+                .PREF_SPEEDOMETER_UNITS_DEFAULT);
         if (temp.compareTo("kph") == 0) {
             return Constants.SPEEDOMETER_KPH;
         } else {
             return Constants.SPEEDOMETER_MPH;
         }
+    }
+
+    public static int detectShockSensitivity(Context context) {
+        String temp = SharedPreferencesHelper.checkStringValue(context, Constants.PREF_SHOCK_SENSITIVITY, Constants
+                .PREF_SHOCK_SENSITIVITY_DEFAULT);
+        return Integer.parseInt(temp);
+    }
+
+    public static int detectVideoLength(Context context) {
+        String temp = SharedPreferencesHelper.checkStringValue(context, Constants.PREF_VIDEO_LENGTH, Constants
+                .PREF_VIDEO_LENGTH_DEFAULT);
+        return Integer.parseInt(temp);
     }
     //endregion
 }

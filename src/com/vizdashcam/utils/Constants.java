@@ -25,11 +25,11 @@ public class Constants {
     public static final String PREF_VIDEO_LENGTH_DEFAULT = "300000";
     public static final boolean PREF_LOOP_ACTIVE_DEFAULT = false;
     public static final boolean PREF_SHOCK_ACTIVE_DEFAULT = false;
-    public static final String PREF_SHOCK_SENSITIVITY_DEFAULT = "defaultShockSensitivity";
+    public static final String PREF_SHOCK_SENSITIVITY_DEFAULT = "2";
     public static final boolean PREF_LONG_PRESS_DEFAULT = false;
     public static final boolean PREF_AUDIO_FEEDBACK_SHOCK_DEFAULT = true;
     public static final boolean PREF_AUDIO_FEEDBACK_BUTTON_DEFAULT = false;
     public static final boolean PREF_TACTILE_FEEDBACK_DEFAULT = false;
     public static final boolean PREF_SPEEDOMETER_ACTIVE_DEFAULT = false;
-    public static final String PREF_SPEEDOMETER_UNITS_DEFAULT = "speedometerUnitsMeasure";
+    public static final String PREF_SPEEDOMETER_UNITS_DEFAULT = "kph";
 }
