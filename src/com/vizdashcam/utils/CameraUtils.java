@@ -3,9 +3,13 @@ package com.vizdashcam.utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.hardware.Camera;
+import android.media.CamcorderProfile;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import com.vizdashcam.SharedPreferencesHelper;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -93,5 +97,101 @@ public class CameraUtils {
         displayHeightLandscape -= getStatusBarHeight(context);
 
         return displayHeightLandscape;
+    }
+
+    public static Integer[] getSupportedCamcorderProfiles() {
+
+        List<Integer> supportedProfiles = new ArrayList<>();
+
+        // 1920 x 1080 || 1920 x 1088
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P))
+            supportedProfiles.add(CamcorderProfile.QUALITY_1080P);
+
+        // 640 x 480 || 720 x 480 || 704 x 480
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_480P))
+            supportedProfiles.add(CamcorderProfile.QUALITY_480P);
+
+        // 1280 x 720
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+            supportedProfiles.add(CamcorderProfile.QUALITY_720P);
+
+        // 352 x 288
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_CIF))
+            supportedProfiles.add(CamcorderProfile.QUALITY_CIF);
+
+        // 320 x 240
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_QVGA))
+            supportedProfiles.add(CamcorderProfile.QUALITY_QVGA);
+
+        // 176 x 144
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_QCIF))
+            supportedProfiles.add(CamcorderProfile.QUALITY_QCIF);
+
+        return (Integer[]) supportedProfiles.toArray();
+    }
+
+
+    public static CharSequence[] getSupportedCamcorderProfilesIDAsCharArray() {
+
+        List<CharSequence> supportedProfiles = new ArrayList<>();
+
+        // 1920 x 1080 || 1920 x 1088
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P))
+            supportedProfiles.add(Integer.toString(CamcorderProfile.QUALITY_1080P));
+
+        // 640 x 480 || 720 x 480 || 704 x 480
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_480P))
+            supportedProfiles.add(Integer.toString(CamcorderProfile.QUALITY_480P));
+
+        // 1280 x 720
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+            supportedProfiles.add(Integer.toString(CamcorderProfile.QUALITY_720P));
+
+        // 352 x 288
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_CIF))
+            supportedProfiles.add(Integer.toString(CamcorderProfile.QUALITY_CIF));
+
+        // 320 x 240
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_QVGA))
+            supportedProfiles.add(Integer.toString(CamcorderProfile.QUALITY_QVGA));
+
+        // 176 x 144
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_QCIF))
+            supportedProfiles.add(Integer.toString(CamcorderProfile.QUALITY_QCIF));
+
+        return supportedProfiles.toArray(new CharSequence[supportedProfiles.size()]);
+    }
+
+    public static CharSequence[] getSupportedCamcorderProfilesNAMEAsCharArray() {
+
+        ArrayList<String> temp = new ArrayList<>();
+
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+            temp.add("1080p");
+
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+            temp.add("720p");
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+            temp.add("480p");
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+            temp.add("CIF");
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+            temp.add("QCIF");
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+            temp.add("QVGA");
+
+        return temp.toArray(new CharSequence[temp.size()]);
+    }
+
+    public static int getCamcorderProfile(Context context) throws Exception {
+        int temp = SharedPreferencesHelper.detectStoredCamcorderProfile(context);
+        if (temp != -1) return temp;
+
+        Integer[] supportedCamcorderProfiles = CameraUtils.getSupportedCamcorderProfiles();
+
+        if (supportedCamcorderProfiles.length > 0)
+            return supportedCamcorderProfiles[0];
+
+        throw new Exception("Could not find any camcorder profile");
     }
 }

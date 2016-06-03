@@ -21,6 +21,7 @@ import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
 import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.activities.ActivitySettings;
+import com.vizdashcam.utils.CameraUtils;
 import com.vizdashcam.utils.Constants;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 
@@ -72,9 +73,9 @@ public class FragmentPreferences extends PreferenceFragment {
         audioRecording = findPreference(KEY_RECORDING_AUDIO);
 
         // Video Quality List
-        videoQualityList.setEntries(mAppState.getSupportedVideoQualities());
-        videoQualityList.setEntryValues(mAppState
-                .getSupportedVideoQualitiesIntegers());
+        videoQualityList.setEntries(CameraUtils.getSupportedCamcorderProfilesNAMEAsCharArray());
+        videoQualityList.setEntryValues(CameraUtils
+                .getSupportedCamcorderProfilesIDAsCharArray());
         if (videoQualityList.getValue() == null) {
             videoQualityList.setValueIndex(0);
         }

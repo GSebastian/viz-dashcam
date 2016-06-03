@@ -226,8 +226,6 @@ public class ServicePreview extends Service implements
             mServiceCamera = Camera.open(CameraInfo.CAMERA_FACING_BACK);
             if (mServiceCamera != null) {
 
-                mAppState.initializeCameraParams();
-
                 setCameraParams();
             }
         } catch (RuntimeException re) {
@@ -439,21 +437,27 @@ public class ServicePreview extends Service implements
         };
 
         TextView tvQuality = (TextView) fullLayout.findViewById(R.id.tv_quality);
-        int defaultCamcorderProfile = mAppState.getCamcorderProfile();
-        if (defaultCamcorderProfile == CamcorderProfile.QUALITY_1080P) {
-            tvQuality.setText("1080P");
-        } else if (defaultCamcorderProfile == CamcorderProfile.QUALITY_720P) {
-            tvQuality.setText("720P");
-        } else if (defaultCamcorderProfile == CamcorderProfile.QUALITY_480P) {
-            tvQuality.setText("480P");
-        } else if (defaultCamcorderProfile == CamcorderProfile.QUALITY_CIF) {
-            tvQuality.setText("CIF");
-        } else if (defaultCamcorderProfile == CamcorderProfile.QUALITY_QCIF) {
-            tvQuality.setText("QCIF");
-        } else if (defaultCamcorderProfile == CamcorderProfile.QUALITY_QVGA) {
-            tvQuality.setText("QVGA");
+        try {
+            int defaultCamcorderProfile = CameraUtils.getCamcorderProfile(this);
+            if (defaultCamcorderProfile == CamcorderProfile.QUALITY_1080P) {
+                tvQuality.setText("1080P");
+            } else if (defaultCamcorderProfile == CamcorderProfile.QUALITY_720P) {
+                tvQuality.setText("720P");
+            } else if (defaultCamcorderProfile == CamcorderProfile.QUALITY_480P) {
+                tvQuality.setText("480P");
+            } else if (defaultCamcorderProfile == CamcorderProfile.QUALITY_CIF) {
+                tvQuality.setText("CIF");
+            } else if (defaultCamcorderProfile == CamcorderProfile.QUALITY_QCIF) {
+                tvQuality.setText("QCIF");
+            } else if (defaultCamcorderProfile == CamcorderProfile.QUALITY_QVGA) {
+                tvQuality.setText("QVGA");
+            }
+            tvQuality.setOnClickListener(togglesListener);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception when initialising UI: " + e.getMessage());
+
+            tvQuality.setVisibility(View.GONE);
         }
-        tvQuality.setOnClickListener(togglesListener);
 
         TextView tvLength = (TextView) fullLayout.findViewById(R.id.tv_length);
         int ms = SharedPreferencesHelper.detectVideoLength(mAppState);
@@ -548,8 +552,7 @@ public class ServicePreview extends Service implements
 
             mMediaRecorder.setMaxDuration(SharedPreferencesHelper.detectVideoLength(mAppState));
 
-            mMediaRecorder.setProfile(CamcorderProfile.get(mAppState
-                    .getCamcorderProfile()));
+            mMediaRecorder.setProfile(CamcorderProfile.get(CameraUtils.getCamcorderProfile(this)));
 
             File outputFile = Utils.getOutputMediaFile();
             String outputFileName = outputFile.toString();
@@ -564,7 +567,9 @@ public class ServicePreview extends Service implements
             return false;
         } catch (RuntimeException re) {
             Log.e(TAG, "RuntimeException unlocking camera: " + re.getMessage());
-
+            return false;
+        } catch (Exception e) {
+            Log.e(TAG, "Exception when unlocking camera: " + e.getMessage());
             return false;
         }
 

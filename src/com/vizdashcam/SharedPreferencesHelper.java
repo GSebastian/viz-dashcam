@@ -98,5 +98,10 @@ public class SharedPreferencesHelper {
                 .PREF_VIDEO_LENGTH_DEFAULT);
         return Integer.parseInt(temp);
     }
+
+    public static int detectStoredCamcorderProfile(Context context) {
+        String temp = SharedPreferencesHelper.checkStringValue(context, Constants.PREF_VIDEO_QUALITY, "-1");
+        return Integer.parseInt(temp);
+    }
     //endregion
 }
