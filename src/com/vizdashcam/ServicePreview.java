@@ -121,7 +121,7 @@ public class ServicePreview extends Service implements
 
         mAppState = (GlobalState) getApplicationContext();
 
-        mMessenger = new Messenger(new PreviewIncomingHandler(this, mAppState));
+        mMessenger = new Messenger(new PreviewIncomingHandler(this));
 
         mWindowManager = (WindowManager) this
                 .getSystemService(Context.WINDOW_SERVICE);

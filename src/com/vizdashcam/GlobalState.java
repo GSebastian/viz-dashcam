@@ -21,497 +21,367 @@ import com.vizdashcam.utils.FeedbackSoundPlayer;
 
 public class GlobalState extends Application {
 
-	private static final String TAG = "GlobalState";
+    private static final String TAG = "GlobalState";
 
-	private File mediaStorageDir;
+    private File mediaStorageDir;
 
     private Pair<Integer, Integer> lastFeedbackCoords;
 
-	private String lastFilename;
-	private String lastMarkedFilename;
+    private String lastFilename;
+    private String lastMarkedFilename;
 
-	private boolean recording = false;
-	private boolean loggingEnabled = false;
-	private boolean previewBound = false;
-	private boolean activityPaused = false;
-	private boolean previewActive = false;
+    private boolean recording = false;
+    private boolean previewBound = false;
+    private boolean activityPaused = false;
+    private boolean previewActive = false;
 //	private boolean splashscreenOpen = true;
 
-	private boolean supports1080p;
-	private boolean supports720p;
-	private boolean supports480p;
-	private boolean supportsCIF;
-	private boolean supportsQCIF;
-	private boolean supportsQVGA;
+    private boolean supports1080p;
+    private boolean supports720p;
+    private boolean supports480p;
+    private boolean supportsCIF;
+    private boolean supportsQCIF;
+    private boolean supportsQVGA;
 
-	private int defaultCamcorderProfile;
-	private int defaultVideoLength;
-	private boolean loopModeActive;
-	private boolean shockModeActive;
-	private boolean audioFeedbackButtonActive;
-	private boolean audioFeedbackShockActive;
-	private boolean tactileFeedbackActive;
-	private int defaultShockSensitivity;
-	private boolean longPressToMarkActive;
-	private boolean speedometerActive;
-	private int defaultSpeedometerUnitsMeasure;
+    private int defaultCamcorderProfile;
+    private int defaultVideoLength;
+    private boolean loopModeActive;
+    private boolean shockModeActive;
+    private boolean audioFeedbackButtonActive;
+    private boolean audioFeedbackShockActive;
+    private boolean tactileFeedbackActive;
+    private int defaultShockSensitivity;
+    private boolean longPressToMarkActive;
+    private boolean speedometerActive;
+    private int defaultSpeedometerUnitsMeasure;
 
-	private FragmentAllVideos allVideosFragment = null;
-	private FragmentMarkedVideos markedVideosFragment = null;
+    private FragmentAllVideos allVideosFragment = null;
+    private FragmentMarkedVideos markedVideosFragment = null;
 
-	private boolean mustMarkFile;
+    private boolean mustMarkFile;
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-		createVideoFolder();
-		detectSupportedCamcorderProfiles();
-		FeedbackSoundPlayer.init(this);
-		new VideoPreview();
+        createVideoFolder();
+        detectSupportedCamcorderProfiles();
+        FeedbackSoundPlayer.init(this);
+        new VideoPreview();
+    }
 
-		Locale.setDefault(Locale.US);
-	}
+    public void createVideoFolder() {
+        mediaStorageDir = new File(
+                Environment.getExternalStorageDirectory(), "vizDashcamApp");
 
-	public void createVideoFolder() {
-		mediaStorageDir = new File(
-				Environment.getExternalStorageDirectory(), "vizDashcamApp");
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                Log.e(TAG, "Failed to create directory");
+            }
+        }
+    }
 
-		if (!mediaStorageDir.exists()) {
-			if (!mediaStorageDir.mkdirs()) {
-				Log.e(TAG, "Failed to create directory");
-			}
-		}
-	}
+    public void initializeCameraParams() {
+        setDefaultCamcorderProfile();
+        setDefaultVideoLength();
+        setDefaultShockSensitivity();
+    }
 
-	public void initializeCameraParams() {
-		setDefaultCamcorderProfile();
-		setDefaultVideoLength();
-		setDefaultShockSensitivity();
-	}
+    public void setLastFeedbackCoords(Pair<Integer, Integer> coords) {
+        this.lastFeedbackCoords = coords;
+    }
 
-	public void setLastFeedbackCoords(Pair<Integer, Integer> coords) {
-		this.lastFeedbackCoords = coords;
-	}
+    public Pair<Integer, Integer> getLastFeedbackCoords() {
+        return lastFeedbackCoords;
+    }
 
-	public Pair<Integer, Integer> getLastFeedbackCoords() {
-		return lastFeedbackCoords;
-	}
+    public String getLastFilename() {
+        return lastFilename;
+    }
 
-	public String getLastFilename() {
-		return lastFilename;
-	}
+    public void setLastFilename(String lastFilename) {
+        this.lastFilename = lastFilename;
+        if (this.lastMarkedFilename == null) {
+            this.lastMarkedFilename = "";
+        }
+    }
 
-	public void setLastFilename(String lastFilename) {
-		this.lastFilename = lastFilename;
-		if (this.lastMarkedFilename == null) {
-			this.lastMarkedFilename = "";
-		}
-	}
+    public String getLastMarkedFilename() {
+        return lastMarkedFilename;
+    }
 
-	public String getLastMarkedFilename() {
-		return lastMarkedFilename;
-	}
+    public void setLastMarkedFilename(String lastFilename) {
+        this.lastMarkedFilename = lastFilename;
+    }
 
-	public void setLastMarkedFilename(String lastFilename) {
-		this.lastMarkedFilename = lastFilename;
-	}
+    public void setPreviewBound(boolean previewBound) {
+        this.previewBound = previewBound;
+    }
 
-	public void setPreviewBound(boolean previewBound) {
-		this.previewBound = previewBound;
-	}
+    public boolean isPreviewBound() {
+        return this.previewBound;
+    }
 
-	public boolean isPreviewBound() {
-		return this.previewBound;
-	}
+    public boolean isActivityPaused() {
+        return activityPaused;
+    }
 
-	public boolean isActivityPaused() {
-		return activityPaused;
-	}
+    public void setActivityPaused(boolean activityPaused) {
+        this.activityPaused = activityPaused;
+    }
 
-	public void setActivityPaused(boolean activityPaused) {
-		this.activityPaused = activityPaused;
-	}
+    public boolean isPreviewActive() {
+        return previewActive;
+    }
 
-	public boolean isPreviewActive() {
-		return previewActive;
-	}
+    public void setPreviewActive(boolean previewActive) {
+        this.previewActive = previewActive;
+    }
 
-	public void setPreviewActive(boolean previewActive) {
-		this.previewActive = previewActive;
-	}
+    public boolean isLoopModeActive() {
+        return loopModeActive;
+    }
 
-	public boolean isLoopModeActive() {
-		return loopModeActive;
-	}
+    public void setLoopModeActive(boolean loopModeActive) {
+        this.loopModeActive = loopModeActive;
+    }
 
-	public void setLoopModeActive(boolean loopModeActive) {
-		this.loopModeActive = loopModeActive;
-	}
+    public int getDefaultCamcorderProfile() {
+        return defaultCamcorderProfile;
+    }
 
-	public int getDefaultCamcorderProfile() {
-		return defaultCamcorderProfile;
-	}
+    public void setDefaultCamcorderProfile(int defaultCamcorderProfile) {
+        this.defaultCamcorderProfile = defaultCamcorderProfile;
+    }
 
-	public void setDefaultCamcorderProfile(int defaultCamcorderProfile) {
-		this.defaultCamcorderProfile = defaultCamcorderProfile;
-	}
+    public boolean isRecording() {
+        return this.recording;
+    }
 
-	public boolean isRecording() {
-		return this.recording;
-	}
+    public void setRecording(boolean recording) {
+        this.recording = recording;
+    }
 
-	public boolean isLoggingEnabled() {
-		return this.loggingEnabled;
-	}
+    public int getDefaultVideoLength() {
+        return defaultVideoLength;
+    }
 
-	public void setRecording(boolean recording) {
-		this.recording = recording;
+    public int getDefaultShockSensitivity() {
+        return defaultShockSensitivity;
+    }
 
-		if (this.isLoggingEnabled())
-			Log.v(TAG, "setRecording");
-	}
-
-	public int getDefaultVideoLength() {
-		return defaultVideoLength;
-	}
-
-	public int getDefaultShockSensitivity() {
-		return defaultShockSensitivity;
-	}
-
-	private void detectSupportedCamcorderProfiles() {
-		SharedPreferences camcorderProfiles = PreferenceManager
+    private void detectSupportedCamcorderProfiles() {
+        SharedPreferences camcorderProfiles = PreferenceManager
                 .getDefaultSharedPreferences(this);
 
-		if (!camcorderProfiles.contains("1080p")) {
-			saveSupportedCamcorderProfiles();
-		}
+        if (!camcorderProfiles.contains("1080p")) {
+            saveSupportedCamcorderProfiles();
+        }
 
-		supports1080p = camcorderProfiles.getBoolean("1080p", false);
-		supports720p = camcorderProfiles.getBoolean("720p", false);
-		supports480p = camcorderProfiles.getBoolean("480p", false);
+        supports1080p = camcorderProfiles.getBoolean("1080p", false);
+        supports720p = camcorderProfiles.getBoolean("720p", false);
+        supports480p = camcorderProfiles.getBoolean("480p", false);
 
-		supportsCIF = camcorderProfiles.getBoolean("CIF", false);
-		supportsQCIF = camcorderProfiles.getBoolean("QCIF", false);
-		supportsQVGA = camcorderProfiles.getBoolean("QVGA", false);
-	}
+        supportsCIF = camcorderProfiles.getBoolean("CIF", false);
+        supportsQCIF = camcorderProfiles.getBoolean("QCIF", false);
+        supportsQVGA = camcorderProfiles.getBoolean("QVGA", false);
+    }
 
-	private void saveSupportedCamcorderProfiles() {
-		SharedPreferences camcorderProfiles = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		SharedPreferences.Editor camcorderProfilesEditor = camcorderProfiles
-				.edit();
+    private void saveSupportedCamcorderProfiles() {
+        SharedPreferences camcorderProfiles = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        SharedPreferences.Editor camcorderProfilesEditor = camcorderProfiles
+                .edit();
 
-		// 1920 x 1080 || 1920 x 1088
-		if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P))
-			camcorderProfilesEditor.putBoolean("1080p", true);
-		else
-			camcorderProfilesEditor.putBoolean("1080p", false);
+        // 1920 x 1080 || 1920 x 1088
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P))
+            camcorderProfilesEditor.putBoolean("1080p", true);
+        else
+            camcorderProfilesEditor.putBoolean("1080p", false);
 
-		// 640 x 480 || 720 x 480 || 704 x 480
-		if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_480P)) {
-			camcorderProfilesEditor.putBoolean("480p", true);
-		} else
-			camcorderProfilesEditor.putBoolean("480p", false);
+        // 640 x 480 || 720 x 480 || 704 x 480
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_480P)) {
+            camcorderProfilesEditor.putBoolean("480p", true);
+        } else
+            camcorderProfilesEditor.putBoolean("480p", false);
 
-		// 1280 x 720
-		if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
-			camcorderProfilesEditor.putBoolean("720p", true);
-		else
-			camcorderProfilesEditor.putBoolean("720p", false);
+        // 1280 x 720
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+            camcorderProfilesEditor.putBoolean("720p", true);
+        else
+            camcorderProfilesEditor.putBoolean("720p", false);
 
-		// 352 x 288
-		if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_CIF))
-			camcorderProfilesEditor.putBoolean("CIF", true);
-		else
-			camcorderProfilesEditor.putBoolean("CIF", false);
+        // 352 x 288
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_CIF))
+            camcorderProfilesEditor.putBoolean("CIF", true);
+        else
+            camcorderProfilesEditor.putBoolean("CIF", false);
 
-		// 320 x 240
-		if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_QVGA))
-			camcorderProfilesEditor.putBoolean("QVGA", true);
-		else
-			camcorderProfilesEditor.putBoolean("QVGA", false);
+        // 320 x 240
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_QVGA))
+            camcorderProfilesEditor.putBoolean("QVGA", true);
+        else
+            camcorderProfilesEditor.putBoolean("QVGA", false);
 
-		// 176 x 144
-		if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_QCIF))
-			camcorderProfilesEditor.putBoolean("QCIF", true);
-		else
-			camcorderProfilesEditor.putBoolean("QCIF", false);
+        // 176 x 144
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_QCIF))
+            camcorderProfilesEditor.putBoolean("QCIF", true);
+        else
+            camcorderProfilesEditor.putBoolean("QCIF", false);
 
-		camcorderProfilesEditor.apply();
-	}
+        camcorderProfilesEditor.apply();
+    }
 
-	public Camera.Size getPreviewSize(List<Camera.Size> sizes, int w, int h) {
-		final double ASPECT_TOLERANCE = 0.1;
-		double targetRatio = (double) h / w;
+    public CharSequence[] getSupportedVideoQualities() {
 
-		if (sizes == null)
-			return null;
+        ArrayList<String> temp = new ArrayList<String>();
 
-		Camera.Size optimalSize = null;
-		double minDiff = Double.MAX_VALUE;
+        if (supports1080p)
+            temp.add("1080p");
+        if (supports720p)
+            temp.add("720p");
+        if (supports480p)
+            temp.add("480p");
+        if (supportsCIF)
+            temp.add("CIF");
+        if (supportsQCIF)
+            temp.add("QCIF");
+        if (supportsQVGA)
+            temp.add("QVGA");
 
-		int targetHeight = h;
+        CharSequence[] result = temp.toArray(new CharSequence[temp.size()]);
+        return result;
+    }
 
-		for (Camera.Size size : sizes) {
-			double ratio = (double) size.width / size.height;
-			if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE)
-				continue;
-			if (Math.abs(size.height - targetHeight) < minDiff) {
-				optimalSize = size;
-				minDiff = Math.abs(size.height - targetHeight);
-			}
-		}
+    public CharSequence[] getSupportedVideoQualitiesIntegers() {
 
-		if (optimalSize == null) {
-			minDiff = Double.MAX_VALUE;
-			for (Camera.Size size : sizes) {
-				if (Math.abs(size.height - targetHeight) < minDiff) {
-					optimalSize = size;
-					minDiff = Math.abs(size.height - targetHeight);
-				}
-			}
-		}
-		return optimalSize;
-	}
+        ArrayList<String> temp = new ArrayList<String>();
 
-	// public Pair<Integer, Integer> getPreviewSize2(int camcorderProfile) {
-	//
-	// if (camcorderProfile == CamcorderProfile.QUALITY_1080P) {
-	// int width, height;
-	// width =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_1080P).videoFrameWidth;
-	// height =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_1080P).videoFrameHeight;
-	// return new Pair<Integer, Integer>(width, height);
-	// } else if (camcorderProfile == CamcorderProfile.QUALITY_720P) {
-	// int width, height;
-	// width =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_720P).videoFrameWidth;
-	// height =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_720P).videoFrameHeight;
-	// return new Pair<Integer, Integer>(width, height);
-	// } else if (camcorderProfile == CamcorderProfile.QUALITY_480P) {
-	// int width, height;
-	// width =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_480P).videoFrameWidth;
-	// height =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_480P).videoFrameHeight;
-	// return new Pair<Integer, Integer>(width, height);
-	// } else if (camcorderProfile == CamcorderProfile.QUALITY_CIF) {
-	// int width, height;
-	// width =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_CIF).videoFrameWidth;
-	// height =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_CIF).videoFrameHeight;
-	// return new Pair<Integer, Integer>(width, height);
-	// } else if (camcorderProfile == CamcorderProfile.QUALITY_QVGA) {
-	// int width, height;
-	// width =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_QVGA).videoFrameWidth;
-	// height =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_QVGA).videoFrameHeight;
-	// return new Pair<Integer, Integer>(width, height);
-	// } else if (camcorderProfile == CamcorderProfile.QUALITY_QCIF) {
-	// int width, height;
-	// width =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_QCIF).videoFrameWidth;
-	// height =
-	// CamcorderProfile.get(CamcorderProfile.QUALITY_QCIF).videoFrameHeight;
-	// return new Pair<Integer, Integer>(width, height);
-	// }
-	// return new Pair<Integer, Integer>(-1, -1);
-	// }
+        if (supports1080p)
+            temp.add(Integer.toString(CamcorderProfile.QUALITY_1080P));
+        if (supports720p)
+            temp.add(Integer.toString(CamcorderProfile.QUALITY_720P));
+        if (supports480p)
+            temp.add(Integer.toString(CamcorderProfile.QUALITY_480P));
+        if (supportsCIF)
+            temp.add(Integer.toString(CamcorderProfile.QUALITY_CIF));
+        if (supportsQCIF)
+            temp.add(Integer.toString(CamcorderProfile.QUALITY_QCIF));
+        if (supportsQVGA)
+            temp.add(Integer.toString(CamcorderProfile.QUALITY_QVGA));
 
-	public CharSequence[] getSupportedVideoQualities() {
+        return temp.toArray(new CharSequence[temp.size()]);
+    }
 
-		ArrayList<String> temp = new ArrayList<String>();
+    private void setDefaultShockSensitivity() {
+        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, "defaultShockSensitivity", "2");
+        defaultShockSensitivity = Integer.parseInt(temp);
+    }
 
-		if (supports1080p)
-			temp.add("1080p");
-		if (supports720p)
-			temp.add("720p");
-		if (supports480p)
-			temp.add("480p");
-		if (supportsCIF)
-			temp.add("CIF");
-		if (supportsQCIF)
-			temp.add("QCIF");
-		if (supportsQVGA)
-			temp.add("QVGA");
+    private void setDefaultCamcorderProfile() {
+        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, "defaultCamcorderProfile", null);
+        if (temp != null) defaultCamcorderProfile = Integer.parseInt(temp);
+        else {
+            if (supports1080p)
+                defaultCamcorderProfile = CamcorderProfile.QUALITY_1080P;
+            else if (supports720p)
+                defaultCamcorderProfile = CamcorderProfile.QUALITY_720P;
+            else if (supports480p)
+                defaultCamcorderProfile = CamcorderProfile.QUALITY_480P;
+            else if (supportsCIF)
+                defaultCamcorderProfile = CamcorderProfile.QUALITY_CIF;
+            else if (supportsQCIF)
+                defaultCamcorderProfile = CamcorderProfile.QUALITY_QCIF;
+            else if (supportsQVGA)
+                defaultCamcorderProfile = CamcorderProfile.QUALITY_QVGA;
+        }
+    }
 
-		CharSequence[] result = temp.toArray(new CharSequence[temp.size()]);
-		return result;
-	}
+    private void setDefaultVideoLength() {
+        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, "defaultVideoLength", "300000");
+        defaultVideoLength = Integer.parseInt(temp);
+    }
 
-	public CharSequence[] getSupportedVideoQualitiesIntegers() {
+    public boolean detectLoopModeActive() {
+        loopModeActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, "loopModeActive", false);
+        return loopModeActive;
+    }
 
-		ArrayList<String> temp = new ArrayList<String>();
+    public boolean detectShockModeActive() {
+        shockModeActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, "shockModeActive", false);
+        return shockModeActive;
+    }
 
-		if (supports1080p)
-			temp.add(Integer.toString(CamcorderProfile.QUALITY_1080P));
-		if (supports720p)
-			temp.add(Integer.toString(CamcorderProfile.QUALITY_720P));
-		if (supports480p)
-			temp.add(Integer.toString(CamcorderProfile.QUALITY_480P));
-		if (supportsCIF)
-			temp.add(Integer.toString(CamcorderProfile.QUALITY_CIF));
-		if (supportsQCIF)
-			temp.add(Integer.toString(CamcorderProfile.QUALITY_QCIF));
-		if (supportsQVGA)
-			temp.add(Integer.toString(CamcorderProfile.QUALITY_QVGA));
+    public boolean detectAudioFeedbackButtonActive() {
+        audioFeedbackButtonActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this,
+                "audioFeedbackButtonActive", true);
+        return audioFeedbackButtonActive;
+    }
 
-		CharSequence[] result = temp.toArray(new CharSequence[temp.size()]);
-		return result;
-	}
+    public boolean detectAudioFeedbackShockActive() {
+        audioFeedbackShockActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this,
+                "audioFeedbackShockActive", true);
+        return audioFeedbackShockActive;
+    }
 
-	private void setDefaultShockSensitivity() {
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
+    public boolean detectTactileFeedbackActive() {
+        tactileFeedbackActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, "tactileFeedbackActive",
+                true);
+        return tactileFeedbackActive;
+    }
 
-		String temp = preferences.getString("defaultShockSensitivity", "2");
-		defaultShockSensitivity = Integer.parseInt(temp);
-	}
+    public boolean detectLongPressToMarkActive() {
+        longPressToMarkActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, "longPressToMarkActive",
+                false);
+        return longPressToMarkActive;
+    }
 
-	private void setDefaultCamcorderProfile() {
-		SharedPreferences camcorderProfiles = PreferenceManager
-				.getDefaultSharedPreferences(this);
+    public boolean detectSpeedometerActive() {
+        speedometerActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, "speedometerActive", false);
+        return speedometerActive;
+    }
 
-		if (camcorderProfiles.contains("defaultCamcorderProfile")) {
-			String temp = camcorderProfiles.getString(
-					"defaultCamcorderProfile", "-1");
-			defaultCamcorderProfile = Integer.parseInt(temp);
-		} else {
-			if (supports1080p)
-				defaultCamcorderProfile = CamcorderProfile.QUALITY_1080P;
-			else if (supports720p)
-				defaultCamcorderProfile = CamcorderProfile.QUALITY_720P;
-			else if (supports480p)
-				defaultCamcorderProfile = CamcorderProfile.QUALITY_480P;
-			else if (supportsCIF)
-				defaultCamcorderProfile = CamcorderProfile.QUALITY_CIF;
-			else if (supportsQCIF)
-				defaultCamcorderProfile = CamcorderProfile.QUALITY_QCIF;
-			else if (supportsQVGA)
-				defaultCamcorderProfile = CamcorderProfile.QUALITY_QVGA;
-		}
-	}
+    public int detectSpeedometersUnitsMeasure() {
+        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, "speedometerUnitsMeasure", "kph");
+        if (temp.compareTo("kph") == 0) {
+            defaultSpeedometerUnitsMeasure = Constants.SPEEDOMETER_KPH;
+        } else {
+            defaultSpeedometerUnitsMeasure = Constants.SPEEDOMETER_MPH;
+        }
 
-	private void setDefaultVideoLength() {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		String temp = sharedPreferences.getString("defaultVideoLength",
-				"300000");
-		defaultVideoLength = Integer.parseInt(temp);
-	}
+        return defaultSpeedometerUnitsMeasure;
+    }
 
-	public boolean detectLoopModeActive() {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		loopModeActive = sharedPreferences.getBoolean("loopModeActive", false);
+    public FragmentAllVideos getAllVideosFragment() {
+        return allVideosFragment;
+    }
 
-		return loopModeActive;
-	}
+    public void setAllVideosFragment(FragmentAllVideos allVideosFragment) {
+        this.allVideosFragment = allVideosFragment;
+    }
 
-	public boolean detectShockModeActive() {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		shockModeActive = sharedPreferences
-				.getBoolean("shockModeActive", false);
+    public FragmentMarkedVideos getMarkedVideosFragment() {
+        return markedVideosFragment;
+    }
 
-		return shockModeActive;
-	}
+    public void setMarkedVideosFragment(
+            FragmentMarkedVideos markedVideosFragment) {
+        this.markedVideosFragment = markedVideosFragment;
+    }
 
-	public boolean detectAudioFeedbackButtonActive() {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		audioFeedbackButtonActive = sharedPreferences.getBoolean(
-				"audioFeedbackButtonActive", true);
+    public File getMediaStorageDir() {
+        return mediaStorageDir;
+    }
 
-		return audioFeedbackButtonActive;
-	}
+    public void setMediaStorageDir(File mediaStorageDir) {
+        this.mediaStorageDir = mediaStorageDir;
+    }
 
-	public boolean detectAudioFeedbackShockActive() {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		audioFeedbackShockActive = sharedPreferences.getBoolean(
-				"audioFeedbackShockActive", true);
+    public void setMustMarkFile(boolean b) {
+        this.mustMarkFile = b;
+    }
 
-		return audioFeedbackShockActive;
-	}
-
-	public boolean detectTactileFeedbackActive() {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		tactileFeedbackActive = sharedPreferences.getBoolean(
-				"tactileFeedbackActive", true);
-
-		return tactileFeedbackActive;
-	}
-
-	public boolean detectLongPressToMarkActive() {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		longPressToMarkActive = sharedPreferences.getBoolean(
-				"longPressToMarkActive", false);
-
-		return longPressToMarkActive;
-	}
-
-	public boolean detectSpeedometerActive() {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		speedometerActive = sharedPreferences.getBoolean("speedometerActive",
-				false);
-
-		return speedometerActive;
-	}
-
-	public int detectSpeedometersUnitsMeasure() {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		String temp = sharedPreferences.getString("speedometerUnitsMeasure",
-				"kph");
-		if (temp.compareTo("kph") == 0) {
-			defaultSpeedometerUnitsMeasure = Constants.SPEEDOMETER_KPH;
-		} else {
-			defaultSpeedometerUnitsMeasure = Constants.SPEEDOMETER_MPH;
-		}
-
-		return defaultSpeedometerUnitsMeasure;
-	}
-
-	public FragmentAllVideos getAllVideosFragment() {
-		return allVideosFragment;
-	}
-
-	public void setAllVideosFragment(FragmentAllVideos allVideosFragment) {
-		this.allVideosFragment = allVideosFragment;
-	}
-
-	public FragmentMarkedVideos getMarkedVideosFragment() {
-		return markedVideosFragment;
-	}
-
-	public void setMarkedVideosFragment(
-			FragmentMarkedVideos markedVideosFragment) {
-		this.markedVideosFragment = markedVideosFragment;
-	}
-
-	public File getMediaStorageDir() {
-		return mediaStorageDir;
-	}
-
-	public void setMediaStorageDir(File mediaStorageDir) {
-		this.mediaStorageDir = mediaStorageDir;
-	}
-
-	public void setMustMarkFile(boolean b) {
-		this.mustMarkFile = b;
-	}
-
-	public boolean getMustMarkFile() {
-		return this.mustMarkFile;
-	}
+    public boolean getMustMarkFile() {
+        return this.mustMarkFile;
+    }
 }
