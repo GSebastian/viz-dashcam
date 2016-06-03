@@ -271,12 +271,12 @@ public class GlobalState extends Application {
     }
 
     private void setShockSensitivity() {
-        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, Constants.PREF_SHOCK_SENSITIVITY, "2");
+        String temp = SharedPreferencesHelper.checkStringValue(this, Constants.PREF_SHOCK_SENSITIVITY, "2");
         shockSensitivity = Integer.parseInt(temp);
     }
 
     private void setCamcorderProfile() {
-        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, Constants.PREF_VIDEO_QUALITY, null);
+        String temp = SharedPreferencesHelper.checkStringValue(this, Constants.PREF_VIDEO_QUALITY, null);
         if (temp != null) camcorderProfile = Integer.parseInt(temp);
         else {
             if (supports1080p)
@@ -295,52 +295,55 @@ public class GlobalState extends Application {
     }
 
     private void setVideoLength() {
-        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, Constants.PREF_VIDEO_LENGTH, "300000");
+        String temp = SharedPreferencesHelper.checkStringValue(this, Constants.PREF_VIDEO_LENGTH, Constants
+                .PREF_VIDEO_LENGTH_DEFAULT);
         videoLength = Integer.parseInt(temp);
     }
 
     public boolean detectLoopModeActive() {
-        loopModeActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants.PREF_LOOP_ACTIVE, false);
+        loopModeActive = SharedPreferencesHelper.checkBooleanValue(this, Constants.PREF_LOOP_ACTIVE,
+                Constants.PREF_LOOP_ACTIVE_DEFAULT);
         return loopModeActive;
     }
 
     public boolean detectShockModeActive() {
-        shockModeActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants.PREF_SHOCK_ACTIVE, false);
+        shockModeActive = SharedPreferencesHelper.checkBooleanValue(this, Constants.PREF_SHOCK_ACTIVE, Constants
+                .PREF_SHOCK_ACTIVE_DEFAULT);
         return shockModeActive;
     }
 
     public boolean detectAudioFeedbackButtonActive() {
-        audioFeedbackButtonActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants
-                .PREF_AUDIO_FEEDBACK_BUTTON, true);
+        audioFeedbackButtonActive = SharedPreferencesHelper.checkBooleanValue(this, Constants
+                .PREF_AUDIO_FEEDBACK_BUTTON, Constants.PREF_AUDIO_FEEDBACK_BUTTON_DEFAULT);
         return audioFeedbackButtonActive;
     }
 
     public boolean detectAudioFeedbackShockActive() {
-        audioFeedbackShockActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants
-                .PREF_AUDIO_FEEDBACK_SHOCK, true);
+        audioFeedbackShockActive = SharedPreferencesHelper.checkBooleanValue(this, Constants
+                .PREF_AUDIO_FEEDBACK_SHOCK, Constants.PREF_AUDIO_FEEDBACK_SHOCK_DEFAULT);
         return audioFeedbackShockActive;
     }
 
     public boolean detectTactileFeedbackActive() {
-        tactileFeedbackActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants
-                .PREF_TACTILE_FEEDBACK, true);
+        tactileFeedbackActive = SharedPreferencesHelper.checkBooleanValue(this, Constants
+                .PREF_TACTILE_FEEDBACK, Constants.PREF_TACTILE_FEEDBACK_DEFAULT);
         return tactileFeedbackActive;
     }
 
     public boolean detectLongPressToMarkActive() {
-        longPressToMarkActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants.PREF_LONG_PRESS,
-                false);
+        longPressToMarkActive = SharedPreferencesHelper.checkBooleanValue(this, Constants.PREF_LONG_PRESS,
+                Constants.PREF_LONG_PRESS_DEFAULT);
         return longPressToMarkActive;
     }
 
     public boolean detectSpeedometerActive() {
-        speedometerActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants
-                .PREF_SPEEDOMETER_ACTIVE, false);
+        speedometerActive = SharedPreferencesHelper.checkBooleanValue(this, Constants
+                .PREF_SPEEDOMETER_ACTIVE, Constants.PREF_SPEEDOMETER_ACTIVE_DEFAULT);
         return speedometerActive;
     }
 
     public int detectSpeedometersUnitsMeasure() {
-        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, Constants.PREF_SPEEDOMETER_UNITS, "kph");
+        String temp = SharedPreferencesHelper.checkStringValue(this, Constants.PREF_SPEEDOMETER_UNITS, "kph");
         if (temp.compareTo("kph") == 0) {
             speedometerUnitsMeasure = Constants.SPEEDOMETER_KPH;
         } else {

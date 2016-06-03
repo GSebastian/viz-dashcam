@@ -25,14 +25,14 @@ public class SharedPreferencesHelper {
         prefs.edit().putBoolean(KEY_DECLINED_AUDIO, value).apply();
     }
 
-    public static boolean checkBooleanPreferenceValue(Context context, String key, boolean defaultValue) {
+    public static boolean checkBooleanValue(Context context, String key, boolean defaultValue) {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
 
         return prefs.getBoolean(key, defaultValue);
     }
 
-    public static String checkStringPreferenceValue(Context context, String key, String defaultValue) {
+    public static String checkStringValue(Context context, String key, String defaultValue) {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
 

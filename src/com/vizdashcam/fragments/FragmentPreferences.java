@@ -199,7 +199,7 @@ public class FragmentPreferences extends PreferenceFragment {
         speedometerActive.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                boolean newValue = SharedPreferencesHelper.checkBooleanPreferenceValue(getActivity(),
+                boolean newValue = SharedPreferencesHelper.checkBooleanValue(getActivity(),
                         Constants.PREF_SPEEDOMETER_ACTIVE, false);
 
                 if (newValue && !hasFineLocationPermission()) requestFineLocationPermission();
@@ -311,7 +311,7 @@ public class FragmentPreferences extends PreferenceFragment {
 
     public void obtainedLocationPermission() {
 
-        if (SharedPreferencesHelper.checkBooleanPreferenceValue(getActivity(), Constants.PREF_SPEEDOMETER_ACTIVE,
+        if (SharedPreferencesHelper.checkBooleanValue(getActivity(), Constants.PREF_SPEEDOMETER_ACTIVE,
                 false))
             speedometerActive.setChecked(true);
     }
