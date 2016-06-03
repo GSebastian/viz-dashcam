@@ -21,23 +21,13 @@ import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
 import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.activities.ActivitySettings;
+import com.vizdashcam.utils.Constants;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 
 public class FragmentPreferences extends PreferenceFragment {
 
     public static final String TAG = "FragmentPreferences";
 
-    private static final String KEY_LP_VIDEO_QUALITY = "defaultCamcorderProfile";
-    private static final String KEY_LP_VIDEO_LENGTH = "defaultVideoLength";
-    private static final String KEY_CP_LOOP_ACTIVE = "loopModeActive";
-    private static final String KEY_CP_SHOCK_ACTIVE = "shockModeActive";
-    private static final String KEY_LP_SHOCK_SENSITIVITY = "defaultShockSensitivity";
-    private static final String KEY_CP_LONG_PRESS = "longPressToMarkActive";
-    private static final String KEY_CP_AUDIO_FEEDBACK_SHOCK = "audioFeedbackShockActive";
-    private static final String KEY_CP_AUDIO_FEEDBACK_BUTTON = "audioFeedbackButtonActive";
-    private static final String KEY_CP_TACTILE_FEEDBACK = "tactileFeedbackActive";
-    private static final String KEY_CP_SPEEDOMETER_ACTIVE = "speedometerActive";
-    private static final String KEY_LP_SPEEDOMETER_UNITS = "speedometerUnitsMeasure";
     private static final String KEY_RECORDING_AUDIO = "recordingAudio";
 
     GlobalState mAppState;
@@ -64,19 +54,21 @@ public class FragmentPreferences extends PreferenceFragment {
 
         Activity activity = getActivity();
 
-        ListPreference videoQualityList = (ListPreference) findPreference(KEY_LP_VIDEO_QUALITY);
-        ListPreference videoLengthList = (ListPreference) findPreference(KEY_LP_VIDEO_LENGTH);
-        final CheckBoxPreference useLoopMode = (CheckBoxPreference) findPreference(KEY_CP_LOOP_ACTIVE);
-        final CheckBoxPreference shockModeActive = (CheckBoxPreference) findPreference(KEY_CP_SHOCK_ACTIVE);
-        final ListPreference shockSensitivity = (ListPreference) findPreference(KEY_LP_SHOCK_SENSITIVITY);
-        final CheckBoxPreference longPressToMarkActive = (CheckBoxPreference) findPreference(KEY_CP_LONG_PRESS);
+        ListPreference videoQualityList = (ListPreference) findPreference(Constants.PREF_VIDEO_QUALITY);
+        ListPreference videoLengthList = (ListPreference) findPreference(Constants.PREF_VIDEO_LENGTH);
+        final CheckBoxPreference useLoopMode = (CheckBoxPreference) findPreference(Constants.PREF_LOOP_ACTIVE);
+        final CheckBoxPreference shockModeActive = (CheckBoxPreference) findPreference(Constants.PREF_SHOCK_ACTIVE);
+        final ListPreference shockSensitivity = (ListPreference) findPreference(Constants.PREF_SHOCK_SENSITIVITY);
+        final CheckBoxPreference longPressToMarkActive = (CheckBoxPreference) findPreference(Constants.PREF_LONG_PRESS);
         final CheckBoxPreference audioFeedbackButtonActive = (CheckBoxPreference) findPreference
-                (KEY_CP_AUDIO_FEEDBACK_BUTTON);
+                (Constants.PREF_AUDIO_FEEDBACK_BUTTON);
         final CheckBoxPreference audioFeedbackShockActive = (CheckBoxPreference) findPreference
-                (KEY_CP_AUDIO_FEEDBACK_SHOCK);
-        final CheckBoxPreference tactileFeedbackActive = (CheckBoxPreference) findPreference(KEY_CP_TACTILE_FEEDBACK);
-        speedometerActive = (CheckBoxPreference) findPreference(KEY_CP_SPEEDOMETER_ACTIVE);
-        final ListPreference speedometerUnitsMeasure = (ListPreference) findPreference(KEY_LP_SPEEDOMETER_UNITS);
+                (Constants.PREF_AUDIO_FEEDBACK_SHOCK);
+        final CheckBoxPreference tactileFeedbackActive = (CheckBoxPreference) findPreference(Constants
+                .PREF_TACTILE_FEEDBACK);
+        speedometerActive = (CheckBoxPreference) findPreference(Constants.PREF_SPEEDOMETER_ACTIVE);
+        final ListPreference speedometerUnitsMeasure = (ListPreference) findPreference(Constants
+                .PREF_SPEEDOMETER_UNITS);
         audioRecording = findPreference(KEY_RECORDING_AUDIO);
 
         // Video Quality List
@@ -208,7 +200,7 @@ public class FragmentPreferences extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 boolean newValue = SharedPreferencesHelper.checkBooleanPreferenceValue(getActivity(),
-                        KEY_CP_SPEEDOMETER_ACTIVE, false);
+                        Constants.PREF_SPEEDOMETER_ACTIVE, false);
 
                 if (newValue && !hasFineLocationPermission()) requestFineLocationPermission();
 
@@ -319,7 +311,8 @@ public class FragmentPreferences extends PreferenceFragment {
 
     public void obtainedLocationPermission() {
 
-        if (SharedPreferencesHelper.checkBooleanPreferenceValue(getActivity(), KEY_CP_SPEEDOMETER_ACTIVE, false))
+        if (SharedPreferencesHelper.checkBooleanPreferenceValue(getActivity(), Constants.PREF_SPEEDOMETER_ACTIVE,
+                false))
             speedometerActive.setChecked(true);
     }
 

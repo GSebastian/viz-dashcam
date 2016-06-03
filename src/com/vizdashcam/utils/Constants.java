@@ -9,4 +9,16 @@ public class Constants {
     public static final float SHOCK_SENSITIVITY_HIGH = 11;
     public static final int SPEEDOMETER_MPH = 0;
     public static final int SPEEDOMETER_KPH = 1;
+
+    public static final String PREF_VIDEO_QUALITY = "defaultCamcorderProfile";
+    public static final String PREF_VIDEO_LENGTH = "defaultVideoLength";
+    public static final String PREF_LOOP_ACTIVE = "loopModeActive";
+    public static final String PREF_SHOCK_ACTIVE = "shockModeActive";
+    public static final String PREF_SHOCK_SENSITIVITY = "defaultShockSensitivity";
+    public static final String PREF_LONG_PRESS = "longPressToMarkActive";
+    public static final String PREF_AUDIO_FEEDBACK_SHOCK = "audioFeedbackShockActive";
+    public static final String PREF_AUDIO_FEEDBACK_BUTTON = "audioFeedbackButtonActive";
+    public static final String PREF_TACTILE_FEEDBACK = "tactileFeedbackActive";
+    public static final String PREF_SPEEDOMETER_ACTIVE = "speedometerActive";
+    public static final String PREF_SPEEDOMETER_UNITS = "speedometerUnitsMeasure";
 }

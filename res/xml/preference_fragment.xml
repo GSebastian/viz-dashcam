@@ -5,12 +5,12 @@
 
         <ListPreference
             android:dialogTitle="@string/video_quality"
-            android:key="defaultCamcorderProfile"
+            android:key="camcorderProfile"
             android:summary="@string/set_video_quality"
             android:title="@string/video_quality" />
 
         <ListPreference
-            android:dependency="defaultCamcorderProfile"
+            android:dependency="camcorderProfile"
             android:dialogTitle="@string/video_length"
             android:entries="@array/video_length_entry"
             android:entryValues="@array/video_length_value"

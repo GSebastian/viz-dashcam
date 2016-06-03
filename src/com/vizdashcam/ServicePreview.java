@@ -34,8 +34,6 @@ import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -441,7 +439,7 @@ public class ServicePreview extends Service implements
         };
 
         TextView tvQuality = (TextView) fullLayout.findViewById(R.id.tv_quality);
-        int defaultCamcorderProfile = mAppState.getDefaultCamcorderProfile();
+        int defaultCamcorderProfile = mAppState.getCamcorderProfile();
         if (defaultCamcorderProfile == CamcorderProfile.QUALITY_1080P) {
             tvQuality.setText("1080P");
         } else if (defaultCamcorderProfile == CamcorderProfile.QUALITY_720P) {
@@ -458,7 +456,7 @@ public class ServicePreview extends Service implements
         tvQuality.setOnClickListener(togglesListener);
 
         TextView tvLength = (TextView) fullLayout.findViewById(R.id.tv_length);
-        int ms = mAppState.getDefaultVideoLength();
+        int ms = mAppState.getVideoLength();
         int s = ms / 1000;
         if (s < 60) {
             tvLength.setText(s + "SEC");
@@ -548,10 +546,10 @@ public class ServicePreview extends Service implements
 
             mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
-            mMediaRecorder.setMaxDuration(mAppState.getDefaultVideoLength());
+            mMediaRecorder.setMaxDuration(mAppState.getVideoLength());
 
             mMediaRecorder.setProfile(CamcorderProfile.get(mAppState
-                    .getDefaultCamcorderProfile()));
+                    .getCamcorderProfile()));
 
             File outputFile = Utils.getOutputMediaFile();
             String outputFileName = outputFile.toString();

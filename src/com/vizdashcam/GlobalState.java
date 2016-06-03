@@ -2,12 +2,9 @@ package com.vizdashcam;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -43,17 +40,17 @@ public class GlobalState extends Application {
     private boolean supportsQCIF;
     private boolean supportsQVGA;
 
-    private int defaultCamcorderProfile;
-    private int defaultVideoLength;
+    private int camcorderProfile;
+    private int videoLength;
     private boolean loopModeActive;
     private boolean shockModeActive;
     private boolean audioFeedbackButtonActive;
     private boolean audioFeedbackShockActive;
     private boolean tactileFeedbackActive;
-    private int defaultShockSensitivity;
+    private int shockSensitivity;
     private boolean longPressToMarkActive;
     private boolean speedometerActive;
-    private int defaultSpeedometerUnitsMeasure;
+    private int speedometerUnitsMeasure;
 
     private FragmentAllVideos allVideosFragment = null;
     private FragmentMarkedVideos markedVideosFragment = null;
@@ -82,9 +79,9 @@ public class GlobalState extends Application {
     }
 
     public void initializeCameraParams() {
-        setDefaultCamcorderProfile();
-        setDefaultVideoLength();
-        setDefaultShockSensitivity();
+        setCamcorderProfile();
+        setVideoLength();
+        setShockSensitivity();
     }
 
     public void setLastFeedbackCoords(Pair<Integer, Integer> coords) {
@@ -146,12 +143,12 @@ public class GlobalState extends Application {
         this.loopModeActive = loopModeActive;
     }
 
-    public int getDefaultCamcorderProfile() {
-        return defaultCamcorderProfile;
+    public int getCamcorderProfile() {
+        return camcorderProfile;
     }
 
-    public void setDefaultCamcorderProfile(int defaultCamcorderProfile) {
-        this.defaultCamcorderProfile = defaultCamcorderProfile;
+    public void setCamcorderProfile(int camcorderProfile) {
+        this.camcorderProfile = camcorderProfile;
     }
 
     public boolean isRecording() {
@@ -162,12 +159,12 @@ public class GlobalState extends Application {
         this.recording = recording;
     }
 
-    public int getDefaultVideoLength() {
-        return defaultVideoLength;
+    public int getVideoLength() {
+        return videoLength;
     }
 
-    public int getDefaultShockSensitivity() {
-        return defaultShockSensitivity;
+    public int getShockSensitivity() {
+        return shockSensitivity;
     }
 
     private void detectSupportedCamcorderProfiles() {
@@ -273,83 +270,84 @@ public class GlobalState extends Application {
         return temp.toArray(new CharSequence[temp.size()]);
     }
 
-    private void setDefaultShockSensitivity() {
-        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, "defaultShockSensitivity", "2");
-        defaultShockSensitivity = Integer.parseInt(temp);
+    private void setShockSensitivity() {
+        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, Constants.PREF_SHOCK_SENSITIVITY, "2");
+        shockSensitivity = Integer.parseInt(temp);
     }
 
-    private void setDefaultCamcorderProfile() {
-        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, "defaultCamcorderProfile", null);
-        if (temp != null) defaultCamcorderProfile = Integer.parseInt(temp);
+    private void setCamcorderProfile() {
+        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, Constants.PREF_VIDEO_QUALITY, null);
+        if (temp != null) camcorderProfile = Integer.parseInt(temp);
         else {
             if (supports1080p)
-                defaultCamcorderProfile = CamcorderProfile.QUALITY_1080P;
+                camcorderProfile = CamcorderProfile.QUALITY_1080P;
             else if (supports720p)
-                defaultCamcorderProfile = CamcorderProfile.QUALITY_720P;
+                camcorderProfile = CamcorderProfile.QUALITY_720P;
             else if (supports480p)
-                defaultCamcorderProfile = CamcorderProfile.QUALITY_480P;
+                camcorderProfile = CamcorderProfile.QUALITY_480P;
             else if (supportsCIF)
-                defaultCamcorderProfile = CamcorderProfile.QUALITY_CIF;
+                camcorderProfile = CamcorderProfile.QUALITY_CIF;
             else if (supportsQCIF)
-                defaultCamcorderProfile = CamcorderProfile.QUALITY_QCIF;
+                camcorderProfile = CamcorderProfile.QUALITY_QCIF;
             else if (supportsQVGA)
-                defaultCamcorderProfile = CamcorderProfile.QUALITY_QVGA;
+                camcorderProfile = CamcorderProfile.QUALITY_QVGA;
         }
     }
 
-    private void setDefaultVideoLength() {
-        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, "defaultVideoLength", "300000");
-        defaultVideoLength = Integer.parseInt(temp);
+    private void setVideoLength() {
+        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, Constants.PREF_VIDEO_LENGTH, "300000");
+        videoLength = Integer.parseInt(temp);
     }
 
     public boolean detectLoopModeActive() {
-        loopModeActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, "loopModeActive", false);
+        loopModeActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants.PREF_LOOP_ACTIVE, false);
         return loopModeActive;
     }
 
     public boolean detectShockModeActive() {
-        shockModeActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, "shockModeActive", false);
+        shockModeActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants.PREF_SHOCK_ACTIVE, false);
         return shockModeActive;
     }
 
     public boolean detectAudioFeedbackButtonActive() {
-        audioFeedbackButtonActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this,
-                "audioFeedbackButtonActive", true);
+        audioFeedbackButtonActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants
+                .PREF_AUDIO_FEEDBACK_BUTTON, true);
         return audioFeedbackButtonActive;
     }
 
     public boolean detectAudioFeedbackShockActive() {
-        audioFeedbackShockActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this,
-                "audioFeedbackShockActive", true);
+        audioFeedbackShockActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants
+                .PREF_AUDIO_FEEDBACK_SHOCK, true);
         return audioFeedbackShockActive;
     }
 
     public boolean detectTactileFeedbackActive() {
-        tactileFeedbackActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, "tactileFeedbackActive",
-                true);
+        tactileFeedbackActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants
+                .PREF_TACTILE_FEEDBACK, true);
         return tactileFeedbackActive;
     }
 
     public boolean detectLongPressToMarkActive() {
-        longPressToMarkActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, "longPressToMarkActive",
+        longPressToMarkActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants.PREF_LONG_PRESS,
                 false);
         return longPressToMarkActive;
     }
 
     public boolean detectSpeedometerActive() {
-        speedometerActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, "speedometerActive", false);
+        speedometerActive = SharedPreferencesHelper.checkBooleanPreferenceValue(this, Constants
+                .PREF_SPEEDOMETER_ACTIVE, false);
         return speedometerActive;
     }
 
     public int detectSpeedometersUnitsMeasure() {
-        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, "speedometerUnitsMeasure", "kph");
+        String temp = SharedPreferencesHelper.checkStringPreferenceValue(this, Constants.PREF_SPEEDOMETER_UNITS, "kph");
         if (temp.compareTo("kph") == 0) {
-            defaultSpeedometerUnitsMeasure = Constants.SPEEDOMETER_KPH;
+            speedometerUnitsMeasure = Constants.SPEEDOMETER_KPH;
         } else {
-            defaultSpeedometerUnitsMeasure = Constants.SPEEDOMETER_MPH;
+            speedometerUnitsMeasure = Constants.SPEEDOMETER_MPH;
         }
 
-        return defaultSpeedometerUnitsMeasure;
+        return speedometerUnitsMeasure;
     }
 
     public FragmentAllVideos getAllVideosFragment() {
