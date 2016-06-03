@@ -10,7 +10,7 @@ public class Constants {
     public static final int SPEEDOMETER_MPH = 0;
     public static final int SPEEDOMETER_KPH = 1;
 
-    public static final String PREF_VIDEO_QUALITY = "defaultCamcorderProfile";
+    public static final String PREF_VIDEO_QUALITY = "camcorderProfile";
     public static final String PREF_VIDEO_LENGTH = "defaultVideoLength";
     public static final String PREF_LOOP_ACTIVE = "loopModeActive";
     public static final String PREF_SHOCK_ACTIVE = "shockModeActive";

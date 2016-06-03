@@ -127,7 +127,7 @@ public class CameraUtils {
         if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_QCIF))
             supportedProfiles.add(CamcorderProfile.QUALITY_QCIF);
 
-        return (Integer[]) supportedProfiles.toArray();
+        return supportedProfiles.toArray(new Integer[supportedProfiles.size()]);
     }
 
 
@@ -166,18 +166,22 @@ public class CameraUtils {
 
         ArrayList<String> temp = new ArrayList<>();
 
-        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P))
             temp.add("1080p");
 
         if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
             temp.add("720p");
-        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_480P))
             temp.add("480p");
-        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_CIF))
             temp.add("CIF");
-        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_QCIF))
             temp.add("QCIF");
-        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P))
+
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_QVGA))
             temp.add("QVGA");
 
         return temp.toArray(new CharSequence[temp.size()]);
