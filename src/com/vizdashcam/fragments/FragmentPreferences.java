@@ -229,13 +229,13 @@ public class FragmentPreferences extends PreferenceFragment {
     }
 
     private void audioFeedback() {
-        if (mAppState.detectAudioFeedbackButtonActive()) {
+        if (SharedPreferencesHelper.detectAudioFeedbackButtonActive(mAppState)) {
             FeedbackSoundPlayer.playSound(FeedbackSoundPlayer.SOUND_BTN);
         }
     }
 
     private void tactileFeedback() {
-        if (mAppState.detectTactileFeedbackActive()) {
+        if (SharedPreferencesHelper.detectTactileFeedbackActive(mAppState)) {
             Vibrator vibrator = (Vibrator) this.getActivity().getSystemService(
                     Context.VIBRATOR_SERVICE);
             vibrator.vibrate(100);

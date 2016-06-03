@@ -29,7 +29,7 @@ public class ShockListener implements AccelerometerListener {
 	}
 
 	private void audioFeedback() {
-		if (mAppState.detectAudioFeedbackShockActive()) {
+		if (SharedPreferencesHelper.detectAudioFeedbackShockActive(mAppState)) {
 			FeedbackSoundPlayer.playSound(FeedbackSoundPlayer.SOUND_SHOCK);
 		}
 	}

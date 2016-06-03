@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
+import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.VideoItem;
 import com.vizdashcam.VideoPreview;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
@@ -235,7 +236,7 @@ public class ActivityVideoItem extends AppCompatActivity {
     }
 
     private void tactileFeedback() {
-        if (appState.detectTactileFeedbackActive()) {
+        if (SharedPreferencesHelper.detectTactileFeedbackActive(appState)) {
             Vibrator vibrator = (Vibrator) this
                     .getSystemService(Context.VIBRATOR_SERVICE);
             vibrator.vibrate(100);
@@ -243,7 +244,7 @@ public class ActivityVideoItem extends AppCompatActivity {
     }
 
     private void audioFeedback() {
-        if (appState.detectAudioFeedbackButtonActive()) {
+        if (SharedPreferencesHelper.detectAudioFeedbackButtonActive(appState)) {
             FeedbackSoundPlayer.playSound(FeedbackSoundPlayer.SOUND_BTN);
         }
     }

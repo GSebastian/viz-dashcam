@@ -30,7 +30,6 @@ public class GlobalState extends Application {
     private boolean recording = false;
     private boolean previewBound = false;
     private boolean activityPaused = false;
-    private boolean previewActive = false;
 //	private boolean splashscreenOpen = true;
 
     private boolean supports1080p;
@@ -42,15 +41,7 @@ public class GlobalState extends Application {
 
     private int camcorderProfile;
     private int videoLength;
-    private boolean loopModeActive;
-    private boolean shockModeActive;
-    private boolean audioFeedbackButtonActive;
-    private boolean audioFeedbackShockActive;
-    private boolean tactileFeedbackActive;
     private int shockSensitivity;
-    private boolean longPressToMarkActive;
-    private boolean speedometerActive;
-    private int speedometerUnitsMeasure;
 
     private FragmentAllVideos allVideosFragment = null;
     private FragmentMarkedVideos markedVideosFragment = null;
@@ -127,28 +118,8 @@ public class GlobalState extends Application {
         this.activityPaused = activityPaused;
     }
 
-    public boolean isPreviewActive() {
-        return previewActive;
-    }
-
-    public void setPreviewActive(boolean previewActive) {
-        this.previewActive = previewActive;
-    }
-
-    public boolean isLoopModeActive() {
-        return loopModeActive;
-    }
-
-    public void setLoopModeActive(boolean loopModeActive) {
-        this.loopModeActive = loopModeActive;
-    }
-
     public int getCamcorderProfile() {
         return camcorderProfile;
-    }
-
-    public void setCamcorderProfile(int camcorderProfile) {
-        this.camcorderProfile = camcorderProfile;
     }
 
     public boolean isRecording() {
@@ -231,7 +202,7 @@ public class GlobalState extends Application {
 
     public CharSequence[] getSupportedVideoQualities() {
 
-        ArrayList<String> temp = new ArrayList<String>();
+        ArrayList<String> temp = new ArrayList<>();
 
         if (supports1080p)
             temp.add("1080p");
@@ -246,13 +217,12 @@ public class GlobalState extends Application {
         if (supportsQVGA)
             temp.add("QVGA");
 
-        CharSequence[] result = temp.toArray(new CharSequence[temp.size()]);
-        return result;
+        return temp.toArray(new CharSequence[temp.size()]);
     }
 
     public CharSequence[] getSupportedVideoQualitiesIntegers() {
 
-        ArrayList<String> temp = new ArrayList<String>();
+        ArrayList<String> temp = new ArrayList<>();
 
         if (supports1080p)
             temp.add(Integer.toString(CamcorderProfile.QUALITY_1080P));
@@ -300,59 +270,6 @@ public class GlobalState extends Application {
         videoLength = Integer.parseInt(temp);
     }
 
-    public boolean detectLoopModeActive() {
-        loopModeActive = SharedPreferencesHelper.checkBooleanValue(this, Constants.PREF_LOOP_ACTIVE,
-                Constants.PREF_LOOP_ACTIVE_DEFAULT);
-        return loopModeActive;
-    }
-
-    public boolean detectShockModeActive() {
-        shockModeActive = SharedPreferencesHelper.checkBooleanValue(this, Constants.PREF_SHOCK_ACTIVE, Constants
-                .PREF_SHOCK_ACTIVE_DEFAULT);
-        return shockModeActive;
-    }
-
-    public boolean detectAudioFeedbackButtonActive() {
-        audioFeedbackButtonActive = SharedPreferencesHelper.checkBooleanValue(this, Constants
-                .PREF_AUDIO_FEEDBACK_BUTTON, Constants.PREF_AUDIO_FEEDBACK_BUTTON_DEFAULT);
-        return audioFeedbackButtonActive;
-    }
-
-    public boolean detectAudioFeedbackShockActive() {
-        audioFeedbackShockActive = SharedPreferencesHelper.checkBooleanValue(this, Constants
-                .PREF_AUDIO_FEEDBACK_SHOCK, Constants.PREF_AUDIO_FEEDBACK_SHOCK_DEFAULT);
-        return audioFeedbackShockActive;
-    }
-
-    public boolean detectTactileFeedbackActive() {
-        tactileFeedbackActive = SharedPreferencesHelper.checkBooleanValue(this, Constants
-                .PREF_TACTILE_FEEDBACK, Constants.PREF_TACTILE_FEEDBACK_DEFAULT);
-        return tactileFeedbackActive;
-    }
-
-    public boolean detectLongPressToMarkActive() {
-        longPressToMarkActive = SharedPreferencesHelper.checkBooleanValue(this, Constants.PREF_LONG_PRESS,
-                Constants.PREF_LONG_PRESS_DEFAULT);
-        return longPressToMarkActive;
-    }
-
-    public boolean detectSpeedometerActive() {
-        speedometerActive = SharedPreferencesHelper.checkBooleanValue(this, Constants
-                .PREF_SPEEDOMETER_ACTIVE, Constants.PREF_SPEEDOMETER_ACTIVE_DEFAULT);
-        return speedometerActive;
-    }
-
-    public int detectSpeedometersUnitsMeasure() {
-        String temp = SharedPreferencesHelper.checkStringValue(this, Constants.PREF_SPEEDOMETER_UNITS, "kph");
-        if (temp.compareTo("kph") == 0) {
-            speedometerUnitsMeasure = Constants.SPEEDOMETER_KPH;
-        } else {
-            speedometerUnitsMeasure = Constants.SPEEDOMETER_MPH;
-        }
-
-        return speedometerUnitsMeasure;
-    }
-
     public FragmentAllVideos getAllVideosFragment() {
         return allVideosFragment;
     }
@@ -372,10 +289,6 @@ public class GlobalState extends Application {
 
     public File getMediaStorageDir() {
         return mediaStorageDir;
-    }
-
-    public void setMediaStorageDir(File mediaStorageDir) {
-        this.mediaStorageDir = mediaStorageDir;
     }
 
     public void setMustMarkFile(boolean b) {

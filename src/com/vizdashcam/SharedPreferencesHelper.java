@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.vizdashcam.utils.Constants;
+
 /**
  * Created by sebastian on 20/05/16.
  */
@@ -38,4 +40,50 @@ public class SharedPreferencesHelper {
 
         return prefs.getString(key, defaultValue);
     }
+
+    //region Individual Settings
+    public static boolean detectShockModeActive(Context context) {
+        return SharedPreferencesHelper.checkBooleanValue(context, Constants.PREF_SHOCK_ACTIVE, Constants
+                .PREF_SHOCK_ACTIVE_DEFAULT);
+    }
+
+    public static boolean detectLoopModeActive(Context context) {
+        return SharedPreferencesHelper.checkBooleanValue(context, Constants.PREF_LOOP_ACTIVE,
+                Constants.PREF_LOOP_ACTIVE_DEFAULT);
+    }
+
+    public static boolean detectAudioFeedbackButtonActive(Context context) {
+        return SharedPreferencesHelper.checkBooleanValue(context, Constants
+                .PREF_AUDIO_FEEDBACK_BUTTON, Constants.PREF_AUDIO_FEEDBACK_BUTTON_DEFAULT);
+    }
+
+    public static boolean detectAudioFeedbackShockActive(Context context) {
+        return SharedPreferencesHelper.checkBooleanValue(context, Constants
+                .PREF_AUDIO_FEEDBACK_SHOCK, Constants.PREF_AUDIO_FEEDBACK_SHOCK_DEFAULT);
+    }
+
+    public static boolean detectTactileFeedbackActive(Context context) {
+        return SharedPreferencesHelper.checkBooleanValue(context, Constants
+                .PREF_TACTILE_FEEDBACK, Constants.PREF_TACTILE_FEEDBACK_DEFAULT);
+    }
+
+    public static boolean detectLongPressToMarkActive(Context context) {
+        return SharedPreferencesHelper.checkBooleanValue(context, Constants.PREF_LONG_PRESS,
+                Constants.PREF_LONG_PRESS_DEFAULT);
+    }
+
+    public static boolean detectSpeedometerActive(Context context) {
+        return SharedPreferencesHelper.checkBooleanValue(context, Constants
+                .PREF_SPEEDOMETER_ACTIVE, Constants.PREF_SPEEDOMETER_ACTIVE_DEFAULT);
+    }
+
+    public static int detectSpeedometersUnitsMeasure(Context context) {
+        String temp = SharedPreferencesHelper.checkStringValue(context, Constants.PREF_SPEEDOMETER_UNITS, "kph");
+        if (temp.compareTo("kph") == 0) {
+            return Constants.SPEEDOMETER_KPH;
+        } else {
+            return Constants.SPEEDOMETER_MPH;
+        }
+    }
+    //endregion
 }

@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.vizdashcam.GlobalState;
 import com.vizdashcam.ServicePreview;
+import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.VideoItem;
 import com.vizdashcam.utils.Utils;
 import com.vizdashcam.utils.VideoDetector;
@@ -91,7 +92,7 @@ public class StorageManager extends Thread {
 						}
 					}
 				} else {
-					if (mAppState.detectLoopModeActive()) {
+					if (SharedPreferencesHelper.detectLoopModeActive(mAppState)) {
 						File[] dirEnt = mediaStorageDir.listFiles();
 						Arrays.sort(dirEnt, Utils.DATE_ORDER);
 

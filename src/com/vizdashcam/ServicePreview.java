@@ -381,7 +381,7 @@ public class ServicePreview extends Service implements
             @Override
             public boolean onLongClick(View arg0) {
                 if (mAppState.isRecording()
-                        && mAppState.detectLongPressToMarkActive()) {
+                        && SharedPreferencesHelper.detectLongPressToMarkActive(mAppState)) {
                     if (circleFeedback != null) {
                         circleFeedback.animate(mAppState
                                 .getLastFeedbackCoords());
@@ -397,7 +397,7 @@ public class ServicePreview extends Service implements
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (mAppState.isRecording()
-                        && mAppState.detectLongPressToMarkActive()) {
+                        && SharedPreferencesHelper.detectLongPressToMarkActive(mAppState)) {
                     final int action = event.getAction();
                     switch (action & MotionEvent.ACTION_MASK) {
                         case MotionEvent.ACTION_DOWN:
@@ -468,7 +468,7 @@ public class ServicePreview extends Service implements
 
         TextView tvShockActive = (TextView) fullLayout
                 .findViewById(R.id.tv_shock_toggled);
-        if (mAppState.detectShockModeActive()) {
+        if (SharedPreferencesHelper.detectShockModeActive(mAppState)) {
             tvShockActive.setVisibility(View.VISIBLE);
         } else {
             tvShockActive.setVisibility(View.GONE);
@@ -477,7 +477,7 @@ public class ServicePreview extends Service implements
 
         TextView tvLoopActive = (TextView) fullLayout
                 .findViewById(R.id.tv_loop_toggled);
-        if (mAppState.detectLoopModeActive()) {
+        if (SharedPreferencesHelper.detectLoopModeActive(mAppState)) {
             tvLoopActive.setVisibility(View.VISIBLE);
         } else {
             tvLoopActive.setVisibility(View.GONE);
@@ -622,7 +622,7 @@ public class ServicePreview extends Service implements
 
                         mStorageManager.start();
 
-                        if (mAppState.detectShockModeActive()) {
+                        if (SharedPreferencesHelper.detectShockModeActive(mAppState)) {
                             startListeningForShocks();
                         }
 
@@ -663,7 +663,7 @@ public class ServicePreview extends Service implements
                 mStorageManager.setStopped();
                 mStorageManager = null;
 
-                if (mAppState.detectShockModeActive()) {
+                if (SharedPreferencesHelper.detectShockModeActive(mAppState)) {
                     stopListeningForShocks();
                 }
 
@@ -809,7 +809,7 @@ public class ServicePreview extends Service implements
     }
 
     private void tactileFeedback() {
-        if (mAppState.detectTactileFeedbackActive()) {
+        if (SharedPreferencesHelper.detectTactileFeedbackActive(mAppState)) {
             Vibrator vibrator = (Vibrator) this
                     .getSystemService(Context.VIBRATOR_SERVICE);
             vibrator.vibrate(100);
@@ -817,7 +817,7 @@ public class ServicePreview extends Service implements
     }
 
     private void audioFeedback() {
-        if (mAppState.detectAudioFeedbackButtonActive()) {
+        if (SharedPreferencesHelper.detectAudioFeedbackButtonActive(mAppState)) {
             FeedbackSoundPlayer.playSound(FeedbackSoundPlayer.SOUND_BTN);
         }
     }
@@ -833,7 +833,7 @@ public class ServicePreview extends Service implements
     }
 
     private void requestLocationUpdates() {
-        if (mAppState.detectSpeedometerActive()) {
+        if (SharedPreferencesHelper.detectSpeedometerActive(mAppState)) {
             if (hasFineLocationPermission()) {
                 if (mSpeedListener != null) {
                     mSpeedListener.initView();

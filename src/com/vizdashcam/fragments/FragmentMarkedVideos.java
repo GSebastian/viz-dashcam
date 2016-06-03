@@ -26,6 +26,7 @@ import android.widget.ListView;
 import com.vizdashcam.AdapterVideoList;
 import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
+import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.VideoItem;
 import com.vizdashcam.activities.ActivityVideoItem;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
@@ -258,13 +259,13 @@ public class FragmentMarkedVideos extends Fragment {
 
 	private void audioFeedback() {
 
-		if (mAppState.detectAudioFeedbackButtonActive()) {
+		if (SharedPreferencesHelper.detectAudioFeedbackButtonActive(mAppState)) {
 			FeedbackSoundPlayer.playSound(FeedbackSoundPlayer.SOUND_BTN);
 		}
 	}
 
 	private void tactileFeedback() {
-		if (mAppState.detectTactileFeedbackActive()) {
+		if (SharedPreferencesHelper.detectTactileFeedbackActive(mAppState)) {
 			Vibrator vibrator = (Vibrator) getActivity().getSystemService(
 					Context.VIBRATOR_SERVICE);
 			vibrator.vibrate(100);
