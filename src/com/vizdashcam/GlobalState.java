@@ -52,14 +52,6 @@ public class GlobalState extends Application {
         }
     }
 
-    public void setLastFeedbackCoords(Pair<Float, Float> coords) {
-        this.lastFeedbackCoords = coords;
-    }
-
-    public Pair<Float, Float> getLastFeedbackCoords() {
-        return lastFeedbackCoords;
-    }
-
     public String getLastFilename() {
         return lastFilename;
     }

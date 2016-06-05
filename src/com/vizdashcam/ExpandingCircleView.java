@@ -8,7 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.view.View;
 
 import com.vizdashcam.utils.CameraUtils;
@@ -95,9 +94,9 @@ public class ExpandingCircleView extends View {
         }
     }
 
-    public void startAnimation(Pair<Float, Float> coords) {
-        this.x = coords.first;
-        this.y = coords.second;
+    public void startAnimation(float X, float Y) {
+        this.x = X;
+        this.y = Y;
         currentSizePX = startSizePX;
         currentAlpha = startAlpha;
 

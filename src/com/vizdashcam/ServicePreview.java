@@ -108,6 +108,9 @@ public class ServicePreview extends Service implements
 
     private StorageManager mStorageManager;
 
+    private float lastTouchX;
+    private float lastTouchY;
+
     @Override
     public IBinder onBind(Intent arg0) {
         return mMessenger.getBinder();
@@ -380,7 +383,7 @@ public class ServicePreview extends Service implements
                 if (mAppState.isRecording()
                         && SharedPreferencesHelper.detectLongPressToMarkActive(mAppState)) {
 
-                    expandingCircle.startAnimation(mAppState.getLastFeedbackCoords());
+                    expandingCircle.startAnimation(lastTouchX, lastTouchY);
 
                     rememberFileForMarking();
                 }
@@ -397,9 +400,8 @@ public class ServicePreview extends Service implements
                     final int action = event.getAction();
                     switch (action & MotionEvent.ACTION_MASK) {
                         case MotionEvent.ACTION_DOWN:
-                            final float x = event.getX();
-                            final float y = event.getY();
-                            mAppState.setLastFeedbackCoords(new Pair<>(x, y));
+                            lastTouchX = event.getX();
+                            lastTouchY = event.getY();
                             break;
                     }
                 }
