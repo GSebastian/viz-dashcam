@@ -17,7 +17,7 @@ public class GlobalState extends Application {
 
     private File mediaStorageDir;
 
-    private Pair<Integer, Integer> lastFeedbackCoords;
+    private Pair<Float, Float> lastFeedbackCoords;
 
     private String lastFilename;
     private String lastMarkedFilename;
@@ -52,11 +52,11 @@ public class GlobalState extends Application {
         }
     }
 
-    public void setLastFeedbackCoords(Pair<Integer, Integer> coords) {
+    public void setLastFeedbackCoords(Pair<Float, Float> coords) {
         this.lastFeedbackCoords = coords;
     }
 
-    public Pair<Integer, Integer> getLastFeedbackCoords() {
+    public Pair<Float, Float> getLastFeedbackCoords() {
         return lastFeedbackCoords;
     }
 

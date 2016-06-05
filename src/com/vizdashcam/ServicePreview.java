@@ -84,9 +84,9 @@ public class ServicePreview extends Service implements
     private ImageView ivRecord;
     private TextView tvSpeed;
     private RelativeLayout rlMenu;
-    private ViewCircleFeedback circleFeedback;
     private RelativeLayout rlMenuLeftColumn;
-    private TextureView txtvCameraPreview;
+    private TextureView cameraPreview;
+    private ExpandingCircleView expandingCircle;
 
     private Handler mHandler;
 
@@ -340,13 +340,13 @@ public class ServicePreview extends Service implements
         });
 
         initCameraPreview();
-        txtvCameraPreview = (TextureView) fullLayout.findViewById(R.id.txtvCameraPreview);
-        txtvCameraPreview.setOpaque(true);
-        txtvCameraPreview.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+        cameraPreview = (TextureView) fullLayout.findViewById(R.id.txtvCameraPreview);
+        cameraPreview.setOpaque(true);
+        cameraPreview.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
                 try {
-                    mServiceCamera.setPreviewTexture(txtvCameraPreview.getSurfaceTexture());
+                    mServiceCamera.setPreviewTexture(cameraPreview.getSurfaceTexture());
                     mServiceCamera.startPreview();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -372,18 +372,16 @@ public class ServicePreview extends Service implements
 
         FrameLayout flFeedback = (FrameLayout) fullLayout
                 .findViewById(R.id.fl_feedback);
-        circleFeedback = new ViewCircleFeedback(ServicePreview.this);
-        flFeedback.addView(circleFeedback);
+        final ExpandingCircleView expandingCircle = (ExpandingCircleView) flFeedback.findViewById(R.id.expandingCircle);
         flFeedback.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
             public boolean onLongClick(View arg0) {
                 if (mAppState.isRecording()
                         && SharedPreferencesHelper.detectLongPressToMarkActive(mAppState)) {
-                    if (circleFeedback != null) {
-                        circleFeedback.animate(mAppState
-                                .getLastFeedbackCoords());
-                    }
+
+                    expandingCircle.startAnimation(mAppState.getLastFeedbackCoords());
+
                     rememberFileForMarking();
                 }
                 return true;
@@ -399,11 +397,9 @@ public class ServicePreview extends Service implements
                     final int action = event.getAction();
                     switch (action & MotionEvent.ACTION_MASK) {
                         case MotionEvent.ACTION_DOWN:
-                            final int x = (int) event.getX();
-                            final int y = (int) event.getY();
-                            mAppState
-                                    .setLastFeedbackCoords(new Pair<Integer, Integer>(
-                                            x, y));
+                            final float x = event.getX();
+                            final float y = event.getY();
+                            mAppState.setLastFeedbackCoords(new Pair<>(x, y));
                             break;
                     }
                 }

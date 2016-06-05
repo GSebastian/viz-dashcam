@@ -15,7 +15,13 @@
         <FrameLayout
             android:id="@+id/fl_feedback"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent">
+
+            <com.vizdashcam.ExpandingCircleView
+                android:id="@+id/expandingCircle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/iv_record"
