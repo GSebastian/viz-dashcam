@@ -17,7 +17,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.vizdashcam.R;
-import com.vizdashcam.VideoItem;
 import com.vizdashcam.fragments.FragmentAllVideos;
 import com.vizdashcam.fragments.FragmentMarkedVideos;
 

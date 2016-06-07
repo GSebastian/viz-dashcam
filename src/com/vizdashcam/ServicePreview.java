@@ -743,7 +743,7 @@ public class ServicePreview extends Service implements
         if (dir.exists()) {
             File file = new File(dir, mAppState.getLastFilename());
 
-            broadcastAdd(new VideoItem(file));
+            broadcastUpdate(new VideoItem(file));
         }
     }
 
@@ -871,7 +871,7 @@ public class ServicePreview extends Service implements
         return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void broadcastAdd(VideoItem video) {
+    private void broadcastUpdate(VideoItem video) {
         Intent intent = new Intent(ActivityVideoList.ACTION_UPDATE);
         intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
