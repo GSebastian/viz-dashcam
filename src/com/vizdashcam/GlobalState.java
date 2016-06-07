@@ -3,7 +3,6 @@ package com.vizdashcam;
 import android.app.Application;
 import android.os.Environment;
 import android.util.Log;
-import android.util.Pair;
 
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 
@@ -15,15 +14,12 @@ public class GlobalState extends Application {
 
     private File mediaStorageDir;
 
-    private Pair<Float, Float> lastFeedbackCoords;
-
     private String lastFilename;
     private String lastMarkedFilename;
 
     private boolean recording = false;
     private boolean previewBound = false;
     private boolean activityPaused = false;
-//	private boolean splashscreenOpen = true;
 
     private boolean mustMarkFile;
 

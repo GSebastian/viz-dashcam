@@ -23,9 +23,7 @@ import com.vizdashcam.fragments.FragmentMarkedVideos;
 
 public class ActivityVideoList extends AppCompatActivity {
 
-    public static final String ACTION_ADD_VIDEO = "add-video";
-    public static final String ACTION_REMOVE_VIDEO = "remove-video";
-    public static final String ACTION_REMOVE_VIDEO_FROM_DATASET = "remove-video-from-dataset";
+    public static final String ACTION_UPDATE = "add-video";
     public static final String KEY_VIDEO = "video";
 
     private IntentFilter videoActionsFilter;
@@ -42,17 +40,9 @@ public class ActivityVideoList extends AppCompatActivity {
             FragmentMarkedVideos markedVids = (FragmentMarkedVideos) getSupportFragmentManager().findFragmentByTag
                     (makeFragmentName(R.id.pager, 1));
 
-            VideoItem video = (VideoItem) intent.getSerializableExtra(KEY_VIDEO);
-
-            if (intent.getAction().equals(ACTION_ADD_VIDEO)) {
-                if (allVids != null) allVids.addVideoToDataset(video);
-                if (markedVids != null) markedVids.addVideoToDataset(video);
-            } else if (intent.getAction().equals(ACTION_REMOVE_VIDEO)) {
-                if (allVids != null) allVids.removeVideo(video);
-                if (markedVids != null) markedVids.removeVideo(video);
-            } else if (intent.getAction().equals(ACTION_REMOVE_VIDEO_FROM_DATASET)) {
-                if (allVids != null) allVids.removeVideoFromDataset(video);
-                if (markedVids != null) markedVids.removeVideoFromDataset(video);
+            if (intent.getAction().equals(ACTION_UPDATE)) {
+                if (allVids != null) allVids.updateList();
+                if (markedVids != null) markedVids.updateList();
             }
         }
     };
@@ -66,9 +56,7 @@ public class ActivityVideoList extends AppCompatActivity {
         initViews();
 
         videoActionsFilter = new IntentFilter();
-        videoActionsFilter.addAction(ACTION_ADD_VIDEO);
-        videoActionsFilter.addAction(ACTION_REMOVE_VIDEO);
-        videoActionsFilter.addAction(ACTION_REMOVE_VIDEO_FROM_DATASET);
+        videoActionsFilter.addAction(ACTION_UPDATE);
     }
 
     private void findViews() {

@@ -1,8 +1,5 @@
 package com.vizdashcam.managers;
 
-import java.io.File;
-import java.util.Arrays;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
@@ -17,6 +14,9 @@ import com.vizdashcam.VideoItem;
 import com.vizdashcam.activities.ActivityVideoList;
 import com.vizdashcam.utils.Utils;
 import com.vizdashcam.utils.VideoDetector;
+
+import java.io.File;
+import java.util.Arrays;
 
 public class StorageManager extends Thread {
 
@@ -122,7 +122,7 @@ public class StorageManager extends Thread {
                                     @Override
                                     public void run() {
 
-                                        broadcastRemoveFromDataset(new VideoItem(toDelete));
+                                        broadcastUpdate();
                                     }
                                 });
 
@@ -144,21 +144,8 @@ public class StorageManager extends Thread {
         }
     }
 
-    private void broadcastRemove(VideoItem video) {
-        Intent intent = new Intent(ActivityVideoList.ACTION_REMOVE_VIDEO);
-        intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
-        LocalBroadcastManager.getInstance(mAppState).sendBroadcast(intent);
-    }
-
-    private void broadcastAdd(VideoItem video) {
-        Intent intent = new Intent(ActivityVideoList.ACTION_ADD_VIDEO);
-        intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
-        LocalBroadcastManager.getInstance(mAppState).sendBroadcast(intent);
-    }
-
-    private void broadcastRemoveFromDataset(VideoItem video) {
-        Intent intent = new Intent(ActivityVideoList.ACTION_REMOVE_VIDEO_FROM_DATASET);
-        intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
+    private void broadcastUpdate() {
+        Intent intent = new Intent(ActivityVideoList.ACTION_UPDATE);
         LocalBroadcastManager.getInstance(mAppState).sendBroadcast(intent);
     }
 }

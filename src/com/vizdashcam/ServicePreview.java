@@ -872,7 +872,7 @@ public class ServicePreview extends Service implements
     }
 
     private void broadcastAdd(VideoItem video) {
-        Intent intent = new Intent(ActivityVideoList.ACTION_ADD_VIDEO);
+        Intent intent = new Intent(ActivityVideoList.ACTION_UPDATE);
         intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
