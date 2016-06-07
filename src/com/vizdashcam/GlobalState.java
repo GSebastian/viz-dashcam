@@ -5,8 +5,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.util.Pair;
 
-import com.vizdashcam.fragments.FragmentAllVideos;
-import com.vizdashcam.fragments.FragmentMarkedVideos;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 
 import java.io.File;
@@ -26,9 +24,6 @@ public class GlobalState extends Application {
     private boolean previewBound = false;
     private boolean activityPaused = false;
 //	private boolean splashscreenOpen = true;
-
-    private FragmentAllVideos allVideosFragment = null;
-    private FragmentMarkedVideos markedVideosFragment = null;
 
     private boolean mustMarkFile;
 
@@ -93,23 +88,6 @@ public class GlobalState extends Application {
 
     public void setRecording(boolean recording) {
         this.recording = recording;
-    }
-
-    public FragmentAllVideos getAllVideosFragment() {
-        return allVideosFragment;
-    }
-
-    public void setAllVideosFragment(FragmentAllVideos allVideosFragment) {
-        this.allVideosFragment = allVideosFragment;
-    }
-
-    public FragmentMarkedVideos getMarkedVideosFragment() {
-        return markedVideosFragment;
-    }
-
-    public void setMarkedVideosFragment(
-            FragmentMarkedVideos markedVideosFragment) {
-        this.markedVideosFragment = markedVideosFragment;
     }
 
     public File getMediaStorageDir() {

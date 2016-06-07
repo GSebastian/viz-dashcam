@@ -1,18 +1,19 @@
 package com.vizdashcam;
 
+import android.media.MediaMetadataRetriever;
+import android.os.Environment;
+import android.util.Log;
+
+import org.joda.time.DateTime;
+
 import java.io.File;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.joda.time.DateTime;
-
-import android.media.MediaMetadataRetriever;
-import android.os.Environment;
-import android.util.Log;
-
-public class VideoItem {
+public class VideoItem implements Serializable {
 
 	public static final String TAG = "VideoItem";
 	public static final String EXTENSION_MARKED_FILE = "_M";
@@ -126,7 +127,7 @@ public class VideoItem {
 	}
 
 	public void setMarked(boolean value) {
-		if (value == true) {
+		if (value) {
 			if (!isMarked()) {
 				StringBuilder stringBuilder = new StringBuilder(mName);
 				int lastPointPosition = mName.lastIndexOf(".");

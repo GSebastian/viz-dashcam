@@ -1,34 +1,56 @@
 package com.vizdashcam.activities;
 
-import java.lang.reflect.Method;
-
-import com.vizdashcam.GlobalState;
-
-import com.vizdashcam.R;
-import com.vizdashcam.fragments.FragmentAllVideos;
-import com.vizdashcam.fragments.FragmentMarkedVideos;
-
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.ActionBar.TabListener;
-import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.vizdashcam.R;
+import com.vizdashcam.fragments.FragmentAllVideos;
+import com.vizdashcam.fragments.FragmentMarkedVideos;
+
 public class ActivityVideoList extends AppCompatActivity { //implements TabListener {
+
+    public static final String ACTION_ADD_VIDEO = "add-video";
+    public static final String ACTION_REMOVE_VIDEO = "remove-video";
+    public static final String ACTION_REMOVE_VIDEO_FROM_DATASET = "remove-video-from-dataset";
+    public static final String KEY_VIDEO = "video";
+
+    private IntentFilter videoActionsFilter;
 
     Toolbar toolbar;
     ViewPager viewPager;
     TabLayout tabLayout;
+
+    BroadcastReceiver videoActionsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            FragmentAllVideos allVids = (FragmentAllVideos) getSupportFragmentManager().findFragmentByTag
+                    (makeFragmentName(R.id.pager, 0));
+            FragmentMarkedVideos markedVids = (FragmentMarkedVideos) getSupportFragmentManager().findFragmentByTag
+                    (makeFragmentName(R.id.pager, 1));
+
+            if (intent.getAction().equals(ACTION_ADD_VIDEO)) {
+
+            } else if (intent.getAction().equals(ACTION_REMOVE_VIDEO)) {
+
+            } else if (intent.getAction().equals(ACTION_REMOVE_VIDEO_FROM_DATASET)) {
+
+            }
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -37,6 +59,11 @@ public class ActivityVideoList extends AppCompatActivity { //implements TabListe
 
         findViews();
         initViews();
+
+        videoActionsFilter = new IntentFilter();
+        videoActionsFilter.addAction(ACTION_ADD_VIDEO);
+        videoActionsFilter.addAction(ACTION_REMOVE_VIDEO);
+        videoActionsFilter.addAction(ACTION_REMOVE_VIDEO_FROM_DATASET);
     }
 
     private void findViews() {
@@ -57,6 +84,24 @@ public class ActivityVideoList extends AppCompatActivity { //implements TabListe
 
         viewPager.setAdapter(new VideoListAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(videoActionsReceiver, videoActionsFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(videoActionsReceiver);
+    }
+
+    private static String makeFragmentName(@IdRes int viewPagerId, int index) {
+        return "android:switcher:" + viewPagerId + ":" + index;
     }
 }
 
