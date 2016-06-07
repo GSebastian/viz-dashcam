@@ -178,6 +178,8 @@ public class VideoItemActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem arg0) {
 
+                videoItem.getFile().delete();
+
                 tactileFeedback();
                 audioFeedback();
 
