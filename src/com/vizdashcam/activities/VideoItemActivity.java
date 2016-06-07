@@ -26,8 +26,6 @@ import com.vizdashcam.VideoItem;
 import com.vizdashcam.VideoPreview;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 
-import java.io.File;
-
 public class VideoItemActivity extends AppCompatActivity {
 
     public static final String TAG = "VideoItemActivity";
@@ -45,14 +43,7 @@ public class VideoItemActivity extends AppCompatActivity {
     Button btnDelete;
     Button btnUpload;
 
-    boolean isVideoMarked;
-    String videoItemName;
-
     GlobalState appState;
-
-    public static final int RESULT_BECAME_MARKED = 5;
-    public static final int RESULT_BECAME_NORMAL = 6;
-    public static final int RESULT_DELETE = 7;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,17 +53,7 @@ public class VideoItemActivity extends AppCompatActivity {
         appState = (GlobalState) getApplicationContext();
 
         Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            File value = (File) extras.getSerializable(KEY_VIDEO_ITEM);
-            videoItem = new VideoItem(value);
-
-            if (videoItem.isMarked())
-                isVideoMarked = true;
-            else
-                isVideoMarked = false;
-
-            videoItemName = videoItem.getName();
-        }
+        if (extras != null) videoItem = (VideoItem) extras.getSerializable(KEY_VIDEO_ITEM);
 
         findViews();
         initViews();
@@ -134,32 +115,28 @@ public class VideoItemActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (!isVideoMarked) {
-                    isVideoMarked = true;
-                    markVideoTitle();
-                    tvTitle.setText(videoItemName);
-                    getSupportActionBar().setTitle(videoItemName);
+                if (!videoItem.isMarked()) {
+
+                    String newVideoTitle = videoItem.setMarked(true);
+                    tvTitle.setText(newVideoTitle);
+                    getSupportActionBar().setTitle(newVideoTitle);
 
                     FeedbackSoundPlayer
                             .playSound(FeedbackSoundPlayer.SOUND_MARKED);
                     llShock.setAlpha(1f);
                     Toast.makeText(VideoItemActivity.this, "File marked!",
                             Toast.LENGTH_SHORT).show();
-
-                    setResult(RESULT_BECAME_MARKED);
                 } else {
-                    isVideoMarked = false;
-                    unmarkVideoTitle();
-                    tvTitle.setText(videoItemName);
-                    getSupportActionBar().setTitle(videoItemName);
+
+                    String newVideoTitle = videoItem.setMarked(false);
+                    tvTitle.setText(newVideoTitle);
+                    getSupportActionBar().setTitle(newVideoTitle);
 
                     FeedbackSoundPlayer
                             .playSound(FeedbackSoundPlayer.SOUND_MARKED);
                     llShock.setAlpha(0.1f);
                     Toast.makeText(VideoItemActivity.this, "File unmarked!",
                             Toast.LENGTH_SHORT).show();
-
-                    setResult(RESULT_BECAME_NORMAL);
                 }
             }
         });
@@ -204,7 +181,6 @@ public class VideoItemActivity extends AppCompatActivity {
                 tactileFeedback();
                 audioFeedback();
 
-                setResult(RESULT_DELETE);
                 finish();
 
                 return true;
@@ -212,27 +188,6 @@ public class VideoItemActivity extends AppCompatActivity {
         });
 
         return true;
-    }
-
-    private void unmarkVideoTitle() {
-        StringBuilder stringBuilder = new StringBuilder(videoItemName);
-        int lastPointPosition = videoItemName.lastIndexOf(".");
-        if (lastPointPosition != -1) {
-            stringBuilder.delete(lastPointPosition
-                            - VideoItem.EXTENSION_MARKED_FILE.length(),
-                    lastPointPosition);
-            videoItemName = stringBuilder.toString();
-        }
-    }
-
-    private void markVideoTitle() {
-        StringBuilder stringBuilder = new StringBuilder(videoItemName);
-        int lastPointPosition = videoItemName.lastIndexOf(".");
-        if (lastPointPosition != -1) {
-            stringBuilder.insert(lastPointPosition,
-                    VideoItem.EXTENSION_MARKED_FILE);
-            videoItemName = stringBuilder.toString();
-        }
     }
 
     private void tactileFeedback() {

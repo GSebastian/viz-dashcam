@@ -2,7 +2,6 @@ package com.vizdashcam;
 
 import android.media.MediaMetadataRetriever;
 import android.os.Environment;
-import android.util.Log;
 
 import org.joda.time.DateTime;
 
@@ -125,7 +124,8 @@ public class VideoItem implements Serializable {
 		return false;
 	}
 
-	public void setMarked(boolean value) {
+	public String setMarked(boolean value) {
+
 		if (value) {
 			if (!isMarked()) {
 				StringBuilder stringBuilder = new StringBuilder(name);
@@ -137,11 +137,14 @@ public class VideoItem implements Serializable {
 					File from = new File(mediaStorageDir, name);
 					File to = new File(mediaStorageDir, markedFileName);
 					name = markedFileName;
+
 					if (from.exists())
 						from.renameTo(to);
 					file = to;
 					path = to.getPath();
 					isMarked = true;
+
+					return name;
 				}
 			}
 		} else if (isMarked()) {
@@ -153,14 +156,18 @@ public class VideoItem implements Serializable {
 				File from = new File(mediaStorageDir, name);
 				File to = new File(mediaStorageDir, unmarkedFileName);
 				name = unmarkedFileName;
-				Log.e(TAG, "New name: " + name);
+
 				if (from.exists())
 					from.renameTo(to);
 				file = to;
 				path = to.getPath();
 				isMarked = false;
+
+				return name;
 			}
 		}
+
+		return name;
 	}
 
 	@Override
