@@ -1,7 +1,5 @@
 package com.vizdashcam.activities;
 
-import java.io.File;
-
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +26,9 @@ import com.vizdashcam.VideoItem;
 import com.vizdashcam.VideoPreview;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 
-public class ActivityVideoItem extends AppCompatActivity {
+import java.io.File;
+
+public class VideoItemActivity extends AppCompatActivity {
 
     public static final String TAG = "VideoItemActivity";
     public static final String KEY_VIDEO_ITEM = "video_item";
@@ -113,7 +113,7 @@ public class ActivityVideoItem extends AppCompatActivity {
                     intent.setDataAndType(videoUri, "video/*");
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
-                    Toast.makeText(ActivityVideoItem.this,
+                    Toast.makeText(VideoItemActivity.this,
                             "No video player detected", Toast.LENGTH_LONG)
                             .show();
                 }
@@ -143,7 +143,7 @@ public class ActivityVideoItem extends AppCompatActivity {
                     FeedbackSoundPlayer
                             .playSound(FeedbackSoundPlayer.SOUND_MARKED);
                     llShock.setAlpha(1f);
-                    Toast.makeText(ActivityVideoItem.this, "File marked!",
+                    Toast.makeText(VideoItemActivity.this, "File marked!",
                             Toast.LENGTH_SHORT).show();
 
                     setResult(RESULT_BECAME_MARKED);
@@ -156,7 +156,7 @@ public class ActivityVideoItem extends AppCompatActivity {
                     FeedbackSoundPlayer
                             .playSound(FeedbackSoundPlayer.SOUND_MARKED);
                     llShock.setAlpha(0.1f);
-                    Toast.makeText(ActivityVideoItem.this, "File unmarked!",
+                    Toast.makeText(VideoItemActivity.this, "File unmarked!",
                             Toast.LENGTH_SHORT).show();
 
                     setResult(RESULT_BECAME_NORMAL);

@@ -1,10 +1,5 @@
 package com.vizdashcam;
 
-import java.util.Collections;
-import java.util.Vector;
-
-import org.joda.time.DateTime;
-
 import android.content.Context;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -16,29 +11,34 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class AdapterVideoList extends ArrayAdapter<VideoItem> {
+import org.joda.time.DateTime;
+
+import java.util.Collections;
+import java.util.Vector;
+
+public class VideoListAdapter extends ArrayAdapter<VideoItem> {
 
 	LayoutInflater inflater;
 
-	public static final String TAG = "VideoListAdapter";
+	public static final String TAG = "VideoListFragmentAdapter";
 
 	public static final int NORMAL_TYPE = 0;
 	public static final int WITH_DATE_TYPE = 1;
 
-	Vector<VideoItem> mDirectoryEntries = null;
-	SparseBooleanArray mSelectedItemsIds;
+	Vector<VideoItem> directoryEntries = null;
+	SparseBooleanArray selectedItemsIds;
 
-	public AdapterVideoList(Context context, int textViewResourceId) {
+	public VideoListAdapter(Context context, int textViewResourceId) {
 		super(context, textViewResourceId);
 		inflater = LayoutInflater.from(getContext());
 	}
 
-	public AdapterVideoList(Context context, int resource,
-			Vector<VideoItem> items) {
+	public VideoListAdapter(Context context, int resource,
+							Vector<VideoItem> items) {
 		super(context, resource, items);
 		inflater = LayoutInflater.from(getContext());
-		mDirectoryEntries = items;
-		mSelectedItemsIds = new SparseBooleanArray();
+		directoryEntries = items;
+		selectedItemsIds = new SparseBooleanArray();
 	}
 
 	@Override
@@ -125,13 +125,13 @@ public class AdapterVideoList extends ArrayAdapter<VideoItem> {
 	}
 
 	private void groupEntriesByDate() {
-		if (mDirectoryEntries.size() > 0) {
-			Collections.sort(mDirectoryEntries,
+		if (directoryEntries.size() > 0) {
+			Collections.sort(directoryEntries,
 					VideoItem.VideoDateComparatorDesc);
 
-			if (mDirectoryEntries.size() > 1) {
-				VideoItem firstVid = mDirectoryEntries.get(0);
-				VideoItem secondVid = mDirectoryEntries.get(1);
+			if (directoryEntries.size() > 1) {
+				VideoItem firstVid = directoryEntries.get(0);
+				VideoItem secondVid = directoryEntries.get(1);
 				String firstVidName = firstVid.getName();
 				String secondVidName = secondVid.getName();
 				try {
@@ -155,9 +155,9 @@ public class AdapterVideoList extends ArrayAdapter<VideoItem> {
 					if (firstVidName.compareTo(secondVidName) == 0) {
 						if (Float.parseFloat(firstVid.getSize()) > Float
 								.parseFloat(secondVid.getSize()))
-							mDirectoryEntries.remove(1);
+							directoryEntries.remove(1);
 						else
-							mDirectoryEntries.remove(0);
+							directoryEntries.remove(0);
 					}
 				} catch (IndexOutOfBoundsException e) {
 					Log.e(TAG,
@@ -166,10 +166,10 @@ public class AdapterVideoList extends ArrayAdapter<VideoItem> {
 				}
 			}
 
-			mDirectoryEntries.get(0).setShowDate(true);
-			for (int i = 0; i < mDirectoryEntries.size() - 1; i++) {
-				VideoItem first = mDirectoryEntries.get(i);
-				VideoItem second = mDirectoryEntries.get(i + 1);
+			directoryEntries.get(0).setShowDate(true);
+			for (int i = 0; i < directoryEntries.size() - 1; i++) {
+				VideoItem first = directoryEntries.get(i);
+				VideoItem second = directoryEntries.get(i + 1);
 				second.setShowDate(false);
 
 				DateTime date1 = first.getDate();
@@ -197,39 +197,39 @@ public class AdapterVideoList extends ArrayAdapter<VideoItem> {
 	@Override
 	public void remove(VideoItem object) {
 		super.remove(object);
-		if (mDirectoryEntries != null) {
-			mDirectoryEntries.remove(object);
+		if (directoryEntries != null) {
+			directoryEntries.remove(object);
 			notifyDataSetChanged();
 			object.getFile().delete();
 		}
 	}
 
 	public void removeSelection() {
-		mSelectedItemsIds.clear();
+		selectedItemsIds.clear();
 		notifyDataSetChanged();
 	}
 
 	public Vector<VideoItem> getDataset() {
-		return mDirectoryEntries;
+		return directoryEntries;
 	}
 
 	public void toggleSelection(int position) {
-		selectView(position, !mSelectedItemsIds.get(position));
+		selectView(position, !selectedItemsIds.get(position));
 	}
 
 	public void selectView(int position, boolean value) {
 		if (value)
-			mSelectedItemsIds.put(position, value);
+			selectedItemsIds.put(position, value);
 		else
-			mSelectedItemsIds.delete(position);
+			selectedItemsIds.delete(position);
 		notifyDataSetChanged();
 	}
 
 	public int getSelectedCount() {
-		return mSelectedItemsIds.size();
+		return selectedItemsIds.size();
 	}
 
 	public SparseBooleanArray getSelectedIds() {
-		return mSelectedItemsIds;
+		return selectedItemsIds;
 	}
 }

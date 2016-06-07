@@ -44,10 +44,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.vizdashcam.activities.ActivityMain;
-import com.vizdashcam.activities.ActivitySettings;
-import com.vizdashcam.activities.ActivityVideoList;
-import com.vizdashcam.activities.DialogStorage;
+import com.vizdashcam.activities.MainActivity;
+import com.vizdashcam.activities.SettingsActivity;
+import com.vizdashcam.activities.VideoListActivity;
+import com.vizdashcam.activities.StorageDialog;
 import com.vizdashcam.managers.AccelerometerManager;
 import com.vizdashcam.managers.StorageManager;
 import com.vizdashcam.utils.CameraUtils;
@@ -69,14 +69,14 @@ public class ServicePreview extends Service implements
 
     public static final String ACTION_FOREGROUND = "com.vizdashcam.PrevievService.FOREGROUND";
 
-    private GlobalState mAppState;
-    private WindowManager mWindowManager;
+    private GlobalState appState;
+    private WindowManager windowManager;
 
-    private Camera mServiceCamera;
-    private MediaRecorder mMediaRecorder;
+    private Camera camera;
+    private MediaRecorder mediaRecorder;
 
-    private LocationManager mLocationManager;
-    private SpeedListener mSpeedListener;
+    private LocationManager locationManager;
+    private SpeedListener speedListener;
 
     private ViewGroup fullLayout;
     private ImageView ivRecord;
@@ -84,7 +84,6 @@ public class ServicePreview extends Service implements
     private RelativeLayout rlMenu;
     private RelativeLayout rlMenuLeftColumn;
     private TextureView cameraPreview;
-    private ExpandingCircleView expandingCircle;
 
     private Handler mHandler;
 
@@ -118,22 +117,22 @@ public class ServicePreview extends Service implements
     public void onCreate() {
         super.onCreate();
 
-        mAppState = (GlobalState) getApplicationContext();
+        appState = (GlobalState) getApplicationContext();
 
         mMessenger = new Messenger(new PreviewIncomingHandler(this));
 
-        mWindowManager = (WindowManager) this
+        windowManager = (WindowManager) this
                 .getSystemService(Context.WINDOW_SERVICE);
 
-        mLocationManager = (LocationManager) this
+        locationManager = (LocationManager) this
                 .getSystemService(LOCATION_SERVICE);
 
         initUI();
 
         mHandler = new Handler();
 
-        mMediaRecorder = new MediaRecorder();
-        mMediaRecorder.setOnInfoListener(this);
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setOnInfoListener(this);
 
         startForeground(previewNotificationId, getPreviewNotification());
     }
@@ -142,17 +141,17 @@ public class ServicePreview extends Service implements
     public void onDestroy() {
         super.onDestroy();
 
-        if (mServiceCamera != null) {
-            if (mAppState.isRecording()) {
+        if (camera != null) {
+            if (appState.isRecording()) {
                 stopRecording();
             }
 
-            mServiceCamera.stopPreview();
-            mServiceCamera.setPreviewCallback(null);
-            mServiceCamera.release();
-            mServiceCamera = null;
+            camera.stopPreview();
+            camera.setPreviewCallback(null);
+            camera.release();
+            camera = null;
         }
-        mWindowManager.removeView(fullLayout);
+        windowManager.removeView(fullLayout);
         removeLocationUpdates();
     }
 
@@ -224,8 +223,8 @@ public class ServicePreview extends Service implements
 
     private void initCameraPreview() {
         try {
-            mServiceCamera = Camera.open(CameraInfo.CAMERA_FACING_BACK);
-            if (mServiceCamera != null) {
+            camera = Camera.open(CameraInfo.CAMERA_FACING_BACK);
+            if (camera != null) {
 
                 setCameraParams();
             }
@@ -235,7 +234,7 @@ public class ServicePreview extends Service implements
     }
 
     private void setCameraParams() {
-        Camera.Parameters parameters = mServiceCamera.getParameters();
+        Camera.Parameters parameters = camera.getParameters();
         parameters.setRecordingHint(true);
 
         Camera.Size previewSize = CameraUtils.getOptimalPreviewResolution(
@@ -244,7 +243,7 @@ public class ServicePreview extends Service implements
 
         parameters.setPreviewSize(previewSize.width, previewSize.height);
 
-        mServiceCamera.setParameters(parameters);
+        camera.setParameters(parameters);
     }
 
     private void initUI() {
@@ -273,7 +272,7 @@ public class ServicePreview extends Service implements
             @Override
             public void onClick(View arg0) {
                 Intent intent = new Intent(ServicePreview.this,
-                        ActivityVideoList.class);
+                        VideoListActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
@@ -285,7 +284,7 @@ public class ServicePreview extends Service implements
             @Override
             public void onClick(View arg0) {
                 Intent intent = new Intent(ServicePreview.this,
-                        ActivitySettings.class);
+                        SettingsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
@@ -315,7 +314,7 @@ public class ServicePreview extends Service implements
             public void onClick(View v) {
                 tactileFeedback();
 
-                if (!mAppState.isRecording()) {
+                if (!appState.isRecording()) {
                     startRecording();
                 } else {
                     stopRecording();
@@ -347,8 +346,8 @@ public class ServicePreview extends Service implements
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
                 try {
-                    mServiceCamera.setPreviewTexture(cameraPreview.getSurfaceTexture());
-                    mServiceCamera.startPreview();
+                    camera.setPreviewTexture(cameraPreview.getSurfaceTexture());
+                    camera.startPreview();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -378,8 +377,8 @@ public class ServicePreview extends Service implements
 
             @Override
             public boolean onLongClick(View arg0) {
-                if (mAppState.isRecording()
-                        && SharedPreferencesHelper.detectLongPressToMarkActive(mAppState)) {
+                if (appState.isRecording()
+                        && SharedPreferencesHelper.detectLongPressToMarkActive(appState)) {
 
                     expandingCircle.startAnimation(lastTouchX, lastTouchY);
 
@@ -393,8 +392,8 @@ public class ServicePreview extends Service implements
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (mAppState.isRecording()
-                        && SharedPreferencesHelper.detectLongPressToMarkActive(mAppState)) {
+                if (appState.isRecording()
+                        && SharedPreferencesHelper.detectLongPressToMarkActive(appState)) {
                     final int action = event.getAction();
                     switch (action & MotionEvent.ACTION_MASK) {
                         case MotionEvent.ACTION_DOWN:
@@ -426,7 +425,7 @@ public class ServicePreview extends Service implements
                 audioFeedback();
 
                 Intent intent = new Intent(ServicePreview.this,
-                        ActivitySettings.class);
+                        SettingsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
@@ -456,7 +455,7 @@ public class ServicePreview extends Service implements
         }
 
         TextView tvLength = (TextView) fullLayout.findViewById(R.id.tv_length);
-        int ms = SharedPreferencesHelper.detectVideoLength(mAppState);
+        int ms = SharedPreferencesHelper.detectVideoLength(appState);
         int s = ms / 1000;
         if (s < 60) {
             tvLength.setText(s + "SEC");
@@ -468,7 +467,7 @@ public class ServicePreview extends Service implements
 
         TextView tvShockActive = (TextView) fullLayout
                 .findViewById(R.id.tv_shock_toggled);
-        if (SharedPreferencesHelper.detectShockModeActive(mAppState)) {
+        if (SharedPreferencesHelper.detectShockModeActive(appState)) {
             tvShockActive.setVisibility(View.VISIBLE);
         } else {
             tvShockActive.setVisibility(View.GONE);
@@ -477,14 +476,14 @@ public class ServicePreview extends Service implements
 
         TextView tvLoopActive = (TextView) fullLayout
                 .findViewById(R.id.tv_loop_toggled);
-        if (SharedPreferencesHelper.detectLoopModeActive(mAppState)) {
+        if (SharedPreferencesHelper.detectLoopModeActive(appState)) {
             tvLoopActive.setVisibility(View.VISIBLE);
         } else {
             tvLoopActive.setVisibility(View.GONE);
         }
         tvLoopActive.setOnClickListener(togglesListener);
 
-        mWindowManager.addView(fullLayout, mLayoutParamsFull);
+        windowManager.addView(fullLayout, mLayoutParamsFull);
     }
 
     private void initLayoutParams() {
@@ -513,12 +512,12 @@ public class ServicePreview extends Service implements
 
     public void adjustPreview() {
 
-        if (mAppState.isActivityPaused()) {
-            mWindowManager
+        if (appState.isActivityPaused()) {
+            windowManager
                     .updateViewLayout(fullLayout, mLayoutParamsMinimised);
             removeLocationUpdates();
         } else {
-            mWindowManager.updateViewLayout(fullLayout, mLayoutParamsFull);
+            windowManager.updateViewLayout(fullLayout, mLayoutParamsFull);
             requestLocationUpdates();
         }
     }
@@ -538,22 +537,22 @@ public class ServicePreview extends Service implements
 
     private boolean configureVideoRecorder() {
         try {
-            mServiceCamera.unlock();
-            mMediaRecorder.setCamera(mServiceCamera);
+            camera.unlock();
+            mediaRecorder.setCamera(camera);
 
             if (hasAudioRecordingPermission())
-                mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+                mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 
-            mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+            mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
-            mMediaRecorder.setMaxDuration(SharedPreferencesHelper.detectVideoLength(mAppState));
+            mediaRecorder.setMaxDuration(SharedPreferencesHelper.detectVideoLength(appState));
 
-            mMediaRecorder.setProfile(CamcorderProfile.get(CameraUtils.getCamcorderProfile(this)));
+            mediaRecorder.setProfile(CamcorderProfile.get(CameraUtils.getCamcorderProfile(this)));
 
             File outputFile = Utils.getOutputMediaFile();
             String outputFileName = outputFile.toString();
-            mMediaRecorder.setOutputFile(outputFileName);
-            mAppState.setLastFilename(outputFile.getName());
+            mediaRecorder.setOutputFile(outputFileName);
+            appState.setLastFilename(outputFile.getName());
 
         } catch (IllegalStateException ise) {
             Log.e(TAG,
@@ -577,7 +576,7 @@ public class ServicePreview extends Service implements
         if (configureVideoRecorder()) {
 
             try {
-                mMediaRecorder.prepare();
+                mediaRecorder.prepare();
             } catch (IllegalStateException e) {
                 Log.e(TAG, "IllegalStateException preparing MediaRecorder: "
                         + e.getMessage());
@@ -598,15 +597,15 @@ public class ServicePreview extends Service implements
     }
 
     private void resetMediaRecorder() {
-        if (mMediaRecorder != null) {
-            mMediaRecorder.reset();
+        if (mediaRecorder != null) {
+            mediaRecorder.reset();
         }
     }
 
     public void startRecording() {
-        if (mServiceCamera != null) {
+        if (camera != null) {
 
-            if (!mAppState.isRecording()) {
+            if (!appState.isRecording()) {
 
                 mStorageManager = new StorageManager(getApplicationContext(),
                         this, mHandler);
@@ -616,14 +615,14 @@ public class ServicePreview extends Service implements
                     if (prepareVideoRecorder()) {
 
                         disableRecordButton();
-                        mAppState.setRecording(true);
-                        mAppState.setMustMarkFile(false);
+                        appState.setRecording(true);
+                        appState.setMustMarkFile(false);
 
-                        mMediaRecorder.start();
+                        mediaRecorder.start();
 
                         mStorageManager.start();
 
-                        if (SharedPreferencesHelper.detectShockModeActive(mAppState)) {
+                        if (SharedPreferencesHelper.detectShockModeActive(appState)) {
                             startListeningForShocks();
                         }
 
@@ -640,21 +639,21 @@ public class ServicePreview extends Service implements
     }
 
     public void stopRecording() {
-        if (mServiceCamera != null) {
-            if (mAppState.isRecording()) {
+        if (camera != null) {
+            if (appState.isRecording()) {
                 disableRecordButton();
-                mAppState.setRecording(false);
+                appState.setRecording(false);
 
                 try {
-                    mMediaRecorder.stop();
-                    mMediaRecorder.reset();
+                    mediaRecorder.stop();
+                    mediaRecorder.reset();
                 } catch (RuntimeException re) {
                     Log.e(TAG, "RuntimeException when stopping MediaRecorder: "
                             + re.getMessage());
                 }
 
                 try {
-                    mServiceCamera.lock();
+                    camera.lock();
                 } catch (RuntimeException re) {
                     Log.e(TAG,
                             "RuntimeException when locking camera: "
@@ -664,7 +663,7 @@ public class ServicePreview extends Service implements
                 mStorageManager.setStopped();
                 mStorageManager = null;
 
-                if (SharedPreferencesHelper.detectShockModeActive(mAppState)) {
+                if (SharedPreferencesHelper.detectShockModeActive(appState)) {
                     stopListeningForShocks();
                 }
 
@@ -680,7 +679,7 @@ public class ServicePreview extends Service implements
     private Notification getPreviewNotification() {
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, ActivityMain.class), 0);
+                new Intent(this, MainActivity.class), 0);
 
         Notification.Builder builder = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_notify).setContentTitle("viz")
@@ -702,7 +701,7 @@ public class ServicePreview extends Service implements
                     public void onClick(View v) {
                         tactileFeedback();
 
-                        if (!mAppState.isRecording()) {
+                        if (!appState.isRecording()) {
                             startRecording();
                         } else {
                             stopRecording();
@@ -720,16 +719,16 @@ public class ServicePreview extends Service implements
 
             disableRecordButton();
 
-            mMediaRecorder.stop();
-            mMediaRecorder.reset();
+            mediaRecorder.stop();
+            mediaRecorder.reset();
 
             markFileByRenaming();
             updateFragments();
-            mAppState.setMustMarkFile(false);
+            appState.setMustMarkFile(false);
 
-            if (mServiceCamera != null) {
+            if (camera != null) {
                 if (prepareVideoRecorder()) {
-                    mMediaRecorder.start();
+                    mediaRecorder.start();
                 }
             } else {
                 ivRecord.setImageResource(R.drawable.btn_not_recording);
@@ -739,19 +738,19 @@ public class ServicePreview extends Service implements
 
     private void updateFragments() {
 
-        File dir = mAppState.getMediaStorageDir();
+        File dir = appState.getMediaStorageDir();
         if (dir.exists()) {
-            File file = new File(dir, mAppState.getLastFilename());
+            File file = new File(dir, appState.getLastFilename());
 
             broadcastUpdate(new VideoItem(file));
         }
     }
 
     private void markFileByRenaming() {
-        if (mAppState.getMustMarkFile()) {
-            File dir = mAppState.getMediaStorageDir();
+        if (appState.getMustMarkFile()) {
+            File dir = appState.getMediaStorageDir();
             if (dir.exists()) {
-                String lastFileName = mAppState.getLastFilename();
+                String lastFileName = appState.getLastFilename();
                 StringBuilder stringBuilder = new StringBuilder(lastFileName);
                 int lastPointPosition = lastFileName.lastIndexOf(".");
                 if (lastPointPosition != -1) {
@@ -763,21 +762,21 @@ public class ServicePreview extends Service implements
                     if (from.exists())
                         from.renameTo(to);
 
-                    mAppState.setLastFilename(markedFileName);
-                    mAppState.setLastMarkedFilename(markedFileName);
+                    appState.setLastFilename(markedFileName);
+                    appState.setLastMarkedFilename(markedFileName);
                 }
             }
         }
     }
 
     public void displayStorageDialog() {
-        if (!mAppState.isActivityPaused()) {
+        if (!appState.isActivityPaused()) {
             mHandler.post(new Runnable() {
 
                 @Override
                 public void run() {
                     Intent intent = new Intent(getApplicationContext(),
-                            DialogStorage.class);
+                            StorageDialog.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
@@ -793,13 +792,13 @@ public class ServicePreview extends Service implements
     }
 
     private void startListeningForShocks() {
-        if (AccelerometerManager.isSupported(mAppState)) {
-            AccelerometerManager.startListening(new ShockListener(mAppState));
+        if (AccelerometerManager.isSupported(appState)) {
+            AccelerometerManager.startListening(new ShockListener(appState));
         }
     }
 
     private void tactileFeedback() {
-        if (SharedPreferencesHelper.detectTactileFeedbackActive(mAppState)) {
+        if (SharedPreferencesHelper.detectTactileFeedbackActive(appState)) {
             Vibrator vibrator = (Vibrator) this
                     .getSystemService(Context.VIBRATOR_SERVICE);
             vibrator.vibrate(100);
@@ -807,33 +806,33 @@ public class ServicePreview extends Service implements
     }
 
     private void audioFeedback() {
-        if (SharedPreferencesHelper.detectAudioFeedbackButtonActive(mAppState)) {
+        if (SharedPreferencesHelper.detectAudioFeedbackButtonActive(appState)) {
             FeedbackSoundPlayer.playSound(FeedbackSoundPlayer.SOUND_BTN);
         }
     }
 
     private void rememberFileForMarking() {
-        String lastGlobalFilename = mAppState.getLastFilename();
-        String lastMarkedFilename = mAppState.getLastMarkedFilename();
+        String lastGlobalFilename = appState.getLastFilename();
+        String lastMarkedFilename = appState.getLastMarkedFilename();
         if (lastGlobalFilename.compareTo(lastMarkedFilename) != 0) {
-            mAppState.setMustMarkFile(true);
+            appState.setMustMarkFile(true);
             FeedbackSoundPlayer.playSound(FeedbackSoundPlayer.SOUND_MARKED);
-            mAppState.setLastMarkedFilename(lastGlobalFilename);
+            appState.setLastMarkedFilename(lastGlobalFilename);
         }
     }
 
     private void requestLocationUpdates() {
-        if (SharedPreferencesHelper.detectSpeedometerActive(mAppState)) {
+        if (SharedPreferencesHelper.detectSpeedometerActive(appState)) {
             if (hasFineLocationPermission()) {
-                if (mSpeedListener != null) {
-                    mSpeedListener.initView();
-                    mLocationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER, 0, 0, mSpeedListener);
+                if (speedListener != null) {
+                    speedListener.initView();
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER, 0, 0, speedListener);
                 } else {
-                    mSpeedListener = new SpeedListener(tvSpeed, mAppState);
-                    mSpeedListener.initView();
-                    mLocationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER, 0, 0, mSpeedListener);
+                    speedListener = new SpeedListener(tvSpeed, appState);
+                    speedListener.initView();
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER, 0, 0, speedListener);
                 }
             } else {
 
@@ -842,8 +841,8 @@ public class ServicePreview extends Service implements
     }
 
     private void removeLocationUpdates() {
-        if (mSpeedListener != null) {
-            mLocationManager.removeUpdates(mSpeedListener);
+        if (speedListener != null) {
+            locationManager.removeUpdates(speedListener);
             tvSpeed.setVisibility(View.INVISIBLE);
         }
     }
@@ -872,8 +871,8 @@ public class ServicePreview extends Service implements
     }
 
     private void broadcastUpdate(VideoItem video) {
-        Intent intent = new Intent(ActivityVideoList.ACTION_UPDATE);
-        intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
+        Intent intent = new Intent(VideoListActivity.ACTION_UPDATE);
+        intent.putExtra(VideoListActivity.KEY_VIDEO, video);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

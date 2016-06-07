@@ -1,12 +1,5 @@
 package com.vizdashcam;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.os.Handler;
@@ -14,16 +7,23 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.widget.ImageView;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class VideoPreview {
 
-	private static BitmapLruCache<String> mBitmapCache;
+	private static BitmapLruCache<String> bitmapCache;
 	private static ExecutorService pool = null;
 	private static Map<ImageView, String> imageViews = Collections
 			.synchronizedMap(new ConcurrentHashMap<ImageView, String>());
 
 	public VideoPreview() {
 		pool = Executors.newFixedThreadPool(3);
-		mBitmapCache = new BitmapLruCache<String>();
+		bitmapCache = new BitmapLruCache<String>();
 	}
 
 	public static void getFileIcon(File file, final ImageView icon) {
@@ -58,7 +58,7 @@ public class VideoPreview {
 
 	private static void loadBitmap(final File file, final ImageView imageView) {
 		imageViews.put(imageView, file.getAbsolutePath());
-		Bitmap cachedIcon = mBitmapCache.get(file.getAbsolutePath());
+		Bitmap cachedIcon = bitmapCache.get(file.getAbsolutePath());
 
 		if (cachedIcon != null) {
 			imageView.setImageBitmap(cachedIcon);
@@ -75,11 +75,11 @@ public class VideoPreview {
 		mBitmap = ThumbnailUtils.createVideoThumbnail(path,
 				MediaStore.Video.Thumbnails.MINI_KIND);
 
-		mBitmapCache.put(path, mBitmap);
+		bitmapCache.put(path, mBitmap);
 		return mBitmap;
 	}
 
 	public static void clearCache() {
-		mBitmapCache.evictAll();
+		bitmapCache.evictAll();
 	}
 }

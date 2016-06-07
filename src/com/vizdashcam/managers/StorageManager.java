@@ -11,7 +11,7 @@ import com.vizdashcam.GlobalState;
 import com.vizdashcam.ServicePreview;
 import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.VideoItem;
-import com.vizdashcam.activities.ActivityVideoList;
+import com.vizdashcam.activities.VideoListActivity;
 import com.vizdashcam.utils.Utils;
 import com.vizdashcam.utils.VideoDetector;
 
@@ -30,9 +30,9 @@ public class StorageManager extends Thread {
     private static long full90 = (long) (0.10 * totalSpace);
     private boolean isStopped = false;
 
-    private static GlobalState mAppState;
-    private static ServicePreview mPreviewService;
-    private static Handler mHandler;
+    private static GlobalState appState;
+    private static ServicePreview previewService;
+    private static Handler handler;
 
     public void setStopped() {
         isStopped = true;
@@ -40,9 +40,9 @@ public class StorageManager extends Thread {
 
     public StorageManager(Context appState, ServicePreview previewService,
                           Handler handler) {
-        mAppState = (GlobalState) appState;
-        mPreviewService = previewService;
-        mHandler = handler;
+        StorageManager.appState = (GlobalState) appState;
+        StorageManager.previewService = previewService;
+        StorageManager.handler = handler;
     }
 
     public static long getFreeSpace() {
@@ -70,24 +70,24 @@ public class StorageManager extends Thread {
         while (!isStopped) {
             if (hasLowSpace()) {
                 if (hasRunOutOufSpace()) {
-                    if (mPreviewService != null) {
-                        if (mAppState.isRecording()) {
-                            mHandler.post(new Runnable() {
+                    if (previewService != null) {
+                        if (appState.isRecording()) {
+                            handler.post(new Runnable() {
 
                                 @Override
                                 public void run() {
-                                    mPreviewService.stopRecording();
-                                    mPreviewService.displayStorageDialog();
+                                    previewService.stopRecording();
+                                    previewService.displayStorageDialog();
                                 }
                             });
 
                             isStopped = true;
                         } else {
-                            mHandler.post(new Runnable() {
+                            handler.post(new Runnable() {
 
                                 @Override
                                 public void run() {
-                                    mPreviewService.displayStorageDialog();
+                                    previewService.displayStorageDialog();
                                 }
                             });
 
@@ -95,7 +95,7 @@ public class StorageManager extends Thread {
                         }
                     }
                 } else {
-                    if (SharedPreferencesHelper.detectLoopModeActive(mAppState)) {
+                    if (SharedPreferencesHelper.detectLoopModeActive(appState)) {
                         File[] dirEnt = mediaStorageDir.listFiles();
                         Arrays.sort(dirEnt, Utils.DATE_ORDER);
 
@@ -118,7 +118,7 @@ public class StorageManager extends Thread {
                                 Log.e(TAG,
                                         "Removing video from fragments");
 
-                                mHandler.post(new Runnable() {
+                                handler.post(new Runnable() {
                                     @Override
                                     public void run() {
 
@@ -145,7 +145,7 @@ public class StorageManager extends Thread {
     }
 
     private void broadcastUpdate() {
-        Intent intent = new Intent(ActivityVideoList.ACTION_UPDATE);
-        LocalBroadcastManager.getInstance(mAppState).sendBroadcast(intent);
+        Intent intent = new Intent(VideoListActivity.ACTION_UPDATE);
+        LocalBroadcastManager.getInstance(appState).sendBroadcast(intent);
     }
 }

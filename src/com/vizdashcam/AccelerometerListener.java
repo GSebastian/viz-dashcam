@@ -2,7 +2,7 @@ package com.vizdashcam;
 
 public interface AccelerometerListener {
 	
-	public void onAccelerationChanged(float x, float y, float z);
+	void onAccelerationChanged(float x, float y, float z);
 	
-	public void onShake(float force);
+	void onShake(float force);
 }

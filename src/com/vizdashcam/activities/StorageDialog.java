@@ -6,13 +6,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 
-public class DialogStorage extends Activity {
+public class StorageDialog extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		final DialogStorage activity = this;
+		final StorageDialog activity = this;
 
 		Builder builder = new Builder(this);
 		builder.setTitle("viz");

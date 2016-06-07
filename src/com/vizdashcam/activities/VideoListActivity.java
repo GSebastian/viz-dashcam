@@ -17,10 +17,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.vizdashcam.R;
-import com.vizdashcam.fragments.FragmentAllVideos;
-import com.vizdashcam.fragments.FragmentMarkedVideos;
+import com.vizdashcam.fragments.AllVideosFragment;
+import com.vizdashcam.fragments.MarkedVideosFragment;
 
-public class ActivityVideoList extends AppCompatActivity {
+public class VideoListActivity extends AppCompatActivity {
 
     public static final String ACTION_UPDATE = "add-video";
     public static final String KEY_VIDEO = "video";
@@ -34,9 +34,9 @@ public class ActivityVideoList extends AppCompatActivity {
     BroadcastReceiver videoActionsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            FragmentAllVideos allVids = (FragmentAllVideos) getSupportFragmentManager().findFragmentByTag
+            AllVideosFragment allVids = (AllVideosFragment) getSupportFragmentManager().findFragmentByTag
                     (makeFragmentName(R.id.pager, 0));
-            FragmentMarkedVideos markedVids = (FragmentMarkedVideos) getSupportFragmentManager().findFragmentByTag
+            MarkedVideosFragment markedVids = (MarkedVideosFragment) getSupportFragmentManager().findFragmentByTag
                     (makeFragmentName(R.id.pager, 1));
 
             if (intent.getAction().equals(ACTION_UPDATE)) {
@@ -74,7 +74,7 @@ public class ActivityVideoList extends AppCompatActivity {
             }
         });
 
-        viewPager.setAdapter(new VideoListAdapter(getSupportFragmentManager()));
+        viewPager.setAdapter(new VideoListFragmentAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
     }
 
@@ -97,9 +97,9 @@ public class ActivityVideoList extends AppCompatActivity {
     }
 }
 
-class VideoListAdapter extends FragmentPagerAdapter {
+class VideoListFragmentAdapter extends FragmentPagerAdapter {
 
-    public VideoListAdapter(FragmentManager fm) {
+    public VideoListFragmentAdapter(FragmentManager fm) {
         super(fm);
     }
 
@@ -108,11 +108,11 @@ class VideoListAdapter extends FragmentPagerAdapter {
         Fragment fragment = null;
 
         if (arg0 == 0) {
-            fragment = new FragmentAllVideos();
+            fragment = new AllVideosFragment();
         }
 
         if (arg0 == 1) {
-            fragment = new FragmentMarkedVideos();
+            fragment = new MarkedVideosFragment();
         }
 
         return fragment;

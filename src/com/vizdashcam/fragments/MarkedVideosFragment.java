@@ -6,7 +6,7 @@ import com.vizdashcam.utils.VideoDetector;
 import java.io.File;
 import java.util.Vector;
 
-public class FragmentMarkedVideos extends VideosFragment {
+public class MarkedVideosFragment extends VideosFragment {
 
     public static final String TAG = "MarkedVideosFragment";
 

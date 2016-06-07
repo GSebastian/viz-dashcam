@@ -29,7 +29,7 @@ import com.vizdashcam.ServicePreview;
 import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.utils.ViewUtils;
 
-public class ActivityMain extends Activity {
+public class MainActivity extends Activity {
 
     private static final int CODE_OVERLAY_PERMISSION = 111;
     private static final int CODE_BASIC_PERMISSIONS = 222;
@@ -39,24 +39,24 @@ public class ActivityMain extends Activity {
 
     public String TAG = "MainActivity";
 
-    private Messenger mMessenger;
-    private GlobalState mAppState = null;
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private Messenger messenger;
+    private GlobalState appState = null;
+    private ServiceConnection connection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
 
-            mMessenger = new Messenger(service);
-            mAppState.setPreviewBound(true);
+            messenger = new Messenger(service);
+            appState.setPreviewBound(true);
 
-            if (mAppState.isActivityPaused()) {
-                mAppState.setActivityPaused(false);
+            if (appState.isActivityPaused()) {
+                appState.setActivityPaused(false);
                 sendMessageToService(ServicePreview.MSG_RESIZE);
             }
         }
 
         public void onServiceDisconnected(ComponentName className) {
-            mMessenger = null;
-            mAppState.setPreviewBound(false);
+            messenger = null;
+            appState.setPreviewBound(false);
         }
     };
     private View viewNoOverlay;
@@ -88,7 +88,7 @@ public class ActivityMain extends Activity {
         findViews();
         initViews();
 
-        mAppState = (GlobalState) getApplicationContext();
+        appState = (GlobalState) getApplicationContext();
     }
 
     private void findViews() {
@@ -125,7 +125,7 @@ public class ActivityMain extends Activity {
                 // show a dialog and redirecting the user to the app's settings page to manually
                 // approve everything
                 if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string
+                    ViewUtils.createOneButtonDialog(MainActivity.this, R.string
                             .permission_explanation_basic_dont_show, new
                             DialogInterface.OnClickListener() {
                                 @Override
@@ -144,7 +144,7 @@ public class ActivityMain extends Activity {
 
                 if (!shouldShowRequestPermissionRationale(Manifest.permission
                         .WRITE_EXTERNAL_STORAGE)) {
-                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string
+                    ViewUtils.createOneButtonDialog(MainActivity.this, R.string
                             .permission_explanation_basic_dont_show, new
                             DialogInterface.OnClickListener() {
                                 @Override
@@ -164,7 +164,7 @@ public class ActivityMain extends Activity {
                 if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ||
                         !shouldShowRequestPermissionRationale(Manifest.permission
                                 .WRITE_EXTERNAL_STORAGE)) {
-                    ViewUtils.createOneButtonDialog(ActivityMain.this, R.string
+                    ViewUtils.createOneButtonDialog(MainActivity.this, R.string
                             .permission_explanation_basic_dont_show, new
                             DialogInterface.OnClickListener() {
                                 @Override
@@ -251,18 +251,18 @@ public class ActivityMain extends Activity {
     protected void onPause() {
         super.onPause();
 
-        if (!mAppState.isActivityPaused()) {
+        if (!appState.isActivityPaused()) {
 
-            mAppState.setActivityPaused(true);
+            appState.setActivityPaused(true);
 
-            if (mAppState.isRecording()) {
+            if (appState.isRecording()) {
                 sendMessageToService(ServicePreview.MSG_RESIZE);
-                if (mAppState.isPreviewBound())
-                    unbindService(mConnection);
+                if (appState.isPreviewBound())
+                    unbindService(connection);
             } else {
-                if (mAppState.isPreviewBound())
-                    unbindService(mConnection);
-                stopService(new Intent(ActivityMain.this, ServicePreview.class));
+                if (appState.isPreviewBound())
+                    unbindService(connection);
+                stopService(new Intent(MainActivity.this, ServicePreview.class));
             }
         }
     }
@@ -271,18 +271,18 @@ public class ActivityMain extends Activity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (!mAppState.isActivityPaused()) {
+        if (!appState.isActivityPaused()) {
 
-            mAppState.setActivityPaused(true);
+            appState.setActivityPaused(true);
 
-            if (mAppState.isRecording()) {
+            if (appState.isRecording()) {
                 sendMessageToService(ServicePreview.MSG_RESIZE);
-                if (mAppState.isPreviewBound())
-                    unbindService(mConnection);
+                if (appState.isPreviewBound())
+                    unbindService(connection);
             } else {
-                if (mAppState.isPreviewBound())
-                    unbindService(mConnection);
-                stopService(new Intent(ActivityMain.this, ServicePreview.class));
+                if (appState.isPreviewBound())
+                    unbindService(connection);
+                stopService(new Intent(MainActivity.this, ServicePreview.class));
             }
         }
     }
@@ -343,10 +343,10 @@ public class ActivityMain extends Activity {
 
         Intent startForegroundIntent = new Intent(
                 ServicePreview.ACTION_FOREGROUND);
-        startForegroundIntent.setClass(ActivityMain.this, ServicePreview.class);
+        startForegroundIntent.setClass(MainActivity.this, ServicePreview.class);
         startService(startForegroundIntent);
 
-        bindService(new Intent(this, ServicePreview.class), mConnection,
+        bindService(new Intent(this, ServicePreview.class), connection,
                 Context.BIND_AUTO_CREATE);
     }
 
@@ -356,11 +356,11 @@ public class ActivityMain extends Activity {
     }
 
     private void sendMessageToService(int intvaluetosend) {
-        if (mAppState.isPreviewBound()) {
-            if (mMessenger != null) {
+        if (appState.isPreviewBound()) {
+            if (messenger != null) {
                 try {
                     Message msg = Message.obtain(null, intvaluetosend, 0, 0);
-                    mMessenger.send(msg);
+                    messenger.send(msg);
                 } catch (RemoteException e) {
                 }
             }

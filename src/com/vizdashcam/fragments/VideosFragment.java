@@ -19,12 +19,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.vizdashcam.AdapterVideoList;
+import com.vizdashcam.VideoListAdapter;
 import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
 import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.VideoItem;
-import com.vizdashcam.activities.ActivityVideoItem;
+import com.vizdashcam.activities.VideoItemActivity;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 
 import java.io.File;
@@ -32,11 +32,11 @@ import java.util.Vector;
 
 public abstract class VideosFragment extends Fragment {
 
-    private GlobalState mAppState;
+    private GlobalState appState;
 
     private ListView videoList;
 
-    protected AdapterVideoList mAdapter;
+    protected VideoListAdapter mAdapter;
     protected File mediaStorageDir = new File(
             Environment.getExternalStorageDirectory(), "vizDashcamApp");
     protected Handler handler;
@@ -49,10 +49,10 @@ public abstract class VideosFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAppState = (GlobalState) getActivity().getApplicationContext();
+        appState = (GlobalState) getActivity().getApplicationContext();
 
         directoryEntries = new Vector<VideoItem>();
-        mAdapter = new AdapterVideoList(getActivity(), R.layout.row_item,
+        mAdapter = new VideoListAdapter(getActivity(), R.layout.row_item,
                 directoryEntries);
 
         handler = new Handler();
@@ -143,8 +143,8 @@ public abstract class VideosFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1,
                                     int position, long arg3) {
-                Intent i = new Intent(getActivity(), ActivityVideoItem.class);
-                i.putExtra(ActivityVideoItem.KEY_VIDEO_ITEM, directoryEntries.elementAt(position)
+                Intent i = new Intent(getActivity(), VideoItemActivity.class);
+                i.putExtra(VideoItemActivity.KEY_VIDEO_ITEM, directoryEntries.elementAt(position)
                         .getFile());
                 startActivity(i);
 
@@ -161,13 +161,13 @@ public abstract class VideosFragment extends Fragment {
     }
 
     private void audioFeedback() {
-        if (SharedPreferencesHelper.detectAudioFeedbackButtonActive(mAppState)) {
+        if (SharedPreferencesHelper.detectAudioFeedbackButtonActive(appState)) {
             FeedbackSoundPlayer.playSound(FeedbackSoundPlayer.SOUND_BTN);
         }
     }
 
     private void tactileFeedback() {
-        if (SharedPreferencesHelper.detectTactileFeedbackActive(mAppState)) {
+        if (SharedPreferencesHelper.detectTactileFeedbackActive(appState)) {
             Vibrator vibrator = (Vibrator) getActivity().getSystemService(
                     Context.VIBRATOR_SERVICE);
             vibrator.vibrate(100);

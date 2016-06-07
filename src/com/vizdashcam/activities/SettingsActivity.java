@@ -8,21 +8,16 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.ViewUtils;
 import android.view.View;
 
 import com.vizdashcam.R;
 import com.vizdashcam.fragments.FragmentPreferences;
 
-import java.util.List;
-
-public class ActivitySettings extends AppCompatPreferenceActivity {
+public class SettingsActivity extends AppCompatPreferenceActivity {
 
     private static final String TAG = "Settings";
 
@@ -158,14 +153,14 @@ public class ActivitySettings extends AppCompatPreferenceActivity {
     private void requestAudioRecordingPermission() {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.RECORD_AUDIO},
-                ActivitySettings.CODE_AUDIO_RECORDING_PERMISSION);
+                SettingsActivity.CODE_AUDIO_RECORDING_PERMISSION);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     private void requestFineLocationPermission() {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                ActivitySettings.CODE_FINE_LOCATION_PERMISSION);
+                SettingsActivity.CODE_FINE_LOCATION_PERMISSION);
     }
 
     @TargetApi(Build.VERSION_CODES.M)

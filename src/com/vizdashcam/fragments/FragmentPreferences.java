@@ -20,7 +20,7 @@ import android.support.v4.content.ContextCompat;
 import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
 import com.vizdashcam.SharedPreferencesHelper;
-import com.vizdashcam.activities.ActivitySettings;
+import com.vizdashcam.activities.SettingsActivity;
 import com.vizdashcam.utils.CameraUtils;
 import com.vizdashcam.utils.Constants;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
@@ -31,7 +31,7 @@ public class FragmentPreferences extends PreferenceFragment {
 
     private static final String KEY_RECORDING_AUDIO = "recordingAudio";
 
-    GlobalState mAppState;
+    GlobalState appState;
 
     Preference audioRecording;
     CheckBoxPreference speedometerActive;
@@ -51,7 +51,7 @@ public class FragmentPreferences extends PreferenceFragment {
         FeedbackClickListener feedbackClickListener = new FeedbackClickListener();
         FeedbackPreferenceChangeListener feedbackPreferenceChangeListener = new FeedbackPreferenceChangeListener();
 
-        mAppState = (GlobalState) getActivity().getApplicationContext();
+        appState = (GlobalState) getActivity().getApplicationContext();
 
         Activity activity = getActivity();
 
@@ -79,7 +79,7 @@ public class FragmentPreferences extends PreferenceFragment {
         if (videoQualityList.getValue() == null) {
             videoQualityList.setValueIndex(0);
         }
-        if (mAppState.isRecording()) {
+        if (appState.isRecording()) {
             videoQualityList.setEnabled(false);
             videoQualityList
                     .setSummary(R.string.prefs_set_video_quality_stop);
@@ -95,7 +95,7 @@ public class FragmentPreferences extends PreferenceFragment {
         if (videoLengthList.getValue() == null) {
             videoLengthList.setValueIndex(2);
         }
-        if (mAppState.isRecording()) {
+        if (appState.isRecording()) {
             videoLengthList.setEnabled(false);
             videoLengthList
                     .setSummary(R.string.prefs_set_video_length_stop);
@@ -109,7 +109,7 @@ public class FragmentPreferences extends PreferenceFragment {
 
         // Loop Mode
         useLoopMode.setDefaultValue(false);
-        if (mAppState.isRecording()) {
+        if (appState.isRecording()) {
             useLoopMode.setEnabled(false);
             useLoopMode
                     .setSummary(R.string.prefs_delete_old_videos_stop);
@@ -133,7 +133,7 @@ public class FragmentPreferences extends PreferenceFragment {
 
         // Shock Mode
         shockModeActive.setDefaultValue(false);
-        if (mAppState.isRecording()) {
+        if (appState.isRecording()) {
             shockModeActive.setEnabled(false);
             shockModeActive
                     .setSummary(R.string.pref_mark_stop);
@@ -167,7 +167,7 @@ public class FragmentPreferences extends PreferenceFragment {
         if (shockSensitivity.getValue() == null) {
             shockSensitivity.setValueIndex(1);
         }
-        if (mAppState.isRecording()) {
+        if (appState.isRecording()) {
             shockSensitivity.setEnabled(false);
             shockSensitivity
                     .setSummary(R.string.prefs_shock_sensitivity_stop);
@@ -230,13 +230,13 @@ public class FragmentPreferences extends PreferenceFragment {
     }
 
     private void audioFeedback() {
-        if (SharedPreferencesHelper.detectAudioFeedbackButtonActive(mAppState)) {
+        if (SharedPreferencesHelper.detectAudioFeedbackButtonActive(appState)) {
             FeedbackSoundPlayer.playSound(FeedbackSoundPlayer.SOUND_BTN);
         }
     }
 
     private void tactileFeedback() {
-        if (SharedPreferencesHelper.detectTactileFeedbackActive(mAppState)) {
+        if (SharedPreferencesHelper.detectTactileFeedbackActive(appState)) {
             Vibrator vibrator = (Vibrator) this.getActivity().getSystemService(
                     Context.VIBRATOR_SERVICE);
             vibrator.vibrate(100);
@@ -275,7 +275,7 @@ public class FragmentPreferences extends PreferenceFragment {
     private void requestAudioRecordingPermission() {
         ActivityCompat.requestPermissions(getActivity(),
                 new String[]{Manifest.permission.RECORD_AUDIO},
-                ActivitySettings.CODE_AUDIO_RECORDING_PERMISSION);
+                SettingsActivity.CODE_AUDIO_RECORDING_PERMISSION);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -289,7 +289,7 @@ public class FragmentPreferences extends PreferenceFragment {
     private void requestFineLocationPermission() {
         ActivityCompat.requestPermissions(getActivity(),
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                ActivitySettings.CODE_FINE_LOCATION_PERMISSION);
+                SettingsActivity.CODE_FINE_LOCATION_PERMISSION);
     }
 
     public void obtainedAudioRecordingPermission() {

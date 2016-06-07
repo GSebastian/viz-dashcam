@@ -30,7 +30,7 @@
             android:stopWithTask="false"/>
 
         <activity
-            android:name="com.vizdashcam.activities.ActivityMain"
+            android:name=".activities.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/app_name"
             android:launchMode="singleTask"
@@ -42,21 +42,21 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.vizdashcam.activities.ActivitySplashscreen"
+            android:name=".activities.SplashscreenActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/app_name"/>
         <activity
-            android:name="com.vizdashcam.activities.ActivitySettings"
+            android:name=".activities.SettingsActivity"
             android:label="@string/action_settings"/>
         <activity
-            android:name="com.vizdashcam.activities.DialogStorage"
+            android:name=".activities.StorageDialog"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         <activity
-            android:name="com.vizdashcam.activities.ActivityVideoList"
+            android:name=".activities.VideoListActivity"
             android:label="@string/videos"
             android:launchMode="singleTask"/>
-        <activity android:name="com.vizdashcam.activities.ActivityVideoItem"/>
+        <activity android:name=".activities.VideoItemActivity"/>
     </application>
 
 </manifest>

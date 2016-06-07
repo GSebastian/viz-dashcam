@@ -20,24 +20,23 @@ public class VideoItem implements Serializable {
 	private File mediaStorageDir = new File(
 			Environment.getExternalStorageDirectory(), "vizDashcamApp");
 
-	private File mFile;
-	private String mPath;
-	private String mName;
-	private String mSize;
-	private String mDuration;
-	private DateTime mDate;
-	private boolean mShowDate;
-	@SuppressWarnings("unused")
+	private File file;
+	private String path;
+	private String name;
+	private String size;
+	private String duration;
+	private DateTime date;
+	private boolean showDate;
 	private boolean isMarked;
 
 	public VideoItem(final File file) {
-		mFile = file;
-		mPath = mFile.getAbsolutePath();
-		mName = mFile.getName();
+		this.file = file;
+		path = this.file.getAbsolutePath();
+		name = this.file.getName();
 		setFileSize();
 		setVideoDuration();
 		setDate();
-		mShowDate = false;
+		showDate = false;
 		if (isMarked()) {
 			isMarked = true;
 		} else {
@@ -46,13 +45,13 @@ public class VideoItem implements Serializable {
 	}
 
 	public VideoItem(VideoItem video) {
-		this.mFile = video.getFile();
-		this.mPath = this.mFile.getAbsolutePath();
-		this.mName = this.mFile.getName();
-		this.mSize = video.getSize();
-		this.mDuration = video.getDuration();
-		this.mDate = video.getDate();
-		this.mShowDate = false;
+		this.file = video.getFile();
+		this.path = this.file.getAbsolutePath();
+		this.name = this.file.getName();
+		this.size = video.getSize();
+		this.duration = video.getDuration();
+		this.date = video.getDate();
+		this.showDate = false;
 		if (isMarked()) {
 			isMarked = true;
 		} else {
@@ -62,48 +61,48 @@ public class VideoItem implements Serializable {
 
 	private void setDate() {
 		if (checkFileNameValidity()) {
-			int year = Integer.parseInt(mName.substring(4, 8));
-			int month = Integer.parseInt(mName.substring(8, 10));
-			int day = Integer.parseInt(mName.substring(10, 12));
-			int hour = Integer.parseInt(mName.substring(13, 15));
-			int minutes = Integer.parseInt(mName.substring(15, 17));
-			int seconds = Integer.parseInt(mName.substring(17, 19));
+			int year = Integer.parseInt(name.substring(4, 8));
+			int month = Integer.parseInt(name.substring(8, 10));
+			int day = Integer.parseInt(name.substring(10, 12));
+			int hour = Integer.parseInt(name.substring(13, 15));
+			int minutes = Integer.parseInt(name.substring(15, 17));
+			int seconds = Integer.parseInt(name.substring(17, 19));
 
-			mDate = new DateTime(year, month, day, hour, minutes, seconds);
+			date = new DateTime(year, month, day, hour, minutes, seconds);
 		} else {
-			mDate = new DateTime(1993, 10, 1, 5, 0, 0);
+			date = new DateTime(1993, 10, 1, 5, 0, 0);
 		}
 	}
 
 	private void setFileSize() {
-		long length = mFile.length();
+		long length = file.length();
 		long divBy = 1024 * 1024;
 
 		if (length > divBy) {
-			mSize = String.valueOf(length / divBy);
+			size = String.valueOf(length / divBy);
 		} else {
-			mSize = String.format(Locale.US, "%.1f",
-					((float) ((float) mFile.length() / (float) divBy)));
+			size = String.format(Locale.US, "%.1f",
+					((float) ((float) file.length() / (float) divBy)));
 		}
 	}
 
 	private void setVideoDuration() {
 		try {
 			MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-			retriever.setDataSource(mPath);
+			retriever.setDataSource(path);
 			String time = retriever
 					.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
 			long timeInmillisec = Long.parseLong(time);
 			long seconds = timeInmillisec / 1000;
-			mDuration = String.valueOf(seconds / 60);
+			duration = String.valueOf(seconds / 60);
 		} catch (RuntimeException e) {
-			mDuration = "-1";
+			duration = "-1";
 		}
 	}
 
 	public boolean isMarked() {
-		int lastPointIndex = mFile.getName().lastIndexOf(".");
-		String lastTwoChars = mFile.getName()
+		int lastPointIndex = file.getName().lastIndexOf(".");
+		String lastTwoChars = file.getName()
 				.substring(lastPointIndex - EXTENSION_MARKED_FILE.length(),
 						lastPointIndex);
 
@@ -129,36 +128,36 @@ public class VideoItem implements Serializable {
 	public void setMarked(boolean value) {
 		if (value) {
 			if (!isMarked()) {
-				StringBuilder stringBuilder = new StringBuilder(mName);
-				int lastPointPosition = mName.lastIndexOf(".");
+				StringBuilder stringBuilder = new StringBuilder(name);
+				int lastPointPosition = name.lastIndexOf(".");
 				if (lastPointPosition != -1) {
 					stringBuilder.insert(lastPointPosition,
 							VideoItem.EXTENSION_MARKED_FILE);
 					String markedFileName = stringBuilder.toString();
-					File from = new File(mediaStorageDir, mName);
+					File from = new File(mediaStorageDir, name);
 					File to = new File(mediaStorageDir, markedFileName);
-					mName = markedFileName;
+					name = markedFileName;
 					if (from.exists())
 						from.renameTo(to);
-					mFile = to;
-					mPath = to.getPath();
+					file = to;
+					path = to.getPath();
 					isMarked = true;
 				}
 			}
 		} else if (isMarked()) {
-			StringBuilder stringBuilder = new StringBuilder(mName);
-			int lastPointPosition = mName.lastIndexOf(".");
+			StringBuilder stringBuilder = new StringBuilder(name);
+			int lastPointPosition = name.lastIndexOf(".");
 			if (lastPointPosition != -1) {
 				stringBuilder.delete(lastPointPosition - VideoItem.EXTENSION_MARKED_FILE.length(), lastPointPosition);
 				String unmarkedFileName = stringBuilder.toString();
-				File from = new File(mediaStorageDir, mName);
+				File from = new File(mediaStorageDir, name);
 				File to = new File(mediaStorageDir, unmarkedFileName);
-				mName = unmarkedFileName;
-				Log.e(TAG, "New mName: " + mName);
+				name = unmarkedFileName;
+				Log.e(TAG, "New name: " + name);
 				if (from.exists())
 					from.renameTo(to);
-				mFile = to;
-				mPath = to.getPath();
+				file = to;
+				path = to.getPath();
 				isMarked = false;
 			}
 		}
@@ -178,62 +177,62 @@ public class VideoItem implements Serializable {
 	}
 
 	public Boolean getShowDate() {
-		return mShowDate;
+		return showDate;
 	}
 
 	public void setShowDate(Boolean mShowDate) {
-		this.mShowDate = mShowDate;
+		this.showDate = mShowDate;
 	}
 
 	public DateTime getDate() {
-		return mDate;
+		return date;
 	}
 
 	public File getFile() {
-		return mFile;
+		return file;
 	}
 
 	public void setFile(File mFile) {
-		this.mFile = mFile;
+		this.file = mFile;
 	}
 
 	public String getPath() {
-		return mPath;
+		return path;
 	}
 
 	public void setPath(String mPath) {
-		this.mPath = mPath;
+		this.path = mPath;
 	}
 
 	public String getName() {
-		return mName;
+		return name;
 	}
 
 	public void setName(String mName) {
-		this.mName = mName;
+		this.name = mName;
 	}
 
 	public String getSize() {
-		return mSize;
+		return size;
 	}
 
 	public void setSize(String mSize) {
-		this.mSize = mSize;
+		this.size = mSize;
 	}
 
 	public String getDuration() {
-		return mDuration;
+		return duration;
 	}
 
 	public void setDuration(String mDuration) {
-		this.mDuration = mDuration;
+		this.duration = mDuration;
 	}
 
 	private boolean checkFileNameValidity() {
 		String REGEX = "VID_\\d\\d\\d\\d\\d\\d\\d\\d_\\d\\d\\d\\d\\d\\d.*";
 
 		Pattern pattern = Pattern.compile(REGEX);
-		Matcher matcher = pattern.matcher(mName);
+		Matcher matcher = pattern.matcher(name);
 		if (matcher.find())
 			return true;
 

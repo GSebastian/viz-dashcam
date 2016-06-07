@@ -1,23 +1,20 @@
 package com.vizdashcam.utils;
 
+import android.os.Environment;
+
+import com.vizdashcam.VideoItem;
+
+import org.joda.time.DateTime;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 
-import org.joda.time.DateTime;
-
-import com.vizdashcam.VideoItem;
-
-import android.os.Environment;
-
 public class Utils {
 
 	public static final String TAG = "Utils";
-
-	public static final int MEDIA_TYPE_IMAGE = 1;
-	public static final int MEDIA_TYPE_VIDEO = 2;
 
 	/** Create a File for saving an image or video */
 	public static File getOutputMediaFile() {

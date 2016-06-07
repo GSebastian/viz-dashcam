@@ -1,7 +1,5 @@
 package com.vizdashcam.managers;
 
-import java.util.List;
-
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -13,9 +11,11 @@ import com.vizdashcam.GlobalState;
 import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.utils.Constants;
 
+import java.util.List;
+
 public class AccelerometerManager {
 
-    private static Context mContext = null;
+    private static Context context = null;
 
     /**
      * Accuracy configuration
@@ -23,7 +23,7 @@ public class AccelerometerManager {
     private static float threshold;
     private static int interval = 200;
 
-    private static GlobalState mAppState;
+    private static GlobalState appState;
 
     private static Sensor sensor;
     private static SensorManager sensorManager;
@@ -63,9 +63,9 @@ public class AccelerometerManager {
      */
     public static boolean isSupported(Context context) {
 
-        mContext = context;
-        mAppState = (GlobalState) mContext.getApplicationContext();
-        int defaultShockSensitivity = SharedPreferencesHelper.detectShockSensitivity(mAppState);
+        AccelerometerManager.context = context;
+        appState = (GlobalState) AccelerometerManager.context.getApplicationContext();
+        int defaultShockSensitivity = SharedPreferencesHelper.detectShockSensitivity(appState);
         if (defaultShockSensitivity == 1) {
             threshold = Constants.SHOCK_SENSITIVITY_LOW;
         } else if (defaultShockSensitivity == 2) {
@@ -75,8 +75,8 @@ public class AccelerometerManager {
         }
 
         if (supported == null) {
-            if (mContext != null) {
-                sensorManager = (SensorManager) mContext
+            if (AccelerometerManager.context != null) {
+                sensorManager = (SensorManager) AccelerometerManager.context
                         .getSystemService(Context.SENSOR_SERVICE);
                 List<Sensor> sensors = sensorManager
                         .getSensorList(Sensor.TYPE_ACCELEROMETER);
@@ -108,7 +108,7 @@ public class AccelerometerManager {
     public static void startListening(
             AccelerometerListener accelerometerListener) {
 
-        sensorManager = (SensorManager) mContext
+        sensorManager = (SensorManager) context
                 .getSystemService(Context.SENSOR_SERVICE);
 
         List<Sensor> sensors = sensorManager
