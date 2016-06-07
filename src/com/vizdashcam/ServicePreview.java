@@ -1,8 +1,5 @@
 package com.vizdashcam;
 
-import java.io.File;
-import java.io.IOException;
-
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
@@ -29,8 +26,8 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -51,13 +48,14 @@ import com.vizdashcam.activities.ActivityMain;
 import com.vizdashcam.activities.ActivitySettings;
 import com.vizdashcam.activities.ActivityVideoList;
 import com.vizdashcam.activities.DialogStorage;
-import com.vizdashcam.fragments.FragmentAllVideos;
-import com.vizdashcam.fragments.FragmentMarkedVideos;
 import com.vizdashcam.managers.AccelerometerManager;
 import com.vizdashcam.managers.StorageManager;
 import com.vizdashcam.utils.CameraUtils;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 import com.vizdashcam.utils.Utils;
+
+import java.io.File;
+import java.io.IOException;
 
 
 public class ServicePreview extends Service implements
@@ -740,23 +738,12 @@ public class ServicePreview extends Service implements
     }
 
     private void updateFragments() {
-        FragmentAllVideos allVideosFragment = mAppState.getAllVideosFragment();
-        FragmentMarkedVideos markedVideosFragment = mAppState
-                .getMarkedVideosFragment();
 
         File dir = mAppState.getMediaStorageDir();
         if (dir.exists()) {
-            if (allVideosFragment != null) {
-                File file = new File(dir, mAppState.getLastFilename());
-                mAppState.getAllVideosFragment().addVideoToDataset(
-                        new VideoItem(file));
-            }
+            File file = new File(dir, mAppState.getLastFilename());
 
-            if (mAppState.getMustMarkFile() && markedVideosFragment != null) {
-                File file = new File(dir, mAppState.getLastFilename());
-                mAppState.getMarkedVideosFragment().addVideoToDataset(
-                        new VideoItem(file));
-            }
+            broadcastAdd(new VideoItem(file));
         }
     }
 
@@ -882,5 +869,11 @@ public class ServicePreview extends Service implements
         int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission
                 .ACCESS_FINE_LOCATION);
         return permissionResultCheck == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void broadcastAdd(VideoItem video) {
+        Intent intent = new Intent(ActivityVideoList.ACTION_ADD_VIDEO);
+        intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

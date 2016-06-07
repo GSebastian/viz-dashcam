@@ -17,10 +17,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.vizdashcam.R;
+import com.vizdashcam.VideoItem;
 import com.vizdashcam.fragments.FragmentAllVideos;
 import com.vizdashcam.fragments.FragmentMarkedVideos;
 
-public class ActivityVideoList extends AppCompatActivity { //implements TabListener {
+public class ActivityVideoList extends AppCompatActivity {
 
     public static final String ACTION_ADD_VIDEO = "add-video";
     public static final String ACTION_REMOVE_VIDEO = "remove-video";
@@ -41,14 +42,18 @@ public class ActivityVideoList extends AppCompatActivity { //implements TabListe
             FragmentMarkedVideos markedVids = (FragmentMarkedVideos) getSupportFragmentManager().findFragmentByTag
                     (makeFragmentName(R.id.pager, 1));
 
+            VideoItem video = (VideoItem) intent.getSerializableExtra(KEY_VIDEO);
+
             if (intent.getAction().equals(ACTION_ADD_VIDEO)) {
-
+                if (allVids != null) allVids.addVideoToDataset(video);
+                if (markedVids != null) markedVids.addVideoToDataset(video);
             } else if (intent.getAction().equals(ACTION_REMOVE_VIDEO)) {
-
+                if (allVids != null) allVids.removeVideo(video);
+                if (markedVids != null) markedVids.removeVideo(video);
             } else if (intent.getAction().equals(ACTION_REMOVE_VIDEO_FROM_DATASET)) {
-
+                if (allVids != null) allVids.removeVideoFromDataset(video);
+                if (markedVids != null) markedVids.removeVideoFromDataset(video);
             }
-
         }
     };
 

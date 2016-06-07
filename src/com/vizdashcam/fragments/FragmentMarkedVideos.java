@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -29,6 +30,7 @@ import com.vizdashcam.R;
 import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.VideoItem;
 import com.vizdashcam.activities.ActivityVideoItem;
+import com.vizdashcam.activities.ActivityVideoList;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 import com.vizdashcam.utils.VideoDetector;
 
@@ -57,10 +59,7 @@ public class FragmentMarkedVideos extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Log.e(TAG, "ONCREATE");
-
 		mAppState = (GlobalState) getActivity().getApplicationContext();
-		mAppState.setMarkedVideosFragment(this);
 
 		directoryEntries = new Vector<VideoItem>();
 		mAdapter = new AdapterVideoList(getActivity(), R.layout.row_item,
@@ -84,12 +83,6 @@ public class FragmentMarkedVideos extends Fragment {
 		videoList = (ListView) getView().findViewById(R.id.lv_videolist);
 		initVideoList();
 		videoList.invalidateViews();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		mAppState.setMarkedVideosFragment(null);
 	}
 
 	private void initVideoList() {
@@ -129,10 +122,8 @@ public class FragmentMarkedVideos extends Fragment {
 									.keyAt(i));
 
 							mAdapter.remove(selecteditem);
-							if (mAppState.getAllVideosFragment() != null) {
-								mAppState.getAllVideosFragment().removeVideo(
-										selecteditem);
-							}
+
+							broadcastRemove(selecteditem);
 						}
 					}
 
@@ -179,25 +170,20 @@ public class FragmentMarkedVideos extends Fragment {
 			if (resultCode == ActivityVideoItem.RESULT_DELETE) {
 				if (lastClicked != null) {
 					mAdapter.remove(lastClicked);
-					if (mAppState.getAllVideosFragment() != null) {
-						mAppState.getAllVideosFragment()
-								.removeVideoFromDataset(lastClicked);
-					}
-					lastClicked = null;
+
+                    broadcastRemoveFromDataset(lastClicked);
+
+                    lastClicked = null;
 				}
 			} else if (resultCode == ActivityVideoItem.RESULT_BECAME_NORMAL) {
 				if (lastClicked != null) {
 
-					if (mAppState.getAllVideosFragment() != null) {
-						mAppState.getAllVideosFragment()
-								.removeVideoFromDataset(lastClicked);
-					}
+                    broadcastRemoveFromDataset(lastClicked);
+
 					lastClicked.setMarked(false);
 					removeVideoFromDataset(lastClicked);
-					if (mAppState.getAllVideosFragment() != null) {
-						mAppState.getAllVideosFragment().addVideoToDataset(
-								lastClicked);
-					}
+
+                    broadcastAdd(lastClicked);
 				}
 			}
 		}
@@ -255,6 +241,24 @@ public class FragmentMarkedVideos extends Fragment {
 	public void removeVideoFromDataset(VideoItem video) {
 		directoryEntries.remove(video);
 		mAdapter.notifyDataSetChanged();
+	}
+
+	private void broadcastRemove(VideoItem video) {
+		Intent intent = new Intent(ActivityVideoList.ACTION_REMOVE_VIDEO);
+		intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
+		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+	}
+
+	private void broadcastAdd(VideoItem video) {
+		Intent intent = new Intent(ActivityVideoList.ACTION_ADD_VIDEO);
+		intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
+		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+	}
+
+	private void broadcastRemoveFromDataset(VideoItem video) {
+		Intent intent = new Intent(ActivityVideoList.ACTION_REMOVE_VIDEO_FROM_DATASET);
+		intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
+		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
 	}
 
 	private void audioFeedback() {

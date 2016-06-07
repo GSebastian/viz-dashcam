@@ -1,8 +1,5 @@
 package com.vizdashcam.fragments;
 
-import java.io.File;
-import java.util.Vector;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,6 +29,9 @@ import com.vizdashcam.activities.ActivityVideoItem;
 import com.vizdashcam.activities.ActivityVideoList;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 import com.vizdashcam.utils.VideoDetector;
+
+import java.io.File;
+import java.util.Vector;
 
 public class FragmentAllVideos extends Fragment {
 
@@ -124,7 +124,7 @@ public class FragmentAllVideos extends Fragment {
                                     .keyAt(i));
 
                             mAdapter.remove(selecteditem);
-                            if (selecteditem.isMarked()) broadcastRemove(selecteditem);
+                            if (selecteditem.isMarked()) broadcastRemoveFromDataset(selecteditem);
                         }
                     }
 
@@ -182,17 +182,14 @@ public class FragmentAllVideos extends Fragment {
                 if (lastClicked != null) {
                     lastClicked.setMarked(true);
                     videoList.invalidateViews();
-                    if (mAppState.getMarkedVideosFragment() != null) {
-                        mAppState.getMarkedVideosFragment().addVideoToDataset(
-                                lastClicked);
-                    }
+
+                    broadcastAdd(lastClicked);
                 }
             } else if (resultCode == ActivityVideoItem.RESULT_BECAME_NORMAL) {
                 if (lastClicked != null) {
-                    if (mAppState.getMarkedVideosFragment() != null) {
-                        mAppState.getMarkedVideosFragment()
-                                .removeVideoFromDataset(lastClicked);
-                    }
+
+                    broadcastRemoveFromDataset(lastClicked);
+
                     lastClicked.setMarked(false);
                     videoList.invalidateViews();
                 }
@@ -264,11 +261,11 @@ public class FragmentAllVideos extends Fragment {
         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
     }
 
-	private void broadcastRemoveFromDataset(VideoItem video) {
-		Intent intent = new Intent(ActivityVideoList.ACTION_REMOVE_VIDEO_FROM_DATASET);
-		intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
-		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
-	}
+    private void broadcastRemoveFromDataset(VideoItem video) {
+        Intent intent = new Intent(ActivityVideoList.ACTION_REMOVE_VIDEO_FROM_DATASET);
+        intent.putExtra(ActivityVideoList.KEY_VIDEO, video);
+        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+    }
 
     private void audioFeedback() {
         if (SharedPreferencesHelper.detectAudioFeedbackButtonActive(mAppState)) {
