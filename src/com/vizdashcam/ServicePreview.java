@@ -47,7 +47,7 @@ import android.widget.TextView;
 import com.vizdashcam.activities.MainActivity;
 import com.vizdashcam.activities.SettingsActivity;
 import com.vizdashcam.activities.VideoListActivity;
-import com.vizdashcam.activities.StorageDialog;
+import com.vizdashcam.activities.StorageDialogActivity;
 import com.vizdashcam.managers.AccelerometerManager;
 import com.vizdashcam.managers.StorageManager;
 import com.vizdashcam.utils.CameraUtils;
@@ -610,7 +610,9 @@ public class ServicePreview extends Service implements
                 mStorageManager = new StorageManager(getApplicationContext(),
                         this, mHandler);
 
-                if (!StorageManager.hasRunOutOufSpace()) {
+                if (false) {
+
+//                if (!StorageManager.hasRunOutOufSpace()) {
 
                     if (prepareVideoRecorder()) {
 
@@ -681,9 +683,12 @@ public class ServicePreview extends Service implements
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class), 0);
 
+        String notificationTitle = getString(R.string.app_name);
+        String notificationDescription = getString(R.string.notification_description);
+
         Notification.Builder builder = new Notification.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_notify).setContentTitle("viz")
-                .setContentText("viz is Running")
+                .setSmallIcon(R.drawable.ic_stat_notify).setContentTitle(notificationTitle)
+                .setContentText(notificationDescription)
                 .setContentIntent(contentIntent);
         return builder.build();
     }
@@ -776,7 +781,7 @@ public class ServicePreview extends Service implements
                 @Override
                 public void run() {
                     Intent intent = new Intent(getApplicationContext(),
-                            StorageDialog.class);
+                            StorageDialogActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 

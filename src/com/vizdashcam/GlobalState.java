@@ -12,6 +12,8 @@ public class GlobalState extends Application {
 
     private static final String TAG = "GlobalState";
 
+    private static final String VIDEO_DIR = "Viz Dashcam Recordings";
+
     private File mediaStorageDir;
 
     private String lastFilename;
@@ -34,7 +36,7 @@ public class GlobalState extends Application {
 
     public void createVideoFolder() {
         mediaStorageDir = new File(
-                Environment.getExternalStorageDirectory(), "vizDashcamApp");
+                Environment.getExternalStorageDirectory(), VIDEO_DIR);
 
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {

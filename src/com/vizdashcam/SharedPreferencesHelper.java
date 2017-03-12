@@ -13,6 +13,8 @@ public class SharedPreferencesHelper {
 
     public static final String KEY_DECLINED_AUDIO = "declinedAudoRecordingPermission";
 
+    public static final String KEY_FIRST_OPEN = "keyFirstOpen";
+
     public static boolean getHasDeclinedAudio(Context context) {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
@@ -25,6 +27,20 @@ public class SharedPreferencesHelper {
                 .getDefaultSharedPreferences(context);
 
         prefs.edit().putBoolean(KEY_DECLINED_AUDIO, value).apply();
+    }
+
+    public static boolean getAppFirstOpen(Context context) {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+
+        return prefs.getBoolean(KEY_FIRST_OPEN, true);
+    }
+
+    public static void putAppFirstOpen(Context context) {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+
+        prefs.edit().putBoolean(KEY_FIRST_OPEN, true).apply();
     }
 
     public static boolean checkBooleanValue(Context context, String key, boolean defaultValue) {

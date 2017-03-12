@@ -20,7 +20,7 @@ public class VideoListAdapter extends ArrayAdapter<VideoItem> {
 
 	LayoutInflater inflater;
 
-	public static final String TAG = "VideoListFragmentAdapter";
+	public static final String TAG = "VideoListFragmentAdapt";
 
 	public static final int NORMAL_TYPE = 0;
 	public static final int WITH_DATE_TYPE = 1;
@@ -152,9 +152,8 @@ public class VideoListAdapter extends ArrayAdapter<VideoItem> {
 								secondVidName.lastIndexOf("."));
 					}
 
-					if (firstVidName.compareTo(secondVidName) == 0) {
-						if (Float.parseFloat(firstVid.getSize()) > Float
-								.parseFloat(secondVid.getSize()))
+					if (firstVidName.equals(secondVidName)) {
+						if (firstVid.getSize() > secondVid.getSize())
 							directoryEntries.remove(1);
 						else
 							directoryEntries.remove(0);

@@ -1,30 +1,36 @@
 package com.vizdashcam.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
+import com.vizdashcam.SharedPreferencesHelper;
 
 public class SplashscreenActivity extends Activity {
 
-	private GlobalState appState;
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_splashscreen);
-		
-		appState = (GlobalState) getApplicationContext();
-				
-		new Handler().postDelayed(new Runnable() {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splashscreen);
 
-			@Override
-			public void run() {
-//				appState.setSplashscreenOpen(false);
-				SplashscreenActivity.this.finish();
-			}
-		}, 3000);
-	}
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                Intent intent;
+                boolean appFirstOpen = SharedPreferencesHelper.getAppFirstOpen(getApplicationContext());
+                if (appFirstOpen) {
+                    intent = new Intent(SplashscreenActivity.this, OnboardingActivity.class);
+                    SharedPreferencesHelper.putAppFirstOpen(getApplicationContext());
+                } else {
+                    intent = new Intent(SplashscreenActivity.this, MainActivity.class);
+                }
+                startActivity(intent);
+
+                SplashscreenActivity.this.finish();
+            }
+        }, 10000);
+    }
 }

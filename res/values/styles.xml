@@ -14,18 +14,27 @@
         -->
     </style>
 
-    <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/C3Turqoise</item>
+        <item name="colorPrimaryDark">@color/C3TurqoiseDark</item>
+        <item name="colorAccent">@color/C3Red</item>
+        <item name="android:colorBackground">@color/C3White</item>
+        <item name="android:colorForeground">@color/C2LightGrey</item>
+        <item name="android:textColorPrimary">@color/C3DarkGrey</item>
     </style>
 
-    <style name="Theme.AppCompat.NoActionBar.Light.NoActionBar" parent="Theme.AppCompat.NoActionBar" >
-        <item name="colorPrimary">@color/C2LighterBlue</item>
-        <item name="colorPrimaryDark">@color/C2DarkBlue</item>
-        <item name="colorAccent">@color/C2DarkOrange</item>
-        <item name="android:colorBackground">@color/C2White</item>
+    <style name="AppTheme.Fullscreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/C3Turqoise</item>
+        <item name="colorPrimaryDark">@color/C3TurqoiseDark</item>
+        <item name="colorAccent">@color/C3Red</item>
+        <item name="android:colorBackground">@color/C3White</item>
         <item name="android:colorForeground">@color/C2LightGrey</item>
-        <item name="android:textColorPrimary">@color/C2Black</item>
+        <item name="android:textColorPrimary">@color/C3DarkGrey</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
 </resources>

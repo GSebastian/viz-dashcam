@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+    <!ENTITY appname "Viz Dashcam">]>
+
 <resources>
 
-    <string name="app_name">viz</string>
-    <string name="app_name_full">viz - the dashboard witness</string>
+    <string name="app_name">Viz Dashcam</string>
+    <string name="app_name_full">Viz Dashcam - The Dashboard Witness</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="delete">Delete</string>
@@ -67,11 +70,11 @@
 
     <string name="video">Video</string>
 
-    <string name="set_video_quality">Set video quality.</string>
+    <string name="set_video_quality">Set video quality</string>
 
     <string name="video_quality">Video Quality</string>
 
-    <string name="set_video_length">Set video length.</string>
+    <string name="set_video_length">Set video length</string>
 
     <string name="loop_mode">Loop Mode</string>
 
@@ -117,7 +120,7 @@
     <string name="cancel">Cancel</string>
     <string name="got_it">Got it</string>
     <string name="videos">Videos</string>
-    <string name="share_video">Share Video</string>
+    <string name="share_video">Share</string>
 
 
     <string name="prefs_set_video_quality">Set video quality</string>
@@ -144,5 +147,42 @@
     <string name="permission_warning_audio">You have not granted the \"Microphone\" permission. Because of this,
         the recordings won\'t contain audio.
         <b>You can grant the permission from the app\'s Settings screen</b></string>
+
+    <string name="file_marked">File marked!</string>
+    <string name="file_unmarked">File unmarked!</string>
+
+    <plurals name="minutes">
+        <item quantity="zero">%d minutes</item>
+        <item quantity="one">%d minute</item>
+        <item quantity="many">%d minutes</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+
+    <plurals name="seconds">
+        <item quantity="zero">%d seconds</item>
+        <item quantity="one">%d second</item>
+        <item quantity="many">%d seconds</item>
+    </plurals>
+
+    <string name="megabyte">%d MB</string>
+
+    <string name="notification_description">&appname; is running</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="storage_dialog_description">Insufficient memory - recording stopped. Free up some space
+        first!</string>
+    <string name="welcome_to_appname">Welcome to <b>&appname;</b></string>
+    <string name="permission_explanation">Before we can start recording, you need to grant the app a few
+        <b>permissions</b>\n
+        \n
+        &#8226; <b>Drawing over other apps:</b> granting this permission ensures that the app can continue recording
+        even if you decide using other apps while you drive (such as Google Maps)\n
+        \n
+        &#8226; <b>Taking pictures and video</b>\n
+        \n
+        &#8226; <b>Access media on your device:</b> we need to save the recordings somewhere, don\'t we? Granting this
+        permission allows the app to save your precious recordings to the smartphone\'s storage\n
+        \n
+        &#8226; <b>Recording audio: </b> make your dashcam video more interesting by enabling audio
+    </string>
 
 </resources>

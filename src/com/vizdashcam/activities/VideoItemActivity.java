@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -13,7 +14,6 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,6 +31,7 @@ public class VideoItemActivity extends AppCompatActivity {
     public static final String TAG = "VideoItemActivity";
     public static final String KEY_VIDEO_ITEM = "video_item";
 
+    View rootView;
     Toolbar toolbar;
     ImageView ivPreview;
     ImageView ivPlay;
@@ -39,9 +40,6 @@ public class VideoItemActivity extends AppCompatActivity {
     TextView tvSize;
     LinearLayout llShock;
     TextView tvTitle;
-
-    Button btnDelete;
-    Button btnUpload;
 
     GlobalState appState;
 
@@ -60,6 +58,7 @@ public class VideoItemActivity extends AppCompatActivity {
     }
 
     private void findViews() {
+        rootView = findViewById(R.id.rootView);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         ivPreview = (ImageView) findViewById(R.id.iv_preview);
         ivPlay = (ImageView) findViewById(R.id.iv_play);
@@ -103,9 +102,9 @@ public class VideoItemActivity extends AppCompatActivity {
 
         tvTitle.setText(videoItem.getName());
 
-        tvSize.setText(videoItem.getSize() + "MB");
+        tvSize.setText(getString(R.string.megabyte, videoItem.getSize()));
 
-        tvLength.setText(videoItem.getDuration() + " min");
+        tvLength.setText(getResources().getQuantityString(R.plurals.minutes, videoItem.getDuration()));
 
         if (!videoItem.isMarked()) {
             llShock.setAlpha(0.1f);
@@ -124,8 +123,14 @@ public class VideoItemActivity extends AppCompatActivity {
                     FeedbackSoundPlayer
                             .playSound(FeedbackSoundPlayer.SOUND_MARKED);
                     llShock.setAlpha(1f);
-                    Toast.makeText(VideoItemActivity.this, "File marked!",
-                            Toast.LENGTH_SHORT).show();
+
+                    Snackbar.make(rootView, R.string.file_marked, Snackbar.LENGTH_LONG)
+                            .setActionTextColor(getResources().getColor(R.color.White))
+                            .setAction(R.string.got_it, new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {}
+                            })
+                            .show();
                 } else {
 
                     String newVideoTitle = videoItem.setMarked(false);
@@ -135,8 +140,14 @@ public class VideoItemActivity extends AppCompatActivity {
                     FeedbackSoundPlayer
                             .playSound(FeedbackSoundPlayer.SOUND_MARKED);
                     llShock.setAlpha(0.1f);
-                    Toast.makeText(VideoItemActivity.this, "File unmarked!",
-                            Toast.LENGTH_SHORT).show();
+
+                    Snackbar.make(rootView, R.string.file_unmarked, Snackbar.LENGTH_LONG)
+                            .setActionTextColor(getResources().getColor(R.color.White))
+                            .setAction(R.string.got_it, new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {}
+                            })
+                            .show();
                 }
             }
         });

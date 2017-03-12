@@ -160,4 +160,11 @@
     <color name="C2LightGrey">#D3D3D3</color>
     <color name="C2LighterBlue">#2B7BA3</color>
     
+    <color name="C3TurqoiseDark">#0097a4</color>
+    <color name="C3Turqoise">#00bcd0</color>
+    <color name="C3White">#fff</color>
+    <color name="C3Pink">#ff9ea0</color>
+    <color name="C3Red">#ff3553</color>
+    <color name="C3DarkGrey">#646464</color>
+
 </resources>

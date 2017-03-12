@@ -61,7 +61,7 @@
             android:theme="@style/ReskinTheme" >
         </activity>
         <activity
-            android:name=".activities.StorageDialog"
+            android:name=".activities.StorageDialogActivity"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>

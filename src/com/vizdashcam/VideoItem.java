@@ -8,7 +8,6 @@ import org.joda.time.DateTime;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,8 +21,8 @@ public class VideoItem implements Serializable {
 	private File file;
 	private String path;
 	private String name;
-	private String size;
-	private String duration;
+	private int size;
+	private int duration;
 	private DateTime date;
 	private boolean showDate;
 	private boolean isMarked;
@@ -78,10 +77,9 @@ public class VideoItem implements Serializable {
 		long divBy = 1024 * 1024;
 
 		if (length > divBy) {
-			size = String.valueOf(length / divBy);
+			size = (int) length / (int) divBy;
 		} else {
-			size = String.format(Locale.US, "%.1f",
-					((float) ((float) file.length() / (float) divBy)));
+			size = (int) ((float) ((float) file.length() / (float) divBy));
 		}
 	}
 
@@ -93,9 +91,9 @@ public class VideoItem implements Serializable {
 					.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
 			long timeInmillisec = Long.parseLong(time);
 			long seconds = timeInmillisec / 1000;
-			duration = String.valueOf(seconds / 60);
+			duration = (int) seconds / 60;
 		} catch (RuntimeException e) {
-			duration = "-1";
+			duration = -1;
 		}
 	}
 
@@ -219,19 +217,19 @@ public class VideoItem implements Serializable {
 		this.name = mName;
 	}
 
-	public String getSize() {
+	public int getSize() {
 		return size;
 	}
 
-	public void setSize(String mSize) {
+	public void setSize(int mSize) {
 		this.size = mSize;
 	}
 
-	public String getDuration() {
+	public int getDuration() {
 		return duration;
 	}
 
-	public void setDuration(String mDuration) {
+	public void setDuration(int mDuration) {
 		this.duration = mDuration;
 	}
 
@@ -261,8 +259,8 @@ public class VideoItem implements Serializable {
 
 		public int compare(VideoItem vi1, VideoItem vi2) {
 
-			int size1 = Integer.parseInt(vi1.getSize());
-			int size2 = Integer.parseInt(vi2.getSize());
+			int size1 = vi1.getSize();
+			int size2 = vi2.getSize();
 
 			if (size1 > size2)
 				return 1;
@@ -277,8 +275,8 @@ public class VideoItem implements Serializable {
 
 		public int compare(VideoItem vi1, VideoItem vi2) {
 
-			int size1 = Integer.parseInt(vi1.getSize());
-			int size2 = Integer.parseInt(vi2.getSize());
+			int size1 = vi1.getSize();
+			int size2 = vi2.getSize();
 
 			if (size1 < size2)
 				return 1;
