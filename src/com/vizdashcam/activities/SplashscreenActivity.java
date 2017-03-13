@@ -21,12 +21,9 @@ public class SplashscreenActivity extends Activity {
             public void run() {
                 Intent intent;
                 boolean appFirstOpen = SharedPreferencesHelper.getAppFirstOpen(getApplicationContext());
-                if (appFirstOpen) {
-                    intent = new Intent(SplashscreenActivity.this, OnboardingActivity.class);
-                    SharedPreferencesHelper.putAppFirstOpen(getApplicationContext());
-                } else {
-                    intent = new Intent(SplashscreenActivity.this, MainActivity.class);
-                }
+
+                intent = new Intent(SplashscreenActivity.this, MainActivity.class);
+
                 startActivity(intent);
 
                 SplashscreenActivity.this.finish();

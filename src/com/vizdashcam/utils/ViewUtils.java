@@ -2,7 +2,9 @@ package com.vizdashcam.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.StringRes;
+import android.util.DisplayMetrics;
 
 import com.vizdashcam.R;
 
@@ -27,5 +29,11 @@ public class ViewUtils {
                 .setPositiveButton(positiveRes,  positiveListener)
                 .setNegativeButton(negativeRes, negativeListener)
                 .create();
+    }
+
+    public static float dp2px(float dp){
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return Math.round(px);
     }
 }

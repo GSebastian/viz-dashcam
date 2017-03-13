@@ -12,9 +12,6 @@ import android.view.View;
 
 import com.vizdashcam.utils.CameraUtils;
 
-/**
- * Created by sebastian on 04/06/16.
- */
 public class ExpandingCircleView extends View {
 
     private AnimatorSet animatorSet;

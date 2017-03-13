@@ -38,13 +38,7 @@
         </activity>
         <activity
             android:name=".activities.SplashscreenActivity"
-            android:theme="@style/AppTheme.Fullscreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.Fullscreen"/>
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/action_settings"/>
@@ -54,11 +48,14 @@
             android:label="@string/videos"/>
         <activity android:name=".activities.VideoItemActivity"/>
         <activity
-            android:name=".activities.OnboardingActivity"
-            android:theme="@style/AppTheme.Fullscreen"/>
-        <activity
-            android:name=".activities.PermissionsRegrantActivity"
-            android:theme="@style/AppTheme.Fullscreen"/>
+            android:name=".activities.PermissionsActivity"
+            android:theme="@style/AppTheme.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
 
     </application>
 
