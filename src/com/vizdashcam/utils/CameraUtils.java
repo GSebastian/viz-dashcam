@@ -99,6 +99,12 @@ public class CameraUtils {
         return displayHeightLandscape;
     }
 
+    public static int getDisplayDiagonal(Context context) {
+        int widthSquared = getDisplayWidth(context) * getDisplayWidth(context);
+        int heightSquared = getDisplayHeight(context) * getDisplayHeight(context);
+        return (int) Math.sqrt((double) widthSquared + (double) heightSquared);
+    }
+
     public static Integer[] getSupportedCamcorderProfiles() {
 
         List<Integer> supportedProfiles = new ArrayList<>();

@@ -9,7 +9,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0-rc1'
+        classpath 'com.android.tools.build:gradle:2.3.1'
         classpath 'gradle.plugin.com.pablisco.gradle:plugin:0.1'
     }
 }
@@ -70,4 +70,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta5'
     compile 'com.android.support:percent:25.2.0'
     compile 'joda-time:joda-time:2.9.2'
+
+    compile 'rebus:permission-utils:1.0.9'
 }

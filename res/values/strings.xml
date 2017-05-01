@@ -204,7 +204,7 @@
 
     <string name="welcome_to_appname">Welcome to <b>&appname;</b></string>
 
-    <string name="Next">Next</string>
+    <string name="next">Next</string>
 
     <string name="Finish">Finish</string>
 
@@ -213,5 +213,13 @@
     <string name="permission_explanation_location_new"><big><b>Location</b></big>\n\nFor the speedometer to work, the \"Location\" permission must be granted</string>
 
     <string name="permission_explanation_camera_new"><big><b>Camera</b></big>\n\nFor the camera to work, the \"Camera\" permission must be granted</string>
+
+    <string name="permission_explanation_storage_new"><big><b>Storage</b></big>\n\nFor the speedometer to work, the \"Location\" permission must be granted</string>
+
+    <string name="permission_explanation_overlay_new"><big><b>Overlay</b></big>\n\nFor the camera to work, the \"Camera\" permission must be granted</string>
+
+    <string name="permission_granted">Permission granted &#10004;</string>
+
+    <string name="done">Done</string>
 
 </resources>

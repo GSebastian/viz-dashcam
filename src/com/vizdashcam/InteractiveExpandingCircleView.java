@@ -1,5 +1,6 @@
 package com.vizdashcam;
 
+import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,18 +11,21 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.vizdashcam.utils.ViewUtils;
+
 public class InteractiveExpandingCircleView extends View {
 
     private Paint circlePaint;
 
-    private int currentRadiusDIP = 150;
-
     public float originX = 0;
     public float originY = 0;
 
-    int minRadiusDIP = 100;
-    int maxRadiusDIP = 300;
+    public int minRadiusDIP = 100;
+    public int maxRadiusDIP = 300;
+
     int circleColor = Color.WHITE;
+
+    private int currentRadiusDIP = minRadiusDIP;
 
     public InteractiveExpandingCircleView(Context context) {
         super(context);
@@ -58,9 +62,6 @@ public class InteractiveExpandingCircleView extends View {
     }
 
     public void setFraction(float fraction) {
-        // 0.5 ... 0
-        // 1 ... 1
-
         if (fraction < 0.5f) {
             currentRadiusDIP = (int)(((float) maxRadiusDIP - (float) minRadiusDIP) * (fraction * 2f) + (float) minRadiusDIP);
         } else {
@@ -69,5 +70,21 @@ public class InteractiveExpandingCircleView extends View {
         }
 
         invalidate();
+    }
+
+    public void animateToDp(float dpRadius) {
+        animateToPx(ViewUtils.dp2px(dpRadius));
+    }
+
+    public void animateToPx(float pxRadius) {
+        ValueAnimator animator = new ValueAnimator();
+        animator.setTarget(currentRadiusDIP);
+        animator.setFloatValues(ViewUtils.dp2px(pxRadius), pxRadius);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                invalidate();
+            }
+        });
     }
 }

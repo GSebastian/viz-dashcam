@@ -5,16 +5,16 @@ import android.Manifest;
 import com.vizdashcam.R;
 import com.vizdashcam.fragments.FragmentPermissionBase;
 
-public class FragmentPermissionLocation extends FragmentPermissionBase {
+public class FragmentPermissionCamera extends FragmentPermissionBase {
 
     @Override
     public int getImageResource() {
-        return R.drawable.ic_permission_audio;
+        return R.drawable.ic_permission_camera;
     }
 
     @Override
     public int getTextResource() {
-        return R.string.permission_explanation_location_new;
+        return R.string.permission_explanation_camera_new;
     }
 
     @Override
@@ -24,6 +24,6 @@ public class FragmentPermissionLocation extends FragmentPermissionBase {
 
     @Override
     public String getPermission() {
-        return Manifest.permission.ACCESS_FINE_LOCATION;
+        return Manifest.permission.CAMERA;
     }
 }
