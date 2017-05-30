@@ -1,7 +1,6 @@
 package com.vizdashcam;
 
 import android.Manifest;
-import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -18,17 +17,17 @@ public class AdapterPermissionPager extends FragmentPagerAdapter {
 
     private static final String TAG = "AdapterPermissionPager";
 
-    public List<String> necessaryPermissions;
+    public List<String> mNecessaryPermissions;
 
-    public AdapterPermissionPager(Activity activity,
+    public AdapterPermissionPager(List<String> necessaryPermissions,
                                   FragmentManager fm) {
         super(fm);
-        necessaryPermissions = PermissionUtils.computeNecessaryPermissions(activity);
+        mNecessaryPermissions = necessaryPermissions;
     }
 
     @Override
     public Fragment getItem(int position) {
-        String permission = necessaryPermissions.get(position);
+        String permission = mNecessaryPermissions.get(position);
         if (permission.equals(Manifest.permission.CAMERA)) {
             return new FragmentPermissionCamera();
         } else if (permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -44,6 +43,6 @@ public class AdapterPermissionPager extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return necessaryPermissions.size();
+        return mNecessaryPermissions.size();
     }
 }

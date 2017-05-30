@@ -18,11 +18,6 @@ public class FragmentPermissionExternalStorage extends FragmentPermissionBase {
     }
 
     @Override
-    public boolean hasPermission() {
-        return false;
-    }
-
-    @Override
     public String getPermission() {
         return Manifest.permission.WRITE_EXTERNAL_STORAGE;
     }

@@ -25,6 +25,8 @@ import rebus.permissionutils.PermissionManager;
 
 public abstract class FragmentPermissionBase extends Fragment implements OnClickListener {
 
+    private static final String TAG = "FragmentPermissionBase";
+
     private ImageView mIvPermissionIcon;
     private TextView mTvPermissionDescription;
     private Button mBtnGrantPermission;
@@ -48,6 +50,15 @@ public abstract class FragmentPermissionBase extends Fragment implements OnClick
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (hasPermission()) {
+            markPermissionGranted();
+        }
+    }
+
     public void markPermissionGranted() {
         mBtnGrantPermission.setEnabled(false);
         mBtnGrantPermission.setText(R.string.permission_granted);
@@ -59,12 +70,9 @@ public abstract class FragmentPermissionBase extends Fragment implements OnClick
         mBtnGrantPermission = (Button) rootView.findViewById(R.id.btnGrantPermission);
     }
 
-
     private void initViews() {
         mIvPermissionIcon.setImageResource(getImageResource());
-
         mTvPermissionDescription.setText(getTextResource());
-
         mBtnGrantPermission.setOnClickListener(this);
     }
 

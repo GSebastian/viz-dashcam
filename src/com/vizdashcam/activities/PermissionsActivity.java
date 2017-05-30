@@ -1,10 +1,13 @@
 package com.vizdashcam.activities;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
@@ -17,6 +20,13 @@ import com.vizdashcam.InteractiveExpandingCircleView;
 import com.vizdashcam.R;
 import com.vizdashcam.utils.PermissionUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import rebus.permissionutils.FullCallback;
+import rebus.permissionutils.PermissionEnum;
+import rebus.permissionutils.PermissionManager;
+
 public class PermissionsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "PermissionsActivity";
@@ -27,10 +37,17 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
 
     private AdapterPermissionPager mAdapter;
 
+    private List<String> mNecessaryPermissions;
+
     private BroadcastReceiver mPermissionGrantedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             setupNextButton();
+
+            Integer missingPermissionIndex = hasAllNecessaryPermissions();
+            if (missingPermissionIndex != null) {
+                mViewPager.setCurrentItem(missingPermissionIndex);
+            }
         }
     };
 
@@ -39,6 +56,8 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_permissions);
+
+        mNecessaryPermissions = PermissionUtils.computeNecessaryPermissions(PermissionsActivity.this);
 
         findViews();
         initViews();
@@ -62,9 +81,9 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
 
     private void handleNextBtnVisibility() {
         int currentItem = mViewPager.getCurrentItem();
-        int totalItems = mAdapter.necessaryPermissions.size();
+        int totalItems = mNecessaryPermissions.size();
         mBtnNextFinish.setVisibility(currentItem == totalItems - 1 &&
-                PermissionUtils.computeNecessaryPermissions(PermissionsActivity.this).size() > 0 ?
+                hasAllNecessaryPermissions() != null ?
                 View.INVISIBLE :
                 View.VISIBLE);
     }
@@ -78,7 +97,7 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
     private void initViews() {
         mBtnNextFinish.setOnClickListener(this);
 
-        mAdapter = new AdapterPermissionPager(PermissionsActivity.this, getSupportFragmentManager());
+        mAdapter = new AdapterPermissionPager(mNecessaryPermissions, getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -101,7 +120,7 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void setupNextButton() {
-        if (PermissionUtils.computeNecessaryPermissions(PermissionsActivity.this).size() == 0) {
+        if (hasAllNecessaryPermissions() == null) {
             mBtnNextFinish.setText(R.string.done);
         } else {
             mBtnNextFinish.setText(R.string.next);
@@ -109,18 +128,58 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
         handleNextBtnVisibility();
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    private Integer hasAllNecessaryPermissions() {
+        for (int i = 0; i < mNecessaryPermissions.size(); i++) {
+            String permission = mNecessaryPermissions.get(i);
+            if (permission.equals(PermissionUtils.PERMISSION_OVERLAY)) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) { continue; }
+                if (!Settings.canDrawOverlays(this)) { return i; }
+            } else {
+                if (!rebus.permissionutils.PermissionUtils.isGranted(this,
+                        PermissionEnum.fromManifestPermission(permission))) {
+                    return i;
+                }
+            }
+        }
+
+        return null;
+    }
+
     //region View.OnClickListener±
     @Override
     public void onClick(View view) {
         if (view == mBtnNextFinish) {
-            if (PermissionUtils.computeNecessaryPermissions(PermissionsActivity.this).size() == 0) {
+            Integer missingPermissionIndex = hasAllNecessaryPermissions();
+            if (missingPermissionIndex == null) {
                 finish();
             } else {
-                int currentItem = mViewPager.getCurrentItem();
-                int totalItems = mAdapter.necessaryPermissions.size();
-                if (currentItem < totalItems - 1) { mViewPager.setCurrentItem(currentItem + 1, true); }
+                mViewPager.setCurrentItem(missingPermissionIndex);
+                String permissionToGrant = mNecessaryPermissions.get(missingPermissionIndex);
+                if (permissionToGrant.equals(PermissionUtils.PERMISSION_OVERLAY)) {
+
+                } else {
+                    PermissionManager.with(this)
+                            .permission(PermissionEnum.fromManifestPermission(permissionToGrant))
+                            .callback(new FullCallback() {
+                                @Override
+                                public void result(ArrayList<PermissionEnum> permissionsGranted, ArrayList<PermissionEnum>
+                                        permissionsDenied, ArrayList<PermissionEnum> permissionsDeniedForever,
+                                                   ArrayList<PermissionEnum> permissionsAsked) {
+                                    if (permissionsGranted.size() > 0) {
+                                        sendPermissionGranted();
+                                    }
+                                }
+                            })
+                            .ask();
+                }
             }
         }
     }
     //endregion
+
+    public void sendPermissionGranted() {
+        Intent intent = new Intent(PermissionUtils.PERMISSION_GRANTED_BROADCAST);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
 }

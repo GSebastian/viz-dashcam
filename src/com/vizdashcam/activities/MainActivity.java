@@ -12,10 +12,14 @@ import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 
+import com.vizdashcam.BuildConfig;
 import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
 import com.vizdashcam.ServicePreview;
 import com.vizdashcam.utils.PermissionUtils;
+
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,12 +55,8 @@ public class MainActivity extends AppCompatActivity {
         initViews();
 
         appState = (GlobalState) getApplicationContext();
-    }
 
-    private void findViews() {
-    }
-
-    private void initViews() {
+        checkForUpdates();
     }
 
     @Override
@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             initService();
         }
+
+        checkForCrashes();
     }
 
     @Override
@@ -91,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
                 stopService(new Intent(MainActivity.this, ServicePreview.class));
             }
         }
+
+        unregisterManagers();
     }
 
     @Override
@@ -111,6 +115,14 @@ public class MainActivity extends AppCompatActivity {
                 stopService(new Intent(MainActivity.this, ServicePreview.class));
             }
         }
+
+        unregisterManagers();
+    }
+
+    private void findViews() {
+    }
+
+    private void initViews() {
     }
 
     private void initService() {
@@ -140,4 +152,20 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    //region HockeyApp
+    private void checkForCrashes() {
+        CrashManager.register(this);
+    }
+
+    private void checkForUpdates() {
+        if (BuildConfig.DEBUG) {
+            UpdateManager.register(this);
+        }
+    }
+
+    private void unregisterManagers() {
+        UpdateManager.unregister();
+    }
+    //endregion
 }

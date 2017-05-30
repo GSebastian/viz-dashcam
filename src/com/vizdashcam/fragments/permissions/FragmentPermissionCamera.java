@@ -18,11 +18,6 @@ public class FragmentPermissionCamera extends FragmentPermissionBase {
     }
 
     @Override
-    public boolean hasPermission() {
-        return false;
-    }
-
-    @Override
     public String getPermission() {
         return Manifest.permission.CAMERA;
     }
