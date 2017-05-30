@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-        android:viewportWidth="258"
-        android:viewportHeight="183"
         android:width="258dp"
-        android:height="183dp">
+        android:height="183dp"
+        android:viewportHeight="183"
+        android:viewportWidth="258">
     <group
         android:translateX="-124"
         android:translateY="-181">
@@ -11,23 +11,23 @@
             android:translateX="131"
             android:translateY="185">
             <path
-                android:pathData="M100 0L100 175 0 0Z"
-                android:fillColor="#000000" />
+                android:fillColor="#000000"
+                android:pathData="M100 0L100 175 0 0Z"/>
             <path
-                android:pathData="M100 0L100 175 0 0Z"
-                android:fillColor="#ffffff" />
+                android:fillColor="#ffffff"
+                android:pathData="M100 0L100 175 0 0Z"/>
             <path
-                android:pathData="M100 0l50 0 0 175 -50 0z"
-                android:fillColor="#000000" />
+                android:fillColor="#000000"
+                android:pathData="M100 0l50 0 0 175 -50 0z"/>
             <path
-                android:pathData="M100 0l50 0 0 175 -50 0z"
-                android:fillColor="#ffffff" />
+                android:fillColor="#ffffff"
+                android:pathData="M100 0l50 0 0 175 -50 0z"/>
             <path
-                android:pathData="M200 87.5L250 0 150 0l0 87.5 -50 87.5 100 0 0 -87.5z"
-                android:fillColor="#000000" />
+                android:fillColor="#000000"
+                android:pathData="M200 87.5L250 0 150 0l0 87.5 -50 87.5 100 0 0 -87.5z"/>
             <path
-                android:pathData="M200 87.5L250 0 150 0l0 87.5 -50 87.5 100 0 0 -87.5z"
-                android:fillColor="#ffffff" />
+                android:fillColor="#ffffff"
+                android:pathData="M200 87.5L250 0 150 0l0 87.5 -50 87.5 100 0 0 -87.5z"/>
         </group>
     </group>
 </vector>

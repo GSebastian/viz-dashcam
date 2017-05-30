@@ -15,16 +15,12 @@ import com.vizdashcam.utils.ViewUtils;
 
 public class InteractiveExpandingCircleView extends View {
 
-    private Paint circlePaint;
-
     public float originX = 0;
     public float originY = 0;
-
     public int minRadiusDIP = 100;
     public int maxRadiusDIP = 300;
-
     int circleColor = Color.WHITE;
-
+    private Paint circlePaint;
     private int currentRadiusDIP = minRadiusDIP;
 
     public InteractiveExpandingCircleView(Context context) {
@@ -63,10 +59,12 @@ public class InteractiveExpandingCircleView extends View {
 
     public void setFraction(float fraction) {
         if (fraction < 0.5f) {
-            currentRadiusDIP = (int)(((float) maxRadiusDIP - (float) minRadiusDIP) * (fraction * 2f) + (float) minRadiusDIP);
+            currentRadiusDIP = (int) (((float) maxRadiusDIP - (float) minRadiusDIP) * (fraction * 2f) + (float)
+                    minRadiusDIP);
         } else {
-            currentRadiusDIP = (int)((float) maxRadiusDIP - ((float) maxRadiusDIP - (float) minRadiusDIP) * Math.abs(1f -
-            (fraction * 2f)));
+            currentRadiusDIP = (int) ((float) maxRadiusDIP - ((float) maxRadiusDIP - (float) minRadiusDIP) * Math.abs
+                    (1f -
+                            (fraction * 2f)));
         }
 
         invalidate();

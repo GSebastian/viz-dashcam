@@ -15,11 +15,10 @@ import rebus.permissionutils.PermissionEnum;
 
 public class PermissionUtils {
 
-    private static final String TAG = "PermissionUtils";
-
     public static final int REQUEST_CODE_PERMISSIONS = 100;
     public static final String PERMISSION_OVERLAY = "PERMISSION_OVERLAY";
     public static final String PERMISSION_GRANTED_BROADCAST = "PERMISSION_GRANTED_BROADCAST";
+    private static final String TAG = "PermissionUtils";
 
     public static List<String> computeNecessaryPermissions(Activity activity) {
         Log.d(TAG, "computeNecessaryPermissions: Checking for permissions ...");

@@ -1,13 +1,13 @@
 package com.vizdashcam.utils;
 
+import android.webkit.MimeTypeMap;
+
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.regex.Pattern;
-
-import org.apache.commons.io.FilenameUtils;
-
-import android.webkit.MimeTypeMap;
 
 public class VideoDetector {
     private static final HashMap<String, String> MIME_TYPES = new HashMap<String, String>();

@@ -243,27 +243,6 @@ public class FragmentPreferences extends PreferenceFragment {
         }
     }
 
-    class FeedbackClickListener implements OnPreferenceClickListener {
-
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            tactileFeedback();
-            audioFeedback();
-            return true;
-        }
-    }
-
-    class FeedbackPreferenceChangeListener implements
-            OnPreferenceChangeListener {
-
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-            tactileFeedback();
-            audioFeedback();
-            return true;
-        }
-    }
-
     @TargetApi(Build.VERSION_CODES.M)
     private boolean hasAudioRecordingPermission() {
         int permissionResultCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission
@@ -319,5 +298,26 @@ public class FragmentPreferences extends PreferenceFragment {
 
     public void lostLocationPermission() {
         speedometerActive.setChecked(false);
+    }
+
+    class FeedbackClickListener implements OnPreferenceClickListener {
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            tactileFeedback();
+            audioFeedback();
+            return true;
+        }
+    }
+
+    class FeedbackPreferenceChangeListener implements
+            OnPreferenceChangeListener {
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            tactileFeedback();
+            audioFeedback();
+            return true;
+        }
     }
 }

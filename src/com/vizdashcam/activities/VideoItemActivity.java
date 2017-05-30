@@ -128,7 +128,8 @@ public class VideoItemActivity extends AppCompatActivity {
                             .setActionTextColor(getResources().getColor(R.color.White))
                             .setAction(R.string.got_it, new OnClickListener() {
                                 @Override
-                                public void onClick(View v) {}
+                                public void onClick(View v) {
+                                }
                             })
                             .show();
                 } else {
@@ -145,7 +146,8 @@ public class VideoItemActivity extends AppCompatActivity {
                             .setActionTextColor(getResources().getColor(R.color.White))
                             .setAction(R.string.got_it, new OnClickListener() {
                                 @Override
-                                public void onClick(View v) {}
+                                public void onClick(View v) {
+                                }
                             })
                             .show();
                 }

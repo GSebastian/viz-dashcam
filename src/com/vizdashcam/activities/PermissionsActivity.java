@@ -133,8 +133,12 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
         for (int i = 0; i < mNecessaryPermissions.size(); i++) {
             String permission = mNecessaryPermissions.get(i);
             if (permission.equals(PermissionUtils.PERMISSION_OVERLAY)) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) { continue; }
-                if (!Settings.canDrawOverlays(this)) { return i; }
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    continue;
+                }
+                if (!Settings.canDrawOverlays(this)) {
+                    return i;
+                }
             } else {
                 if (!rebus.permissionutils.PermissionUtils.isGranted(this,
                         PermissionEnum.fromManifestPermission(permission))) {
@@ -163,8 +167,10 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
                             .permission(PermissionEnum.fromManifestPermission(permissionToGrant))
                             .callback(new FullCallback() {
                                 @Override
-                                public void result(ArrayList<PermissionEnum> permissionsGranted, ArrayList<PermissionEnum>
-                                        permissionsDenied, ArrayList<PermissionEnum> permissionsDeniedForever,
+                                public void result(ArrayList<PermissionEnum> permissionsGranted,
+                                                   ArrayList<PermissionEnum>
+                                                           permissionsDenied, ArrayList<PermissionEnum>
+                                                           permissionsDeniedForever,
                                                    ArrayList<PermissionEnum> permissionsAsked) {
                                     if (permissionsGranted.size() > 0) {
                                         sendPermissionGranted();

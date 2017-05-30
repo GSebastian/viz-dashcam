@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="135dp"
-    android:background="@color/C2White"
-    android:baselineAligned="false"
-    android:orientation="vertical"
-    android:textColor="@color/C2Black" >
+              android:layout_width="fill_parent"
+              android:layout_height="135dp"
+              android:background="@color/C2White"
+              android:baselineAligned="false"
+              android:orientation="vertical"
+              android:textColor="@color/C2Black">
 
     <TextView
         android:id="@+id/tv_date"
@@ -13,7 +13,7 @@
         android:layout_height="35dp"
         android:gravity="center"
         android:textColor="@color/C2Black"
-        android:textSize="18sp" >
+        android:textSize="18sp">
     </TextView>
 
     <LinearLayout
@@ -23,20 +23,20 @@
         android:baselineAligned="false"
         android:orientation="horizontal"
         android:padding="5dp"
-        android:textColor="@color/C2Black" >
+        android:textColor="@color/C2Black">
 
         <ImageView
             android:id="@+id/siv_tumbnail"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center_vertical"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"/>
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:paddingLeft="5dp" >
+            android:paddingLeft="5dp">
 
             <TextView
                 android:id="@+id/tv_title"
@@ -45,28 +45,28 @@
                 android:layout_weight="1"
                 android:gravity="left|center_vertical"
                 android:paddingLeft="40dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="5dp"
                 android:layout_weight="1"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/iv_length"
                     android:layout_width="30dp"
                     android:layout_height="match_parent"
                     android:scaleType="centerInside"
-                    android:src="@drawable/icon_length" />
+                    android:src="@drawable/icon_length"/>
 
                 <TextView
                     android:id="@+id/tv_length"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:gravity="left|center_vertical"
-                    android:paddingLeft="10dp" />
+                    android:paddingLeft="10dp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -74,21 +74,21 @@
                 android:layout_height="0dp"
                 android:layout_marginTop="5dp"
                 android:layout_weight="1"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/iv_size"
                     android:layout_width="30dp"
                     android:layout_height="match_parent"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/icon_size" />
+                    android:src="@drawable/icon_size"/>
 
                 <TextView
                     android:id="@+id/tv_size"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:gravity="left|center_vertical"
-                    android:paddingLeft="10dp" />
+                    android:paddingLeft="10dp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -98,14 +98,14 @@
                 android:layout_marginTop="5dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:visibility="invisible" >
+                android:visibility="invisible">
 
                 <ImageView
                     android:id="@+id/iv_shock"
                     android:layout_width="30dp"
                     android:layout_height="match_parent"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/icon_shock" />
+                    android:src="@drawable/icon_shock"/>
 
                 <TextView
                     android:id="@+id/tv_shock"
@@ -114,7 +114,7 @@
                     android:gravity="left|center_vertical"
                     android:paddingLeft="10dp"
                     android:text="Shock detected!"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

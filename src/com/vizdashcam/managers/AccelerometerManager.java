@@ -37,6 +37,76 @@ public class AccelerometerManager {
      * indicates whether or not Accelerometer Sensor is running
      */
     private static boolean running = false;
+    /**
+     * The listener that listen to events from the accelerometer listener
+     */
+    private static SensorEventListener sensorEventListener = new SensorEventListener() {
+
+        private long now = 0;
+        private long timeDiff = 0;
+        private long lastUpdate = 0;
+        private long lastShake = 0;
+
+        private float x = 0;
+        private float y = 0;
+        private float z = 0;
+        private float lastX = 0;
+        private float lastY = 0;
+        private float lastZ = 0;
+        private float force = 0;
+
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+
+        public void onSensorChanged(SensorEvent event) {
+            // use the event timestamp as reference
+            // so the manager precision won't depends
+            // on the AccelerometerListener implementation
+            // processing time
+            now = event.timestamp;
+
+            x = event.values[0];
+            y = event.values[1];
+            z = event.values[2];
+
+            // if not interesting in shake events
+            // just remove the whole if then else block
+            if (lastUpdate == 0) {
+
+                lastUpdate = now;
+                lastShake = now;
+                lastX = x;
+                lastY = y;
+                lastZ = z;
+            } else {
+
+                timeDiff = now - lastUpdate;
+
+                if (timeDiff > 0) {
+
+					/*
+                     * force = Math.abs(x + y + z - lastX - lastY - lastZ) /
+					 * timeDiff;
+					 */
+                    force = Math.abs(x + y + z - lastX - lastY - lastZ);
+
+                    if (Float.compare(force, threshold) > 0) {
+
+                        if (now - lastShake >= interval) {
+                            listener.onShake(force);
+                        }
+
+                        lastShake = now;
+                    }
+                    lastX = x;
+                    lastY = y;
+                    lastZ = z;
+                    lastUpdate = now;
+                }
+            }
+        }
+    };
 
     /**
      * Returns true if the manager is listening to orientation changes
@@ -141,75 +211,4 @@ public class AccelerometerManager {
         configure(threshold, interval);
         startListening(accelerometerListener);
     }
-
-    /**
-     * The listener that listen to events from the accelerometer listener
-     */
-    private static SensorEventListener sensorEventListener = new SensorEventListener() {
-
-        private long now = 0;
-        private long timeDiff = 0;
-        private long lastUpdate = 0;
-        private long lastShake = 0;
-
-        private float x = 0;
-        private float y = 0;
-        private float z = 0;
-        private float lastX = 0;
-        private float lastY = 0;
-        private float lastZ = 0;
-        private float force = 0;
-
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-        }
-
-        public void onSensorChanged(SensorEvent event) {
-            // use the event timestamp as reference
-            // so the manager precision won't depends
-            // on the AccelerometerListener implementation
-            // processing time
-            now = event.timestamp;
-
-            x = event.values[0];
-            y = event.values[1];
-            z = event.values[2];
-
-            // if not interesting in shake events
-            // just remove the whole if then else block
-            if (lastUpdate == 0) {
-
-                lastUpdate = now;
-                lastShake = now;
-                lastX = x;
-                lastY = y;
-                lastZ = z;
-            } else {
-
-                timeDiff = now - lastUpdate;
-
-                if (timeDiff > 0) {
-
-					/*
-                     * force = Math.abs(x + y + z - lastX - lastY - lastZ) /
-					 * timeDiff;
-					 */
-                    force = Math.abs(x + y + z - lastX - lastY - lastZ);
-
-                    if (Float.compare(force, threshold) > 0) {
-
-                        if (now - lastShake >= interval) {
-                            listener.onShake(force);
-                        }
-
-                        lastShake = now;
-                    }
-                    lastX = x;
-                    lastY = y;
-                    lastZ = z;
-                    lastUpdate = now;
-                }
-            }
-        }
-    };
 }

@@ -28,15 +28,10 @@ public class StorageManager extends Thread {
     private static long totalSpace = mediaStorageDir.getTotalSpace();
     private static long full95 = (long) (0.05 * totalSpace);
     private static long full90 = (long) (0.10 * totalSpace);
-    private boolean isStopped = false;
-
     private static GlobalState appState;
     private static ServicePreview previewService;
     private static Handler handler;
-
-    public void setStopped() {
-        isStopped = true;
-    }
+    private boolean isStopped = false;
 
     public StorageManager(Context appState, ServicePreview previewService,
                           Handler handler) {
@@ -62,6 +57,10 @@ public class StorageManager extends Thread {
         if (freeSpace <= full90)
             return true;
         return false;
+    }
+
+    public void setStopped() {
+        isStopped = true;
     }
 
     @Override

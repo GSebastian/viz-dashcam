@@ -14,10 +14,9 @@ import com.vizdashcam.utils.CameraUtils;
 
 public class ExpandingCircleView extends View {
 
+    float x, y;
     private AnimatorSet animatorSet;
     private Paint circlePaint;
-
-    float x, y;
     private int currentSizePX;
     private int startSizePX = 0;
     private int endSizePX;

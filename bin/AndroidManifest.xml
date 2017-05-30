@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vizdashcam"
-    android:versionCode="1"
-    android:versionName="1.0" >
+          package="com.vizdashcam"
+          android:versionCode="1"
+          android:versionName="1.0">
 
-    <supports-screens android:anyDensity="true" />
+    <supports-screens android:anyDensity="true"/>
 
     <uses-sdk
         android:minSdkVersion="16"
-        android:targetSdkVersion="21" />
-    
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
-    
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+        android:targetSdkVersion="21"/>
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true"/>
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:name="GlobalState"
@@ -28,12 +30,12 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@android:style/Theme.Holo.Light" >
-        
+        android:theme="@android:style/Theme.Holo.Light">
+
         <service
             android:name="com.vizdashcam.ServicePreview"
             android:enabled="true"
-            android:stopWithTask="false" />
+            android:stopWithTask="false"/>
 
         <activity
             android:name=".activities.MainActivity"
@@ -41,42 +43,42 @@
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar" >
+            android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".activities.SplashscreenActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar" >
+            android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/app_name"
             android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/ReskinTheme" >
+            android:theme="@style/ReskinTheme">
         </activity>
         <activity
             android:name=".activities.StorageDialogActivity"
             android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
         </activity>
         <activity
             android:name=".activities.VideoListActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/ReskinTheme" >
+            android:theme="@style/ReskinTheme">
         </activity>
         <activity
             android:name=".activities.VideoItemActivity"
             android:label="@string/app_name"
             android:parentActivityName=".activities.VideoListActivity"
-            android:theme="@style/ReskinTheme" >
+            android:theme="@style/ReskinTheme">
         </activity>
     </application>
 

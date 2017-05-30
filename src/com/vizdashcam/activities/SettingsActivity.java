@@ -19,11 +19,9 @@ import com.vizdashcam.fragments.FragmentPreferences;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
-    private static final String TAG = "Settings";
-
     public static final int CODE_AUDIO_RECORDING_PERMISSION = 555;
     public static final int CODE_FINE_LOCATION_PERMISSION = 777;
-
+    private static final String TAG = "Settings";
     private Toolbar toolbar;
 
     private FragmentPreferences preferencesFragment;

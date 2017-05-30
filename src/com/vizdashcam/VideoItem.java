@@ -13,289 +13,285 @@ import java.util.regex.Pattern;
 
 public class VideoItem implements Serializable {
 
-	public static final String TAG = "VideoItem";
-	public static final String EXTENSION_MARKED_FILE = "_M";
-	private File mediaStorageDir = new File(
-			Environment.getExternalStorageDirectory(), "vizDashcamApp");
+    public static final String TAG = "VideoItem";
+    public static final String EXTENSION_MARKED_FILE = "_M";
+    public static Comparator<VideoItem> VideoSizeComparator = new Comparator<VideoItem>() {
 
-	private File file;
-	private String path;
-	private String name;
-	private int size;
-	private int duration;
-	private DateTime date;
-	private boolean showDate;
-	private boolean isMarked;
+        public int compare(VideoItem vi1, VideoItem vi2) {
 
-	public VideoItem(final File file) {
-		this.file = file;
-		path = this.file.getAbsolutePath();
-		name = this.file.getName();
-		setFileSize();
-		setVideoDuration();
-		setDate();
-		showDate = false;
-		if (isMarked()) {
-			isMarked = true;
-		} else {
-			isMarked = false;
-		}
-	}
+            int size1 = vi1.getSize();
+            int size2 = vi2.getSize();
 
-	public VideoItem(VideoItem video) {
-		this.file = video.getFile();
-		this.path = this.file.getAbsolutePath();
-		this.name = this.file.getName();
-		this.size = video.getSize();
-		this.duration = video.getDuration();
-		this.date = video.getDate();
-		this.showDate = false;
-		if (isMarked()) {
-			isMarked = true;
-		} else {
-			isMarked = false;
-		}
-	}
+            if (size1 > size2)
+                return 1;
+            else if (size1 < size2)
+                return -1;
+            else
+                return 0;
+        }
+    };
+    public static Comparator<VideoItem> VideoSizeComparatorDesc = new Comparator<VideoItem>() {
 
-	private void setDate() {
-		if (checkFileNameValidity()) {
-			int year = Integer.parseInt(name.substring(4, 8));
-			int month = Integer.parseInt(name.substring(8, 10));
-			int day = Integer.parseInt(name.substring(10, 12));
-			int hour = Integer.parseInt(name.substring(13, 15));
-			int minutes = Integer.parseInt(name.substring(15, 17));
-			int seconds = Integer.parseInt(name.substring(17, 19));
+        public int compare(VideoItem vi1, VideoItem vi2) {
 
-			date = new DateTime(year, month, day, hour, minutes, seconds);
-		} else {
-			date = new DateTime(1993, 10, 1, 5, 0, 0);
-		}
-	}
+            int size1 = vi1.getSize();
+            int size2 = vi2.getSize();
 
-	private void setFileSize() {
-		long length = file.length();
-		long divBy = 1024 * 1024;
+            if (size1 < size2)
+                return 1;
+            else if (size1 > size2)
+                return -1;
+            else
+                return 0;
+        }
+    };
+    public static Comparator<VideoItem> VideoDateComparatorDesc = new Comparator<VideoItem>() {
 
-		if (length > divBy) {
-			size = (int) length / (int) divBy;
-		} else {
-			size = (int) ((float) ((float) file.length() / (float) divBy));
-		}
-	}
+        public int compare(VideoItem vi1, VideoItem vi2) {
 
-	private void setVideoDuration() {
-		try {
-			MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-			retriever.setDataSource(path);
-			String time = retriever
-					.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-			long timeInmillisec = Long.parseLong(time);
-			long seconds = timeInmillisec / 1000;
-			duration = (int) seconds / 60;
-		} catch (RuntimeException e) {
-			duration = -1;
-		}
-	}
+            DateTime d1 = vi1.getDate();
+            DateTime d2 = vi2.getDate();
 
-	public boolean isMarked() {
-		int lastPointIndex = file.getName().lastIndexOf(".");
-		String lastTwoChars = file.getName()
-				.substring(lastPointIndex - EXTENSION_MARKED_FILE.length(),
-						lastPointIndex);
+            return d2.compareTo(d1);
+        }
+    };
+    private File mediaStorageDir = new File(
+            Environment.getExternalStorageDirectory(), "vizDashcamApp");
+    private File file;
+    private String path;
+    private String name;
+    private int size;
+    private int duration;
+    private DateTime date;
+    private boolean showDate;
+    private boolean isMarked;
 
-		if (lastTwoChars.compareTo(VideoItem.EXTENSION_MARKED_FILE) == 0) {
-			return true;
-		}
+    public VideoItem(final File file) {
+        this.file = file;
+        path = this.file.getAbsolutePath();
+        name = this.file.getName();
+        setFileSize();
+        setVideoDuration();
+        setDate();
+        showDate = false;
+        if (isMarked()) {
+            isMarked = true;
+        } else {
+            isMarked = false;
+        }
+    }
 
-		return false;
-	}
+    public VideoItem(VideoItem video) {
+        this.file = video.getFile();
+        this.path = this.file.getAbsolutePath();
+        this.name = this.file.getName();
+        this.size = video.getSize();
+        this.duration = video.getDuration();
+        this.date = video.getDate();
+        this.showDate = false;
+        if (isMarked()) {
+            isMarked = true;
+        } else {
+            isMarked = false;
+        }
+    }
 
-	public static boolean isMarked(String name) {
-		int lastPointIndex = name.lastIndexOf(".");
-		String lastTwoChars = name.substring(lastPointIndex
-				- VideoItem.EXTENSION_MARKED_FILE.length(), lastPointIndex);
+    public static boolean isMarked(String name) {
+        int lastPointIndex = name.lastIndexOf(".");
+        String lastTwoChars = name.substring(lastPointIndex
+                - VideoItem.EXTENSION_MARKED_FILE.length(), lastPointIndex);
 
-		if (lastTwoChars.compareTo(VideoItem.EXTENSION_MARKED_FILE) == 0) {
-			return true;
-		}
+        if (lastTwoChars.compareTo(VideoItem.EXTENSION_MARKED_FILE) == 0) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public String setMarked(boolean value) {
+    public static boolean checkFileNameValidity(String name) {
+        String REGEX = "VID_\\d\\d\\d\\d\\d\\d\\d\\d_\\d\\d\\d\\d\\d\\d.*";
 
-		if (value) {
-			if (!isMarked()) {
-				StringBuilder stringBuilder = new StringBuilder(name);
-				int lastPointPosition = name.lastIndexOf(".");
-				if (lastPointPosition != -1) {
-					stringBuilder.insert(lastPointPosition,
-							VideoItem.EXTENSION_MARKED_FILE);
-					String markedFileName = stringBuilder.toString();
-					File from = new File(mediaStorageDir, name);
-					File to = new File(mediaStorageDir, markedFileName);
-					name = markedFileName;
+        Pattern pattern = Pattern.compile(REGEX);
+        Matcher matcher = pattern.matcher(name);
+        if (matcher.find())
+            return true;
 
-					if (from.exists())
-						from.renameTo(to);
-					file = to;
-					path = to.getPath();
-					isMarked = true;
+        return false;
+    }
 
-					return name;
-				}
-			}
-		} else if (isMarked()) {
-			StringBuilder stringBuilder = new StringBuilder(name);
-			int lastPointPosition = name.lastIndexOf(".");
-			if (lastPointPosition != -1) {
-				stringBuilder.delete(lastPointPosition - VideoItem.EXTENSION_MARKED_FILE.length(), lastPointPosition);
-				String unmarkedFileName = stringBuilder.toString();
-				File from = new File(mediaStorageDir, name);
-				File to = new File(mediaStorageDir, unmarkedFileName);
-				name = unmarkedFileName;
+    private void setDate() {
+        if (checkFileNameValidity()) {
+            int year = Integer.parseInt(name.substring(4, 8));
+            int month = Integer.parseInt(name.substring(8, 10));
+            int day = Integer.parseInt(name.substring(10, 12));
+            int hour = Integer.parseInt(name.substring(13, 15));
+            int minutes = Integer.parseInt(name.substring(15, 17));
+            int seconds = Integer.parseInt(name.substring(17, 19));
 
-				if (from.exists())
-					from.renameTo(to);
-				file = to;
-				path = to.getPath();
-				isMarked = false;
+            date = new DateTime(year, month, day, hour, minutes, seconds);
+        } else {
+            date = new DateTime(1993, 10, 1, 5, 0, 0);
+        }
+    }
 
-				return name;
-			}
-		}
+    private void setFileSize() {
+        long length = file.length();
+        long divBy = 1024 * 1024;
 
-		return name;
-	}
+        if (length > divBy) {
+            size = (int) length / (int) divBy;
+        } else {
+            size = (int) ((float) ((float) file.length() / (float) divBy));
+        }
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof VideoItem) {
-			if (((VideoItem) o).getPath().compareTo(this.getPath()) == 0) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
+    private void setVideoDuration() {
+        try {
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(path);
+            String time = retriever
+                    .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            long timeInmillisec = Long.parseLong(time);
+            long seconds = timeInmillisec / 1000;
+            duration = (int) seconds / 60;
+        } catch (RuntimeException e) {
+            duration = -1;
+        }
+    }
 
-	public Boolean getShowDate() {
-		return showDate;
-	}
+    public boolean isMarked() {
+        int lastPointIndex = file.getName().lastIndexOf(".");
+        String lastTwoChars = file.getName()
+                .substring(lastPointIndex - EXTENSION_MARKED_FILE.length(),
+                        lastPointIndex);
 
-	public void setShowDate(Boolean mShowDate) {
-		this.showDate = mShowDate;
-	}
+        if (lastTwoChars.compareTo(VideoItem.EXTENSION_MARKED_FILE) == 0) {
+            return true;
+        }
 
-	public DateTime getDate() {
-		return date;
-	}
+        return false;
+    }
 
-	public File getFile() {
-		return file;
-	}
+    public String setMarked(boolean value) {
 
-	public void setFile(File mFile) {
-		this.file = mFile;
-	}
+        if (value) {
+            if (!isMarked()) {
+                StringBuilder stringBuilder = new StringBuilder(name);
+                int lastPointPosition = name.lastIndexOf(".");
+                if (lastPointPosition != -1) {
+                    stringBuilder.insert(lastPointPosition,
+                            VideoItem.EXTENSION_MARKED_FILE);
+                    String markedFileName = stringBuilder.toString();
+                    File from = new File(mediaStorageDir, name);
+                    File to = new File(mediaStorageDir, markedFileName);
+                    name = markedFileName;
 
-	public String getPath() {
-		return path;
-	}
+                    if (from.exists())
+                        from.renameTo(to);
+                    file = to;
+                    path = to.getPath();
+                    isMarked = true;
 
-	public void setPath(String mPath) {
-		this.path = mPath;
-	}
+                    return name;
+                }
+            }
+        } else if (isMarked()) {
+            StringBuilder stringBuilder = new StringBuilder(name);
+            int lastPointPosition = name.lastIndexOf(".");
+            if (lastPointPosition != -1) {
+                stringBuilder.delete(lastPointPosition - VideoItem.EXTENSION_MARKED_FILE.length(), lastPointPosition);
+                String unmarkedFileName = stringBuilder.toString();
+                File from = new File(mediaStorageDir, name);
+                File to = new File(mediaStorageDir, unmarkedFileName);
+                name = unmarkedFileName;
 
-	public String getName() {
-		return name;
-	}
+                if (from.exists())
+                    from.renameTo(to);
+                file = to;
+                path = to.getPath();
+                isMarked = false;
 
-	public void setName(String mName) {
-		this.name = mName;
-	}
+                return name;
+            }
+        }
 
-	public int getSize() {
-		return size;
-	}
+        return name;
+    }
 
-	public void setSize(int mSize) {
-		this.size = mSize;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof VideoItem) {
+            if (((VideoItem) o).getPath().compareTo(this.getPath()) == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
-	public int getDuration() {
-		return duration;
-	}
+    public Boolean getShowDate() {
+        return showDate;
+    }
 
-	public void setDuration(int mDuration) {
-		this.duration = mDuration;
-	}
+    public void setShowDate(Boolean mShowDate) {
+        this.showDate = mShowDate;
+    }
 
-	private boolean checkFileNameValidity() {
-		String REGEX = "VID_\\d\\d\\d\\d\\d\\d\\d\\d_\\d\\d\\d\\d\\d\\d.*";
+    public DateTime getDate() {
+        return date;
+    }
 
-		Pattern pattern = Pattern.compile(REGEX);
-		Matcher matcher = pattern.matcher(name);
-		if (matcher.find())
-			return true;
+    public File getFile() {
+        return file;
+    }
 
-		return false;
-	}
+    public void setFile(File mFile) {
+        this.file = mFile;
+    }
 
-	public static boolean checkFileNameValidity(String name) {
-		String REGEX = "VID_\\d\\d\\d\\d\\d\\d\\d\\d_\\d\\d\\d\\d\\d\\d.*";
+    public String getPath() {
+        return path;
+    }
 
-		Pattern pattern = Pattern.compile(REGEX);
-		Matcher matcher = pattern.matcher(name);
-		if (matcher.find())
-			return true;
+    public void setPath(String mPath) {
+        this.path = mPath;
+    }
 
-		return false;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public static Comparator<VideoItem> VideoSizeComparator = new Comparator<VideoItem>() {
+    public void setName(String mName) {
+        this.name = mName;
+    }
 
-		public int compare(VideoItem vi1, VideoItem vi2) {
+    public int getSize() {
+        return size;
+    }
 
-			int size1 = vi1.getSize();
-			int size2 = vi2.getSize();
+    public void setSize(int mSize) {
+        this.size = mSize;
+    }
 
-			if (size1 > size2)
-				return 1;
-			else if (size1 < size2)
-				return -1;
-			else
-				return 0;
-		}
-	};
+    public int getDuration() {
+        return duration;
+    }
 
-	public static Comparator<VideoItem> VideoSizeComparatorDesc = new Comparator<VideoItem>() {
+    public void setDuration(int mDuration) {
+        this.duration = mDuration;
+    }
 
-		public int compare(VideoItem vi1, VideoItem vi2) {
+    private boolean checkFileNameValidity() {
+        String REGEX = "VID_\\d\\d\\d\\d\\d\\d\\d\\d_\\d\\d\\d\\d\\d\\d.*";
 
-			int size1 = vi1.getSize();
-			int size2 = vi2.getSize();
+        Pattern pattern = Pattern.compile(REGEX);
+        Matcher matcher = pattern.matcher(name);
+        if (matcher.find())
+            return true;
 
-			if (size1 < size2)
-				return 1;
-			else if (size1 > size2)
-				return -1;
-			else
-				return 0;
-		}
-	};
-
-	public static Comparator<VideoItem> VideoDateComparatorDesc = new Comparator<VideoItem>() {
-
-		public int compare(VideoItem vi1, VideoItem vi2) {
-
-			DateTime d1 = vi1.getDate();
-			DateTime d2 = vi2.getDate();
-
-			return d2.compareTo(d1);
-		}
-	};
+        return false;
+    }
 
 }

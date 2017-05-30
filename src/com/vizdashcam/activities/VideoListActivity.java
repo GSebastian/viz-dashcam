@@ -24,13 +24,9 @@ public class VideoListActivity extends AppCompatActivity {
 
     public static final String ACTION_UPDATE = "add-video";
     public static final String KEY_VIDEO = "video";
-
-    private IntentFilter videoActionsFilter;
-
     Toolbar toolbar;
     ViewPager viewPager;
     TabLayout tabLayout;
-
     BroadcastReceiver videoActionsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -45,6 +41,11 @@ public class VideoListActivity extends AppCompatActivity {
             }
         }
     };
+    private IntentFilter videoActionsFilter;
+
+    private static String makeFragmentName(@IdRes int viewPagerId, int index) {
+        return "android:switcher:" + viewPagerId + ":" + index;
+    }
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -90,10 +91,6 @@ public class VideoListActivity extends AppCompatActivity {
         super.onPause();
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(videoActionsReceiver);
-    }
-
-    private static String makeFragmentName(@IdRes int viewPagerId, int index) {
-        return "android:switcher:" + viewPagerId + ":" + index;
     }
 }
 

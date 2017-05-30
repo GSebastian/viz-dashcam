@@ -22,16 +22,16 @@ public class ViewUtils {
 
     public static AlertDialog createTwoButtonDialog(Context context, @StringRes int stringRes, @StringRes int
             negativeRes, @StringRes int positiveRes, AlertDialog.OnClickListener negativeListener, AlertDialog
-            .OnClickListener positiveListener) {
+                                                            .OnClickListener positiveListener) {
 
         return new AlertDialog.Builder(context)
                 .setMessage(stringRes)
-                .setPositiveButton(positiveRes,  positiveListener)
+                .setPositiveButton(positiveRes, positiveListener)
                 .setNegativeButton(negativeRes, negativeListener)
                 .create();
     }
 
-    public static float dp2px(float dp){
+    public static float dp2px(float dp) {
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
         float px = dp * (metrics.densityDpi / 160f);
         return Math.round(px);

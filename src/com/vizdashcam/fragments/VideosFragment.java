@@ -19,11 +19,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.vizdashcam.VideoListAdapter;
 import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
 import com.vizdashcam.SharedPreferencesHelper;
 import com.vizdashcam.VideoItem;
+import com.vizdashcam.VideoListAdapter;
 import com.vizdashcam.activities.VideoItemActivity;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
 
@@ -32,15 +32,13 @@ import java.util.Vector;
 
 public abstract class VideosFragment extends Fragment {
 
-    private GlobalState appState;
-
-    private ListView videoList;
-
     protected VideoListAdapter mAdapter;
     protected File mediaStorageDir = new File(
             Environment.getExternalStorageDirectory(), "vizDashcamApp");
     protected Handler handler;
     protected Vector<VideoItem> directoryEntries;
+    private GlobalState appState;
+    private ListView videoList;
 
     public VideosFragment() {
     }

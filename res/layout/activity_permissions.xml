@@ -6,32 +6,32 @@
 
 
     <android.support.v4.view.ViewPager
-    android:id="@+id/viewPager"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="32dp"
-    android:layout_marginBottom="32dp"
-    android:layout_above="@+id/btnNextFinish"
-    android:layout_below="@+id/ivLogo"/>
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btnNextFinish"
+        android:layout_below="@+id/ivLogo"
+        android:layout_marginBottom="32dp"
+        android:layout_marginTop="32dp"/>
 
     <Button
-    android:id="@+id/btnNextFinish"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:layout_alignParentEnd="true"
-    android:layout_alignParentRight="true"
-    android:layout_marginBottom="@dimen/activity_vertical_margin"
-    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:background="@null"
-    android:foreground="?attr/selectableItemBackground"
-    android:text="@string/next"
-    android:textColor="@color/C3White"/>
+        android:id="@+id/btnNextFinish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:background="@null"
+        android:foreground="?attr/selectableItemBackground"
+        android:text="@string/next"
+        android:textColor="@color/C3White"/>
 
     <com.vizdashcam.InteractiveExpandingCircleView
-        android:layout_width="match_parent"
         android:id="@+id/expandingCircleView"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/transparent"/>
 
@@ -46,6 +46,6 @@
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:elevation="8dp"
-        android:tint="@color/C3Red"
-        android:src="@drawable/ic_logo"/>
+        android:src="@drawable/ic_logo"
+        android:tint="@color/C3Red"/>
 </RelativeLayout>

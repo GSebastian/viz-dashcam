@@ -2,14 +2,11 @@ package com.vizdashcam;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
-import com.vizdashcam.activities.PermissionsActivity;
 import com.vizdashcam.utils.FeedbackSoundPlayer;
-import com.vizdashcam.utils.PermissionUtils;
 
 import java.io.File;
 
@@ -104,12 +101,12 @@ public class GlobalState extends Application {
         this.lastMarkedFilename = lastFilename;
     }
 
-    public void setPreviewBound(boolean previewBound) {
-        this.previewBound = previewBound;
-    }
-
     public boolean isPreviewBound() {
         return this.previewBound;
+    }
+
+    public void setPreviewBound(boolean previewBound) {
+        this.previewBound = previewBound;
     }
 
     public boolean isActivityPaused() {
@@ -132,11 +129,11 @@ public class GlobalState extends Application {
         return mediaStorageDir;
     }
 
-    public void setMustMarkFile(boolean b) {
-        this.mustMarkFile = b;
-    }
-
     public boolean getMustMarkFile() {
         return this.mustMarkFile;
+    }
+
+    public void setMustMarkFile(boolean b) {
+        this.mustMarkFile = b;
     }
 }

@@ -30,7 +30,9 @@ public class FragmentPermissionOverlay extends FragmentPermissionBase {
 
     @Override
     public void grantPermission() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) { return; }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return;
+        }
 
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:" + getContext().getPackageName()));

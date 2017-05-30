@@ -46,8 +46,8 @@ import android.widget.TextView;
 
 import com.vizdashcam.activities.MainActivity;
 import com.vizdashcam.activities.SettingsActivity;
-import com.vizdashcam.activities.VideoListActivity;
 import com.vizdashcam.activities.StorageDialogActivity;
+import com.vizdashcam.activities.VideoListActivity;
 import com.vizdashcam.managers.AccelerometerManager;
 import com.vizdashcam.managers.StorageManager;
 import com.vizdashcam.utils.CameraUtils;
@@ -61,50 +61,31 @@ import java.io.IOException;
 public class ServicePreview extends Service implements
         MediaRecorder.OnInfoListener {
 
-    private static final String TAG = "PreviewService";
-
-    private static final int previewNotificationId = 222;
-
-    private static final int VALUE_MENU_TRANSITION_TIME = 1000;
-
     public static final String ACTION_FOREGROUND = "com.vizdashcam.PrevievService.FOREGROUND";
-
+    public static final int MSG_OM = 1;
+    public static final int MSG_RESIZE = 2;
+    public static final int DELAY_RECORD_DISABLE = 2000;
+    private static final String TAG = "PreviewService";
+    private static final int previewNotificationId = 222;
+    private static final int VALUE_MENU_TRANSITION_TIME = 1000;
     private GlobalState appState;
     private WindowManager windowManager;
-
     private Camera camera;
     private MediaRecorder mediaRecorder;
-
     private LocationManager locationManager;
     private SpeedListener speedListener;
-
     private ViewGroup fullLayout;
     private ImageView ivRecord;
     private TextView tvSpeed;
     private RelativeLayout rlMenu;
     private RelativeLayout rlMenuLeftColumn;
     private TextureView cameraPreview;
-
     private Handler mHandler;
-
-    public enum SidebarState {
-        OPEN, CLOSED
-    }
-
     private SidebarState sidebarState;
-
     private LayoutParams mLayoutParamsFull;
     private LayoutParams mLayoutParamsMinimised;
-
-    public static final int MSG_OM = 1;
-    public static final int MSG_RESIZE = 2;
-
-    public static final int DELAY_RECORD_DISABLE = 2000;
-
     private Messenger mMessenger;
-
     private StorageManager mStorageManager;
-
     private float lastTouchX;
     private float lastTouchY;
 
@@ -852,15 +833,6 @@ public class ServicePreview extends Service implements
         }
     }
 
-    public class SmoothInterpolator extends LinearInterpolator {
-
-        @Override
-        public float getInterpolation(float input) {
-            return (float) Math.pow(input - 1, 5) + 1;
-        }
-
-    }
-
     @TargetApi(Build.VERSION_CODES.M)
     private boolean hasAudioRecordingPermission() {
         int permissionResultCheck = ContextCompat.checkSelfPermission(this, Manifest.permission
@@ -879,5 +851,18 @@ public class ServicePreview extends Service implements
         Intent intent = new Intent(VideoListActivity.ACTION_UPDATE);
         intent.putExtra(VideoListActivity.KEY_VIDEO, video);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    public enum SidebarState {
+        OPEN, CLOSED
+    }
+
+    public class SmoothInterpolator extends LinearInterpolator {
+
+        @Override
+        public float getInterpolation(float input) {
+            return (float) Math.pow(input - 1, 5) + 1;
+        }
+
     }
 }
