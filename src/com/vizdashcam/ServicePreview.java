@@ -59,7 +59,7 @@ import java.io.IOException;
 
 
 public class ServicePreview extends Service implements
-        MediaRecorder.OnInfoListener {
+        MediaRecorder.OnInfoListener, MediaRecorder.OnErrorListener {
 
     public static final String ACTION_FOREGROUND = "com.vizdashcam.PrevievService.FOREGROUND";
     public static final int MSG_OM = 1;
@@ -114,6 +114,7 @@ public class ServicePreview extends Service implements
 
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setOnInfoListener(this);
+        mediaRecorder.setOnErrorListener(this);
 
         startForeground(previewNotificationId, getPreviewNotification());
     }
@@ -588,12 +589,12 @@ public class ServicePreview extends Service implements
 
             if (!appState.isRecording()) {
 
-                mStorageManager = new StorageManager(getApplicationContext(),
-                        this, mHandler);
+                mStorageManager = new StorageManager(
+                        getApplicationContext(),
+                        this,
+                        mHandler);
 
-                if (false) {
-
-//                if (!StorageManager.hasRunOutOufSpace()) {
+                if (!StorageManager.hasRunOutOufSpace()) {
 
                     if (prepareVideoRecorder()) {
 
@@ -720,6 +721,11 @@ public class ServicePreview extends Service implements
                 ivRecord.setImageResource(R.drawable.btn_not_recording);
             }
         }
+    }
+
+    @Override
+    public void onError(MediaRecorder mediaRecorder, int what, int extra) {
+        Log.e(TAG, "onError: what " + what + " extra " + extra);
     }
 
     private void updateFragments() {

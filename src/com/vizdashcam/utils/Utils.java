@@ -47,8 +47,7 @@ public class Utils {
      * Create a File for saving an image or video
      */
     public static File getOutputMediaFile() {
-        File mediaStorageDir = new File(
-                Environment.getExternalStorageDirectory(), "vizDashcamApp");
+        File mediaStorageDir = new File(Environment.getExternalStorageDirectory(), "viz");
 
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
@@ -56,8 +55,7 @@ public class Utils {
             }
         }
 
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
-                .format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
 
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator
                 + "VID_" + timeStamp + ".mp4");

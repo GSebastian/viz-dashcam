@@ -166,5 +166,7 @@
     <color name="C3Pink">#ff9ea0</color>
     <color name="C3Red">#ff3553</color>
     <color name="C3DarkGrey">#646464</color>
+    <color name="C3TranslucentBlack">#33000000</color>
+    <color name="C3LightGray">#ffcccccc</color>
 
 </resources>

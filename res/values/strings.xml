@@ -208,15 +208,19 @@
 
     <string name="Finish">Finish</string>
 
-    <string name="permission_explanation_audio_new"><big><b>Audio Recording</b></big>\n\nFor audio recording to work, the \"Microphone\" permission must be granted</string>
+    <string name="permission_explanation_audio_new"><big><b>Audio Recording</b></big>\n\nCan\'t record that
+        sporty engine revving without the audio permission :(</string>
 
     <string name="permission_explanation_location_new"><big><b>Location</b></big>\n\nFor the speedometer to work, the \"Location\" permission must be granted</string>
 
-    <string name="permission_explanation_camera_new"><big><b>Camera</b></big>\n\nFor the camera to work, the \"Camera\" permission must be granted</string>
+    <string name="permission_explanation_camera_new"><big><b>Camera</b></big>\n\nCapturing that crisp traffic
+        footage requires … a <b>camera</b>!</string>
 
-    <string name="permission_explanation_storage_new"><big><b>Storage</b></big>\n\nFor the speedometer to work, the \"Location\" permission must be granted</string>
+    <string name="permission_explanation_storage_new"><big><b>Storage</b></big>\n\nWe have to save the
+        recordings somewhere, don\'t we?</string>
 
-    <string name="permission_explanation_overlay_new"><big><b>Overlay</b></big>\n\nFor the camera to work, the \"Camera\" permission must be granted</string>
+    <string name="permission_explanation_overlay_new"><big><b>Overlay</b></big>\n\n<b>viz</b> is designed to
+        work in the background as well, and this wouldn\'t be possible without the <b>overlay</b> permission</string>
 
     <string name="permission_granted">Permission granted &#10004;</string>
 

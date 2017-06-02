@@ -16,16 +16,14 @@ import android.view.View;
 import android.widget.Button;
 
 import com.vizdashcam.AdapterPermissionPager;
+import com.vizdashcam.BuildConfig;
 import com.vizdashcam.InteractiveExpandingCircleView;
 import com.vizdashcam.R;
 import com.vizdashcam.utils.PermissionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import rebus.permissionutils.FullCallback;
 import rebus.permissionutils.PermissionEnum;
-import rebus.permissionutils.PermissionManager;
 
 public class PermissionsActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -59,11 +57,18 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
 
         mNecessaryPermissions = PermissionUtils.computeNecessaryPermissions(PermissionsActivity.this);
 
-        findViews();
-        initViews();
+        // Upon rotation when all permissions were granted but "done" was not pressed, mNecessaryPermissions
+        // will become of size 0. In that case, just dismiss
+        if (mNecessaryPermissions.size() == 0) {
+            finish();
+        } else {
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mPermissionGrantedReceiver,
-                new IntentFilter(PermissionUtils.PERMISSION_GRANTED_BROADCAST));
+            findViews();
+            initViews();
+
+            LocalBroadcastManager.getInstance(this).registerReceiver(mPermissionGrantedReceiver,
+                    new IntentFilter(PermissionUtils.PERMISSION_GRANTED_BROADCAST));
+        }
     }
 
     @Override
@@ -82,10 +87,13 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
     private void handleNextBtnVisibility() {
         int currentItem = mViewPager.getCurrentItem();
         int totalItems = mNecessaryPermissions.size();
-        mBtnNextFinish.setVisibility(currentItem == totalItems - 1 &&
-                hasAllNecessaryPermissions() != null ?
-                View.INVISIBLE :
-                View.VISIBLE);
+
+        mBtnNextFinish.setVisibility(
+                !hasPermission(mNecessaryPermissions.get(currentItem)) ||
+                        (currentItem == totalItems - 1 &&
+                                hasAllNecessaryPermissions() != null) ?
+                        View.INVISIBLE :
+                        View.VISIBLE);
     }
 
     private void findViews() {
@@ -116,7 +124,18 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
+        // Remove clipping for pages
+        mViewPager.setPageTransformer(false, new ViewPager.PageTransformer() {
+            @Override
+            public void transformPage(View page, float position) {
+                page.setLayerType(View.LAYER_TYPE_NONE, null);
+            }
+        });
+
         mExpandingCircleView.maxRadiusDIP = 150;
+        if (!BuildConfig.BUILD_TYPE.equals("emuTesting")) {
+             mExpandingCircleView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
     }
 
     private void setupNextButton() {
@@ -159,33 +178,19 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
                 finish();
             } else {
                 mViewPager.setCurrentItem(missingPermissionIndex);
-                String permissionToGrant = mNecessaryPermissions.get(missingPermissionIndex);
-                if (permissionToGrant.equals(PermissionUtils.PERMISSION_OVERLAY)) {
-
-                } else {
-                    PermissionManager.with(this)
-                            .permission(PermissionEnum.fromManifestPermission(permissionToGrant))
-                            .callback(new FullCallback() {
-                                @Override
-                                public void result(ArrayList<PermissionEnum> permissionsGranted,
-                                                   ArrayList<PermissionEnum>
-                                                           permissionsDenied, ArrayList<PermissionEnum>
-                                                           permissionsDeniedForever,
-                                                   ArrayList<PermissionEnum> permissionsAsked) {
-                                    if (permissionsGranted.size() > 0) {
-                                        sendPermissionGranted();
-                                    }
-                                }
-                            })
-                            .ask();
-                }
             }
         }
     }
     //endregion
 
-    public void sendPermissionGranted() {
-        Intent intent = new Intent(PermissionUtils.PERMISSION_GRANTED_BROADCAST);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    @TargetApi(Build.VERSION_CODES.M)
+    private boolean hasPermission(String permission) {
+        if (permission.equals(PermissionUtils.PERMISSION_OVERLAY)) {
+            return Build.VERSION.SDK_INT < Build.VERSION_CODES.M | Settings.canDrawOverlays(getApplicationContext());
+        } else {
+            return rebus.permissionutils.PermissionUtils.isGranted(
+                    this,
+                    PermissionEnum.fromManifestPermission(permission));
+        }
     }
 }

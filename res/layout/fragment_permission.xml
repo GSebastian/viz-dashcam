@@ -2,14 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@android:color/transparent">
+                android:background="@android:color/transparent"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
     <ImageView
         android:id="@+id/ivPermissionIcon"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginTop="0dp"
+        android:alpha="0"
         android:src="@drawable/ic_permission_audio"/>
 
     <TextView
@@ -17,11 +20,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/btnGrantPermission"
-        android:layout_below="@id/ivPermissionIcon"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:gravity="center"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp"
+        android:layout_marginTop="60dp"
+        android:gravity="center|center_vertical"
         android:text="@string/permission_explanation_audio"
         android:textColor="@color/C3White"/>
 
@@ -32,13 +35,15 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:background="@null"
-        android:foreground="?attr/selectableItemBackground"
+        android:background="@drawable/btn_grant_permission"
         android:gravity="center"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
+        android:shadowColor="#01ffffff"
         android:text="@string/grant_permission"
-        android:textColor="@color/C3White"/>
+        android:textColor="@color/C3Red"/>
 
 </RelativeLayout>

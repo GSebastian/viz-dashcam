@@ -55,8 +55,7 @@ public class VideoItem implements Serializable {
             return d2.compareTo(d1);
         }
     };
-    private File mediaStorageDir = new File(
-            Environment.getExternalStorageDirectory(), "vizDashcamApp");
+    private File mediaStorageDir = new File(Environment.getExternalStorageDirectory(), "viz");
     private File file;
     private String path;
     private String name;

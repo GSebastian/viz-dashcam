@@ -22,10 +22,10 @@ public class StorageManager extends Thread {
 
     private static final String TAG = "StorageManager";
 
-    private static File mediaStorageDir = new File(Environment
-            .getExternalStorageDirectory().getAbsolutePath() + "/vizDashcamApp");
+    private static File externalStorageDir = Environment.getExternalStorageDirectory();
+    private static File mediaStorageDir = new File(externalStorageDir, "viz");
 
-    private static long totalSpace = mediaStorageDir.getTotalSpace();
+    private static long totalSpace = externalStorageDir.getTotalSpace();
     private static long full95 = (long) (0.05 * totalSpace);
     private static long full90 = (long) (0.10 * totalSpace);
     private static GlobalState appState;
@@ -33,7 +33,8 @@ public class StorageManager extends Thread {
     private static Handler handler;
     private boolean isStopped = false;
 
-    public StorageManager(Context appState, ServicePreview previewService,
+    public StorageManager(Context appState,
+                          ServicePreview previewService,
                           Handler handler) {
         StorageManager.appState = (GlobalState) appState;
         StorageManager.previewService = previewService;
@@ -41,12 +42,18 @@ public class StorageManager extends Thread {
     }
 
     public static long getFreeSpace() {
-        long freeBytesExternal = mediaStorageDir.getUsableSpace();
+        long freeBytesExternal = externalStorageDir.getUsableSpace();
+
+        Log.d(TAG, "getFreeSpace: " + freeBytesExternal);
+
         return freeBytesExternal;
     }
 
     public static boolean hasRunOutOufSpace() {
         long freeSpace = getFreeSpace();
+
+        Log.d(TAG, "hasRunOutOufSpace: free space " + freeSpace);
+
         if (freeSpace <= full95)
             return true;
         return false;
@@ -54,6 +61,9 @@ public class StorageManager extends Thread {
 
     public static boolean hasLowSpace() {
         long freeSpace = getFreeSpace();
+
+        Log.d(TAG, "hasLowSpace: free space " + freeSpace);
+
         if (freeSpace <= full90)
             return true;
         return false;

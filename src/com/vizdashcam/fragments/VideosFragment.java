@@ -33,8 +33,7 @@ import java.util.Vector;
 public abstract class VideosFragment extends Fragment {
 
     protected VideoListAdapter mAdapter;
-    protected File mediaStorageDir = new File(
-            Environment.getExternalStorageDirectory(), "vizDashcamApp");
+    protected File mediaStorageDir = new File(Environment.getExternalStorageDirectory(), "viz");
     protected Handler handler;
     protected Vector<VideoItem> directoryEntries;
     private GlobalState appState;
