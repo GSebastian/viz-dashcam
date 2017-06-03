@@ -21,7 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.vizdashcam.R;
-import com.vizdashcam.utils.PermissionUtils;
+import com.vizdashcam.utils.VizPermissionUtils;
 
 import java.util.ArrayList;
 
@@ -92,6 +92,7 @@ public abstract class FragmentPermissionBase extends Fragment implements OnClick
         mIconAnimations.playTogether(mAlphaAnimator, mTopMarginAnimator);
         mIconAnimations.setInterpolator(new AccelerateDecelerateInterpolator());
         mIconAnimations.setDuration(700);
+
     }
 
     @Override
@@ -171,7 +172,7 @@ public abstract class FragmentPermissionBase extends Fragment implements OnClick
     public abstract String getPermission();
 
     public void sendPermissionGranted() {
-        Intent intent = new Intent(PermissionUtils.PERMISSION_GRANTED_BROADCAST);
+        Intent intent = new Intent(VizPermissionUtils.PERMISSION_GRANTED_BROADCAST);
         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
     }
 

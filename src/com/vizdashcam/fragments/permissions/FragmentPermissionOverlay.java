@@ -8,7 +8,7 @@ import android.provider.Settings;
 
 import com.vizdashcam.R;
 import com.vizdashcam.fragments.FragmentPermissionBase;
-import com.vizdashcam.utils.PermissionUtils;
+import com.vizdashcam.utils.VizPermissionUtils;
 
 public class FragmentPermissionOverlay extends FragmentPermissionBase {
 
@@ -36,18 +36,18 @@ public class FragmentPermissionOverlay extends FragmentPermissionBase {
 
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:" + getContext().getPackageName()));
-        startActivityForResult(intent, PermissionUtils.REQUEST_CODE_PERMISSIONS);
+        startActivityForResult(intent, VizPermissionUtils.REQUEST_CODE_PERMISSIONS);
     }
 
     @Override
     public String getPermission() {
-        return PermissionUtils.PERMISSION_OVERLAY;
+        return VizPermissionUtils.PERMISSION_OVERLAY;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PermissionUtils.REQUEST_CODE_PERMISSIONS) {
+        if (requestCode == VizPermissionUtils.REQUEST_CODE_PERMISSIONS) {
             if (hasPermission()) {
                 markPermissionGranted();
                 sendPermissionGranted();

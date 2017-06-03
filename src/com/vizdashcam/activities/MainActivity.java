@@ -16,7 +16,7 @@ import com.vizdashcam.BuildConfig;
 import com.vizdashcam.GlobalState;
 import com.vizdashcam.R;
 import com.vizdashcam.ServicePreview;
-import com.vizdashcam.utils.PermissionUtils;
+import com.vizdashcam.utils.VizPermissionUtils;
 
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (PermissionUtils.computeNecessaryPermissions(MainActivity.this).size() > 0) {
+        if (VizPermissionUtils.computeNecessaryPermissions(MainActivity.this).size() > 0) {
             Intent intent = new Intent(MainActivity.this, PermissionsActivity.class);
             startActivity(intent);
         } else {

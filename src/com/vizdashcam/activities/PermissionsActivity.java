@@ -19,15 +19,19 @@ import com.vizdashcam.AdapterPermissionPager;
 import com.vizdashcam.BuildConfig;
 import com.vizdashcam.InteractiveExpandingCircleView;
 import com.vizdashcam.R;
-import com.vizdashcam.utils.PermissionUtils;
+import com.vizdashcam.utils.VizPermissionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rebus.permissionutils.PermissionEnum;
+import rebus.permissionutils.PermissionUtils;
 
 public class PermissionsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "PermissionsActivity";
+
+    private static final String KEY_NECESSARY_PERMISSIONS = "KEY_NECESSARY_PERMISSIONS";
 
     private InteractiveExpandingCircleView mExpandingCircleView;
     private ViewPager mViewPager;
@@ -35,7 +39,7 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
 
     private AdapterPermissionPager mAdapter;
 
-    private List<String> mNecessaryPermissions;
+    private ArrayList<String> mNecessaryPermissions;
 
     private BroadcastReceiver mPermissionGrantedReceiver = new BroadcastReceiver() {
         @Override
@@ -55,32 +59,54 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
 
         setContentView(R.layout.activity_permissions);
 
-        mNecessaryPermissions = PermissionUtils.computeNecessaryPermissions(PermissionsActivity.this);
-
-        // Upon rotation when all permissions were granted but "done" was not pressed, mNecessaryPermissions
-        // will become of size 0. In that case, just dismiss
-        if (mNecessaryPermissions.size() == 0) {
-            finish();
+        if (savedInstanceState != null) {
+            mNecessaryPermissions = savedInstanceState.getStringArrayList(KEY_NECESSARY_PERMISSIONS);
         } else {
+            mNecessaryPermissions =
+                    new ArrayList<>(VizPermissionUtils.computeNecessaryPermissions(PermissionsActivity.this));
 
-            findViews();
-            initViews();
-
-            LocalBroadcastManager.getInstance(this).registerReceiver(mPermissionGrantedReceiver,
-                    new IntentFilter(PermissionUtils.PERMISSION_GRANTED_BROADCAST));
         }
-    }
+
+        findViews();
+        initViews();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mPermissionGrantedReceiver,
+                new IntentFilter(VizPermissionUtils.PERMISSION_GRANTED_BROADCAST));
+        }
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        boolean foundNewPermission = false;
+
+        List<String> newNecessaryPermissions = VizPermissionUtils.computeNecessaryPermissions(PermissionsActivity.this);
+        for (String possiblyNewPermission : newNecessaryPermissions) {
+            if (!mNecessaryPermissions.contains(possiblyNewPermission)) {
+                mNecessaryPermissions.add(possiblyNewPermission);
+                if (!foundNewPermission) {
+                    foundNewPermission = true;
+                }
+            }
+        }
+
+        if (foundNewPermission) {
+            mAdapter.notifyDataSetChanged();
+        }
+
         setupNextButton();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putStringArrayList(KEY_NECESSARY_PERMISSIONS, mNecessaryPermissions);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mPermissionGrantedReceiver);
     }
 
@@ -134,7 +160,7 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
 
         mExpandingCircleView.maxRadiusDIP = 150;
         if (!BuildConfig.BUILD_TYPE.equals("emuTesting")) {
-             mExpandingCircleView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            mExpandingCircleView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
     }
 
@@ -151,22 +177,28 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
     private Integer hasAllNecessaryPermissions() {
         for (int i = 0; i < mNecessaryPermissions.size(); i++) {
             String permission = mNecessaryPermissions.get(i);
-            if (permission.equals(PermissionUtils.PERMISSION_OVERLAY)) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    continue;
-                }
+            if (permission.equals(VizPermissionUtils.PERMISSION_OVERLAY)) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) continue;
                 if (!Settings.canDrawOverlays(this)) {
                     return i;
                 }
             } else {
-                if (!rebus.permissionutils.PermissionUtils.isGranted(this,
-                        PermissionEnum.fromManifestPermission(permission))) {
+                if (!PermissionUtils.isGranted(this, PermissionEnum.fromManifestPermission(permission))) {
                     return i;
                 }
             }
         }
 
         return null;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private boolean hasPermission(String permission) {
+        if (permission.equals(VizPermissionUtils.PERMISSION_OVERLAY)) {
+            return Build.VERSION.SDK_INT < Build.VERSION_CODES.M | Settings.canDrawOverlays(getApplicationContext());
+        } else {
+            return PermissionUtils.isGranted(this, PermissionEnum.fromManifestPermission(permission));
+        }
     }
 
     //region View.OnClickListener±
@@ -182,15 +214,4 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
         }
     }
     //endregion
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private boolean hasPermission(String permission) {
-        if (permission.equals(PermissionUtils.PERMISSION_OVERLAY)) {
-            return Build.VERSION.SDK_INT < Build.VERSION_CODES.M | Settings.canDrawOverlays(getApplicationContext());
-        } else {
-            return rebus.permissionutils.PermissionUtils.isGranted(
-                    this,
-                    PermissionEnum.fromManifestPermission(permission));
-        }
-    }
 }
