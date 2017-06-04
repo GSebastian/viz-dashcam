@@ -38,7 +38,7 @@ android {
         applicationId 'com.vizdashcam'
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 10
+        versionCode 12
         versionName '1.0'
         manifestPlaceholders = [HOCKEYAPP_APP_ID: "72edc33d2ec64705b38fae3ad445edb9"]
     }

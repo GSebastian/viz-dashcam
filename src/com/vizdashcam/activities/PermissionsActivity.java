@@ -19,6 +19,7 @@ import com.vizdashcam.AdapterPermissionPager;
 import com.vizdashcam.BuildConfig;
 import com.vizdashcam.InteractiveExpandingCircleView;
 import com.vizdashcam.R;
+import com.vizdashcam.fragments.FragmentPermissionBase;
 import com.vizdashcam.utils.VizPermissionUtils;
 
 import java.util.ArrayList;
@@ -40,6 +41,9 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
     private AdapterPermissionPager mAdapter;
 
     private ArrayList<String> mNecessaryPermissions;
+
+    private Integer mPreviousPageIndex = null;
+    private Integer mCurrentPageIndex = null;
 
     private BroadcastReceiver mPermissionGrantedReceiver = new BroadcastReceiver() {
         @Override
@@ -64,7 +68,6 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
         } else {
             mNecessaryPermissions =
                     new ArrayList<>(VizPermissionUtils.computeNecessaryPermissions(PermissionsActivity.this));
-
         }
 
         findViews();
@@ -72,7 +75,7 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mPermissionGrantedReceiver,
                 new IntentFilter(VizPermissionUtils.PERMISSION_GRANTED_BROADCAST));
-        }
+    }
 
     @Override
     protected void onResume() {
@@ -95,6 +98,8 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
         }
 
         setupNextButton();
+
+        mPreviousPageIndex = mViewPager.getCurrentItem();
     }
 
     @Override
@@ -112,14 +117,11 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
 
     private void handleNextBtnVisibility() {
         int currentItem = mViewPager.getCurrentItem();
-        int totalItems = mNecessaryPermissions.size();
 
         mBtnNextFinish.setVisibility(
-                !hasPermission(mNecessaryPermissions.get(currentItem)) ||
-                        (currentItem == totalItems - 1 &&
-                                hasAllNecessaryPermissions() != null) ?
-                        View.INVISIBLE :
-                        View.VISIBLE);
+                hasPermission(mNecessaryPermissions.get(currentItem)) ?
+                        View.VISIBLE :
+                        View.INVISIBLE);
     }
 
     private void findViews() {
@@ -138,6 +140,21 @@ public class PermissionsActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 mExpandingCircleView.setFraction(positionOffset);
+
+                if (mAdapter.registeredFragments.get(position - 1) instanceof FragmentPermissionBase) {
+                    ((FragmentPermissionBase) mAdapter.registeredFragments.get(position - 1))
+                            .setAnimationFraction(positionOffset);
+                }
+
+                if (mAdapter.registeredFragments.get(position + 1) instanceof FragmentPermissionBase) {
+                    ((FragmentPermissionBase) mAdapter.registeredFragments.get(position + 1))
+                            .setAnimationFraction(positionOffset);
+                }
+
+                if (mAdapter.registeredFragments.get(position) instanceof FragmentPermissionBase) {
+                    ((FragmentPermissionBase) mAdapter.registeredFragments.get(position)).setAnimationFraction
+                            (1f - positionOffset);
+                }
             }
 
             @Override

@@ -12,7 +12,6 @@
         android:layout_height="60dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="0dp"
-        android:alpha="0"
         android:src="@drawable/ic_permission_audio"/>
 
     <TextView

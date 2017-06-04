@@ -1,8 +1,5 @@
 package com.vizdashcam.fragments;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,13 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.vizdashcam.R;
+import com.vizdashcam.utils.ViewUtils;
 import com.vizdashcam.utils.VizPermissionUtils;
 
 import java.util.ArrayList;
@@ -37,11 +34,7 @@ public abstract class FragmentPermissionBase extends Fragment implements OnClick
     private TextView mTvPermissionDescription;
     private Button mBtnGrantPermission;
 
-    private AnimatorSet mIconAnimations;
-    private ValueAnimator mTopMarginAnimator;
-    private ObjectAnimator mAlphaAnimator;
-
-    private int topMarginStart = -120;
+    private int topMarginStart = (int) ViewUtils.dp2px(-120);
     private int topMarginEnd = 0;
 
     @Override
@@ -59,40 +52,8 @@ public abstract class FragmentPermissionBase extends Fragment implements OnClick
 
         findViews(rootView);
         initViews();
-        initAnimator();
 
         return rootView;
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            // load data here
-        } else {
-            resetAnimation();
-        }
-    }
-
-    private void initAnimator() {
-        final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mIvPermissionIcon.getLayoutParams();
-
-        mTopMarginAnimator = ValueAnimator.ofInt(topMarginStart, topMarginEnd);
-        mTopMarginAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                params.topMargin = (Integer) valueAnimator.getAnimatedValue();
-                mIvPermissionIcon.requestLayout();
-            }
-        });
-
-        mAlphaAnimator = ObjectAnimator.ofFloat(mIvPermissionIcon, View.ALPHA, 0, 1);
-
-        mIconAnimations = new AnimatorSet();
-        mIconAnimations.playTogether(mAlphaAnimator, mTopMarginAnimator);
-        mIconAnimations.setInterpolator(new AccelerateDecelerateInterpolator());
-        mIconAnimations.setDuration(700);
-
     }
 
     @Override
@@ -123,24 +84,6 @@ public abstract class FragmentPermissionBase extends Fragment implements OnClick
         mBtnGrantPermission.setOnClickListener(this);
 
         mBtnGrantPermission.setTextColor(ContextCompat.getColor(getContext(), R.color.C3Red));
-    }
-
-    public void animateEntry() {
-
-        mIconAnimations.start();
-    }
-
-    public void resetAnimation() {
-
-        if (mIvPermissionIcon != null) {
-            mIvPermissionIcon.setAlpha(0f);
-        }
-
-        if (mIvPermissionIcon != null) {
-            final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mIvPermissionIcon
-                    .getLayoutParams();
-            params.topMargin = topMarginStart;
-        }
     }
 
     public abstract int getImageResource();
@@ -175,6 +118,32 @@ public abstract class FragmentPermissionBase extends Fragment implements OnClick
         Intent intent = new Intent(VizPermissionUtils.PERMISSION_GRANTED_BROADCAST);
         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
     }
+
+    //region Scroll fraction-based animations
+    public void setAnimationFraction(float fraction) {
+        setIconMarginAnimationFraction(fraction);
+        setIconAlphaAnimationFraction(fraction);
+    }
+
+    private void setIconMarginAnimationFraction(float fraction) {
+        if (mIvPermissionIcon != null) {
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mIvPermissionIcon
+                    .getLayoutParams();
+
+
+            layoutParams.topMargin = topMarginStart + (int) ((float) (topMarginEnd - topMarginStart) * fraction);
+
+            mIvPermissionIcon.setLayoutParams(layoutParams);
+            mIvPermissionIcon.requestLayout();
+        }
+    }
+
+    private void setIconAlphaAnimationFraction(float fraction) {
+        if (mIvPermissionIcon != null) {
+            mIvPermissionIcon.setAlpha(fraction);
+        }
+    }
+    //endregion
 
     //region View.OnClickListener
     @Override
