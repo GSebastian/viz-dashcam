@@ -1,9 +1,6 @@
 package com.vizdashcam;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.Animator.AnimatorListener;
-import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -34,14 +31,11 @@ import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
-import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.vizdashcam.activities.MainActivity;
@@ -67,21 +61,23 @@ public class ServicePreview extends Service implements
     public static final int DELAY_RECORD_DISABLE = 2000;
     private static final String TAG = "PreviewService";
     private static final int previewNotificationId = 222;
-    private static final int VALUE_MENU_TRANSITION_TIME = 1000;
+
     private GlobalState appState;
+
     private WindowManager windowManager;
+
     private Camera camera;
+
     private MediaRecorder mediaRecorder;
+
     private LocationManager locationManager;
     private SpeedListener speedListener;
+
     private ViewGroup fullLayout;
     private ImageView ivRecord;
     private TextView tvSpeed;
-    private RelativeLayout rlMenu;
-    private RelativeLayout rlMenuLeftColumn;
     private TextureView cameraPreview;
     private Handler mHandler;
-    private SidebarState sidebarState;
     private LayoutParams mLayoutParamsFull;
     private LayoutParams mLayoutParamsMinimised;
     private Messenger mMessenger;
@@ -142,67 +138,6 @@ public class ServicePreview extends Service implements
         return START_NOT_STICKY;
     }
 
-    private void performSidebarOutAnimation() {
-        fullLayout.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        ObjectAnimator anim = ObjectAnimator.ofFloat(rlMenu,
-                "translationX", 0);
-        anim.setInterpolator(new SmoothInterpolator());
-        anim.addListener(new AnimatorListener() {
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                fullLayout.setLayerType(View.LAYER_TYPE_NONE, null);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-        });
-        anim.setDuration(VALUE_MENU_TRANSITION_TIME);
-        anim.start();
-        sidebarState = SidebarState.CLOSED;
-    }
-
-    private void performSidebarInAnimation() {
-        final int sidebarWidth = rlMenuLeftColumn.getLayoutParams().width;
-
-        rlMenu.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        ObjectAnimator anim = ObjectAnimator.ofFloat(rlMenu,
-                "translationX", sidebarWidth);
-        anim.setInterpolator(new SmoothInterpolator());
-        anim.addListener(new AnimatorListener() {
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                fullLayout.setLayerType(View.LAYER_TYPE_NONE, null);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-        });
-        anim.setDuration(VALUE_MENU_TRANSITION_TIME);
-        anim.start();
-        sidebarState = SidebarState.OPEN;
-    }
-
     private void initCameraPreview() {
         try {
             camera = Camera.open(CameraInfo.CAMERA_FACING_BACK);
@@ -237,18 +172,7 @@ public class ServicePreview extends Service implements
                 null);
         fullLayout.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
-        rlMenu = (RelativeLayout) fullLayout.findViewById(R.id.rl_menu);
-        rlMenuLeftColumn = (RelativeLayout) rlMenu
-                .findViewById(R.id.rl_menu_left_column);
-
-        MarginLayoutParams params = (MarginLayoutParams) rlMenu
-                .getLayoutParams();
-        params.leftMargin = -rlMenuLeftColumn.getLayoutParams().width;
-        rlMenu.setLayoutParams(params);
-
-        sidebarState = SidebarState.CLOSED;
-
-        Button videos = (Button) rlMenu.findViewById(R.id.btn_videos);
+        ImageButton videos = (ImageButton) fullLayout.findViewById(R.id.btn_videos);
         videos.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -260,7 +184,7 @@ public class ServicePreview extends Service implements
             }
         });
 
-        Button settings = (Button) rlMenu.findViewById(R.id.btn_settings);
+        ImageView settings = (ImageView) fullLayout.findViewById(R.id.btn_settings);
         settings.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -272,7 +196,7 @@ public class ServicePreview extends Service implements
             }
         });
 
-        Button help = (Button) rlMenu.findViewById(R.id.btn_help);
+        ImageView help = (ImageView) fullLayout.findViewById(R.id.btn_help);
         help.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -288,7 +212,7 @@ public class ServicePreview extends Service implements
         tvSpeed = (TextView) fullLayout.findViewById(R.id.tv_speed);
 
         ivRecord = (ImageView) fullLayout.findViewById(R.id.iv_record);
-        ivRecord.setImageResource(R.drawable.btn_not_recording);
+        ivRecord.setImageResource(R.drawable.ic_record);
 
         ivRecord.setOnClickListener(new View.OnClickListener() {
 
@@ -301,23 +225,6 @@ public class ServicePreview extends Service implements
                 } else {
                     stopRecording();
                 }
-            }
-        });
-
-        ImageView ivMenu = (ImageView) fullLayout.findViewById(R.id.iv_menu);
-        ivMenu.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                tactileFeedback();
-                audioFeedback();
-
-                if (sidebarState == SidebarState.CLOSED) {
-                    performSidebarInAnimation();
-                } else {
-                    performSidebarOutAnimation();
-                }
-
             }
         });
 
@@ -351,11 +258,8 @@ public class ServicePreview extends Service implements
             }
         });
 
-
-        FrameLayout flFeedback = (FrameLayout) fullLayout
-                .findViewById(R.id.fl_feedback);
-        final ExpandingCircleView expandingCircle = (ExpandingCircleView) flFeedback.findViewById(R.id.expandingCircle);
-        flFeedback.setOnLongClickListener(new View.OnLongClickListener() {
+        final ExpandingCircleView expandingCircle = (ExpandingCircleView) fullLayout.findViewById(R.id.ecv_expanding_circle);
+        expandingCircle.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
             public boolean onLongClick(View arg0) {
@@ -370,7 +274,7 @@ public class ServicePreview extends Service implements
             }
         });
 
-        flFeedback.setOnTouchListener(new View.OnTouchListener() {
+        expandingCircle.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -386,16 +290,6 @@ public class ServicePreview extends Service implements
                 }
 
                 return false;
-            }
-        });
-
-        flFeedback.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                if (sidebarState == SidebarState.OPEN) {
-                    performSidebarOutAnimation();
-                }
             }
         });
 
@@ -447,23 +341,23 @@ public class ServicePreview extends Service implements
         }
         tvLength.setOnClickListener(togglesListener);
 
-        TextView tvShockActive = (TextView) fullLayout
-                .findViewById(R.id.tv_shock_toggled);
+        ImageView ivShockActive = (ImageView) fullLayout
+                .findViewById(R.id.iv_shock_toggled);
         if (SharedPreferencesHelper.detectShockModeActive(appState)) {
-            tvShockActive.setVisibility(View.VISIBLE);
+            ivShockActive.setVisibility(View.VISIBLE);
         } else {
-            tvShockActive.setVisibility(View.GONE);
+            ivShockActive.setVisibility(View.GONE);
         }
-        tvShockActive.setOnClickListener(togglesListener);
+        ivShockActive.setOnClickListener(togglesListener);
 
-        TextView tvLoopActive = (TextView) fullLayout
-                .findViewById(R.id.tv_loop_toggled);
+        ImageView ivLoopActive = (ImageView) fullLayout
+                .findViewById(R.id.iv_loop_toggled);
         if (SharedPreferencesHelper.detectLoopModeActive(appState)) {
-            tvLoopActive.setVisibility(View.VISIBLE);
+            ivLoopActive.setVisibility(View.VISIBLE);
         } else {
-            tvLoopActive.setVisibility(View.GONE);
+            ivLoopActive.setVisibility(View.GONE);
         }
-        tvLoopActive.setOnClickListener(togglesListener);
+        ivLoopActive.setOnClickListener(togglesListener);
 
         windowManager.addView(fullLayout, mLayoutParamsFull);
     }
@@ -502,19 +396,6 @@ public class ServicePreview extends Service implements
             windowManager.updateViewLayout(fullLayout, mLayoutParamsFull);
             requestLocationUpdates();
         }
-    }
-
-    public void createOptionsMenu() {
-
-        tactileFeedback();
-        audioFeedback();
-
-        if (sidebarState == SidebarState.CLOSED) {
-            performSidebarInAnimation();
-        } else {
-            performSidebarOutAnimation();
-        }
-
     }
 
     private boolean configureVideoRecorder() {
@@ -610,7 +491,7 @@ public class ServicePreview extends Service implements
                             startListeningForShocks();
                         }
 
-                        ivRecord.setImageResource(R.drawable.btn_recording);
+                        ivRecord.setImageResource(R.drawable.ic_stop_recording);
 
                     } else {
                         resetMediaRecorder();
@@ -654,8 +535,7 @@ public class ServicePreview extends Service implements
                 markFileByRenaming();
                 updateFragments();
 
-                ivRecord.setImageResource(R.drawable.btn_not_recording);
-
+                ivRecord.setImageResource(R.drawable.ic_record);
             }
         }
     }
@@ -718,7 +598,7 @@ public class ServicePreview extends Service implements
                     mediaRecorder.start();
                 }
             } else {
-                ivRecord.setImageResource(R.drawable.btn_not_recording);
+                ivRecord.setImageResource(R.drawable.ic_record);
             }
         }
     }

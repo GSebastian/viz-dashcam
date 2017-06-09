@@ -7,222 +7,184 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <RelativeLayout
-        android:id="@+id/container"
+    <com.vizdashcam.ExpandingCircleView
+        android:id="@+id/ecv_expanding_circle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"/>
 
-        <FrameLayout
-            android:id="@+id/fl_feedback"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <!-- Videos, Settings and Help -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:background="@drawable/bg_preview_videos_settings_help"
+        android:padding="7dp">
 
-            <com.vizdashcam.ExpandingCircleView
-                android:id="@+id/expandingCircle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-        </FrameLayout>
+        <ImageButton
+            android:id="@+id/btn_videos"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:background="?android:selectableItemBackground"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_folder_black_24dp"
+            android:tint="@color/C3DarkGrey"/>
 
-        <ImageView
-            android:id="@+id/iv_record"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:padding="5dp"/>
+        <ImageButton
+            android:id="@+id/btn_settings"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:background="?android:selectableItemBackground"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_settings_black_24dp"
+            android:tint="@color/C3DarkGrey"/>
+
+        <ImageButton
+            android:id="@+id/btn_help"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:selectableItemBackground"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_help_black_24dp"
+            android:tint="@color/C3DarkGrey"/>
+
+    </LinearLayout>
+
+    <!-- Record / Stop, Resolution -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_quality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="720p"
+            android:textColor="@color/C3White"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <RelativeLayout
+            android:id="@+id/rlRecordContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <ImageView
+                android:id="@+id/imgRecordBg"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_record_bg"/>
+
+            <ImageView
+                android:id="@+id/iv_record"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_centerInParent="true"
+                android:elevation="4dp"
+                android:src="@drawable/ic_record"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <!-- Speed, Video Length, Loop Mode -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:background="@color/C3TranslucentBlack"
+        android:orientation="vertical"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
 
         <LinearLayout
-            android:id="@+id/ll_toggles"
-            android:layout_width="80dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/iv_record"
-            android:layout_alignParentRight="true"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:paddingBottom="10dp">
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tv_quality"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/bg_effect_onpress_semi_full_black"
-                android:clickable="true"
-                android:gravity="center"
-                android:textColor="@color/C2White"
-                android:textStyle="bold"/>
+                android:paddingTop="0dp"
+                android:id="@+id/tv_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:text="64"
+                android:textColor="@color/C3White"
+                android:textSize="72sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="mph"
+                android:textColor="@color/C3White"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:clickable="true">
 
             <TextView
                 android:id="@+id/tv_length"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/bg_effect_onpress_semi_full_black"
-                android:clickable="true"
-                android:gravity="center"
-                android:textColor="@color/C2White"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tv_shock_toggled"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/bg_effect_onpress_semi_full_black"
-                android:clickable="true"
-                android:gravity="center"
-                android:text="SHOCK"
-                android:textColor="@color/C2White"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tv_loop_toggled"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/bg_effect_onpress_semi_full_black"
-                android:clickable="true"
-                android:gravity="center"
-                android:text="LOOP"
-                android:textColor="@color/C2White"
-                android:textStyle="bold"/>
-        </LinearLayout>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent">
-
-        <RelativeLayout
-            android:id="@+id/rl_menu_left_column"
-            android:layout_width="250dp"
-            android:layout_height="match_parent"
-            android:background="@color/C2DarkBlue">
-
-            <LinearLayout
-                android:id="@+id/ll_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:layout_width="200dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <Button
-                        android:id="@+id/btn_videos"
-                        android:layout_width="200dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/bg_effect_onpress"
-                        android:drawableLeft="@drawable/sidebar_icon_videos"
-                        android:paddingLeft="15dp"
-                        android:text="Videos"
-                        android:textColor="@color/C2Black"/>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="20dp"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <Button
-                        android:id="@+id/btn_settings"
-                        android:layout_width="200dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/bg_effect_onpress"
-                        android:drawableLeft="@drawable/sidebar_icon_settings"
-                        android:paddingLeft="15dp"
-                        android:text="Settings"
-                        android:textColor="@color/C2Black"/>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="20dp"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <Button
-                        android:id="@+id/btn_help"
-                        android:layout_width="200dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/bg_effect_onpress"
-                        android:drawableLeft="@drawable/sidebar_icon_help"
-                        android:paddingLeft="15dp"
-                        android:text="Help"
-                        android:textColor="@color/C2Black"/>
-                </RelativeLayout>
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/ll_buttons"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:gravity="center"
-                android:text="Caution: using the phone while driving can cause injury."
-                android:textColor="@color/C2White"
-                android:textSize="13sp"/>
-
-            <ImageView
-                android:layout_width="200dp"
-                android:layout_height="40dp"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="5dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/sidebar_bottom_logo"/>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rl_menu_right_column"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_toRightOf="@id/rl_menu_left_column">
-
-            <RelativeLayout
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/bg_effect_onpress_semi_full_black"
-                android:clickable="true">
-            </RelativeLayout>
-
-            <ImageView
-                android:id="@+id/iv_menu"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
-                android:src="@drawable/btn_menu"/>
-
-            <TextView
-                android:id="@+id/tv_speed"
                 android:layout_width="wrap_content"
-                android:layout_height="100dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_marginBottom="15dp"
-                android:layout_marginLeft="20dp"
-                android:gravity="center"
-                android:textColor="@color/C2White"
-                android:textSize="80sp"/>
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:gravity="start"
+                android:text="10 min"
+                android:textColor="@color/C3White"
+                android:textSize="20sp"/>
+
+            <ImageView
+                android:id="@+id/iv_loop_toggled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@id/tv_length"
+                android:layout_toRightOf="@id/tv_length"
+                android:scaleType="fitEnd"
+                android:src="@drawable/ic_loop_black_24dp"
+                android:tint="@color/C3White"/>
+
+            <ImageView
+                android:id="@+id/iv_shock_toggled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/iv_loop_toggled"
+                android:layout_toRightOf="@id/iv_loop_toggled"
+                android:scaleType="fitEnd"
+                android:src="@drawable/ic_error_black_24dp"
+                android:tint="@color/C3White"/>
         </RelativeLayout>
-    </RelativeLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

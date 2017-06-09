@@ -15,9 +15,6 @@ public class PreviewIncomingHandler extends Handler {
     public void handleMessage(Message msg) {
 
         switch (msg.what) {
-            case ServicePreview.MSG_OM:
-                mService.createOptionsMenu();
-                break;
             case ServicePreview.MSG_RESIZE:
                 mService.adjustPreview();
                 break;
