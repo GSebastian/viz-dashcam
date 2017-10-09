@@ -71,7 +71,7 @@
                         android:layout_height="match_parent"
                         android:contentDescription="@string/video_length"
                         android:scaleType="centerInside"
-                        android:src="@drawable/icon_length"/>
+                        android:src="@drawable/ic_watch_later_black_36dp"/>
 
                     <TextView
                         android:id="@+id/tv_length"
@@ -94,7 +94,7 @@
                         android:layout_height="match_parent"
                         android:contentDescription="@string/video_size"
                         android:scaleType="centerInside"
-                        android:src="@drawable/icon_size"/>
+                        android:src="@drawable/ic_storage_black_36dp"/>
 
                     <TextView
                         android:id="@+id/tv_size"
@@ -117,7 +117,7 @@
                         android:layout_width="30dp"
                         android:layout_height="match_parent"
                         android:scaleType="centerInside"
-                        android:src="@drawable/icon_shock"
+                        android:src="@drawable/ic_error_black_36dp"
                         tools:ignore="ContentDescription"/>
 
                     <TextView

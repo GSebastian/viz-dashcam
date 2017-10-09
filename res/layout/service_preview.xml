@@ -181,7 +181,7 @@
                 android:layout_toEndOf="@id/iv_loop_toggled"
                 android:layout_toRightOf="@id/iv_loop_toggled"
                 android:scaleType="fitEnd"
-                android:src="@drawable/ic_error_black_24dp"
+                android:src="@drawable/ic_error_black_36dp"
                 android:tint="@color/C3White"/>
         </RelativeLayout>
 
