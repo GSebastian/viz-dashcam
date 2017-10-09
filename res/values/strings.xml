@@ -225,5 +225,7 @@
     <string name="permission_granted">Permission granted &#10004;</string>
 
     <string name="done">Done</string>
+    <string name="all_videos">All Videos</string>
+    <string name="marked_videos">Marked Videos</string>
 
 </resources>

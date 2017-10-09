@@ -75,7 +75,7 @@ public class VideoListActivity extends AppCompatActivity {
             }
         });
 
-        viewPager.setAdapter(new VideoListFragmentAdapter(getSupportFragmentManager()));
+        viewPager.setAdapter(new VideoListFragmentAdapter(getSupportFragmentManager(), getApplicationContext()));
         tabLayout.setupWithViewPager(viewPager);
     }
 
@@ -96,8 +96,11 @@ public class VideoListActivity extends AppCompatActivity {
 
 class VideoListFragmentAdapter extends FragmentPagerAdapter {
 
-    public VideoListFragmentAdapter(FragmentManager fm) {
+    Context context;
+
+    public VideoListFragmentAdapter(FragmentManager fm, Context context) {
         super(fm);
+        this.context = context;
     }
 
     @Override
@@ -106,9 +109,7 @@ class VideoListFragmentAdapter extends FragmentPagerAdapter {
 
         if (arg0 == 0) {
             fragment = new AllVideosFragment();
-        }
-
-        if (arg0 == 1) {
+        } else if (arg0 == 1) {
             fragment = new MarkedVideosFragment();
         }
 
@@ -122,6 +123,6 @@ class VideoListFragmentAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return position == 0 ? "All Videos" : "Marked Videos";
+        return position == 0 ? context.getString(R.string.all_videos) : context.getString(R.string.marked_videos);
     }
 }
