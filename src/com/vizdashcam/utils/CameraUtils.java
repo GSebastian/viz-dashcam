@@ -12,9 +12,6 @@ import com.vizdashcam.SharedPreferencesHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by sebastian on 23/05/16.
- */
 public class CameraUtils {
 
     public static Camera.Size getOptimalPreviewResolution(List<Camera.Size> supportedSizes, int screenWidth, int
@@ -99,12 +96,6 @@ public class CameraUtils {
         return displayHeightLandscape;
     }
 
-    public static int getDisplayDiagonal(Context context) {
-        int widthSquared = getDisplayWidth(context) * getDisplayWidth(context);
-        int heightSquared = getDisplayHeight(context) * getDisplayHeight(context);
-        return (int) Math.sqrt((double) widthSquared + (double) heightSquared);
-    }
-
     public static Integer[] getSupportedCamcorderProfiles() {
 
         List<Integer> supportedProfiles = new ArrayList<>();
@@ -135,7 +126,6 @@ public class CameraUtils {
 
         return supportedProfiles.toArray(new Integer[supportedProfiles.size()]);
     }
-
 
     public static CharSequence[] getSupportedCamcorderProfilesIDAsCharArray() {
 

@@ -36,6 +36,7 @@ import android.view.WindowManager.LayoutParams;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.vizdashcam.activities.MainActivity;
@@ -50,6 +51,8 @@ import com.vizdashcam.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
+
+import static com.vizdashcam.R.id.rlRecordContainer;
 
 
 public class ServicePreview extends Service implements
@@ -212,9 +215,10 @@ public class ServicePreview extends Service implements
         tvSpeed = (TextView) fullLayout.findViewById(R.id.tv_speed);
 
         ivRecord = (ImageView) fullLayout.findViewById(R.id.iv_record);
+        RelativeLayout rlRecord = (RelativeLayout) fullLayout.findViewById(R.id.rlRecordContainer);
         ivRecord.setImageResource(R.drawable.ic_record);
 
-        ivRecord.setOnClickListener(new View.OnClickListener() {
+        rlRecord.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -244,7 +248,6 @@ public class ServicePreview extends Service implements
 
             @Override
             public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
             }
 
             @Override
@@ -254,7 +257,6 @@ public class ServicePreview extends Service implements
 
             @Override
             public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
             }
         });
 
@@ -387,7 +389,6 @@ public class ServicePreview extends Service implements
     }
 
     public void adjustPreview() {
-
         if (appState.isActivityPaused()) {
             windowManager
                     .updateViewLayout(fullLayout, mLayoutParamsMinimised);
@@ -651,7 +652,6 @@ public class ServicePreview extends Service implements
                             StorageDialogActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-
                 }
             });
         }
@@ -737,18 +737,5 @@ public class ServicePreview extends Service implements
         Intent intent = new Intent(VideoListActivity.ACTION_UPDATE);
         intent.putExtra(VideoListActivity.KEY_VIDEO, video);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-    }
-
-    public enum SidebarState {
-        OPEN, CLOSED
-    }
-
-    public class SmoothInterpolator extends LinearInterpolator {
-
-        @Override
-        public float getInterpolation(float input) {
-            return (float) Math.pow(input - 1, 5) + 1;
-        }
-
     }
 }

@@ -84,6 +84,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+
     compile 'commons-io:commons-io:2.5'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
@@ -92,4 +93,5 @@ dependencies {
     compile 'joda-time:joda-time:2.9.2'
     compile 'rebus:permission-utils:1.0.9'
     compile 'net.hockeyapp.android:HockeySDK:4.1.4'
+    compile 'uk.co.jakelee:vidsta:1.0.0'
 }

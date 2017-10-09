@@ -89,8 +89,8 @@ public class VideoItemActivity extends AppCompatActivity {
                     audioFeedback();
 
                     Uri videoUri = Uri.parse(videoItem.getPath());
-                    Intent intent = new Intent(Intent.ACTION_VIEW, videoUri);
-                    intent.setDataAndType(videoUri, "video/*");
+                    Intent intent = new Intent(VideoItemActivity.this, VideoPlayerActivity.class);
+                    intent.putExtra(VideoPlayerActivity.EXTRA_VIDEO_URI, videoUri);
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(VideoItemActivity.this,

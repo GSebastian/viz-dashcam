@@ -75,6 +75,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dex-cache" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-safeguard" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
@@ -93,12 +94,15 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="commons-io-2.5" level="project" />
     <orderEntry type="library" exported="" name="constraint-layout-1.0.0-beta5" level="project" />
+    <orderEntry type="library" exported="" name="vidsta-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="joda-time-2.9.2" level="project" />
     <orderEntry type="library" exported="" name="percent-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="permission-utils-1.0.9" level="project" />
     <orderEntry type="library" exported="" name="HockeySDK-4.1.4" level="project" />
     <orderEntry type="library" exported="" name="transition-25.3.1" level="project" />
+    <orderEntry type="library" exported="" name="material-1.2.4" level="project" />
     <orderEntry type="library" exported="" name="constraint-layout-solver-1.0.0-beta5" level="project" />
+    <orderEntry type="library" exported="" name="cardview-v7-23.4.0" level="project" />
     <orderEntry type="library" exported="" name="design-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="support-core-ui-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="support-v4-25.3.1" level="project" />

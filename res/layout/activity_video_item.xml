@@ -28,14 +28,14 @@
                 <ImageView
                     android:id="@+id/iv_preview"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     tools:ignore="ContentDescription"/>
 
                 <ImageView
                     android:id="@+id/iv_play"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="match_parent"
                     android:layout_centerInParent="true"
                     android:background="@drawable/bg_effect_onpress_semi_full_white"
                     android:contentDescription="@string/play_video"
