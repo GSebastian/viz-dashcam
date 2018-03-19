@@ -15,5 +15,6 @@ A simple Android dashcam application I've built about 3 years ago with Java. Cur
 ### [Permission Utils](https://github.com/rebus007/PermissionUtils)
 
 ## How do I get this thing to run? ###
-Just open the project in Android Studio 3.0.1+!
+
+### Just open the project in Android Studio 3.0.1+ and hit run! ###
 
