@@ -2,7 +2,7 @@
 A simple Android dashcam application I've built about 3 years ago with Java. Currently updating it to the latest design and OS guidelines
 
 ![the app's splashscreen and settings screen](/screenshots/splash-settings.png) 
-![the app's settings screen](/screenshots/settings.png)
+![the app's camera preview screen](/screenshots/camera-preview.png)
 
 ## Libraries ##
 
