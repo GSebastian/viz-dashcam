@@ -1,8 +1,7 @@
 # Viz Dashcam #
 A simple Android dashcam application I've built about 3 years ago with Java. Currently updating it to the latest design and OS guidelines
 
-![the app's splashscreen](/screenshots/splashscreen.png)
-![the app's main screen - the camera preview](/screenshots/camera-preview.png)
+![the app's splashscreen and settings screen](/screenshots/splash-settings.png) 
 ![the app's settings screen](/screenshots/settings.png)
 
 ## Libraries ##
